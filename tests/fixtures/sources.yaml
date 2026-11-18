@@ -1,0 +1,26 @@
+# Fixture corpus: three tiny SYNTHETIC documents, one per authority tier.
+documents:
+  - id: xps901
+    file: xps901_operational_risk.pdf
+    title: "Prudential Standard XPS 901 Operational Risk Management (synthetic)"
+    issuer: APRA (synthetic)
+    tier: binding
+    applies_to: [bank, insurer, super]
+    effective_from: "2025-07-01"
+    url: ""
+  - id: letter_ai
+    file: letter_ai.pdf
+    title: "Letter to Industry: Artificial Intelligence (synthetic)"
+    issuer: APRA (synthetic)
+    tier: expectation
+    applies_to: [bank, insurer]
+    effective_from: ""
+    url: ""
+  - id: ai_adoption
+    file: ai_adoption_foundations.pdf
+    title: "Guidance for AI Adoption: Foundations (synthetic)"
+    issuer: National AI Centre (synthetic)
+    tier: voluntary
+    applies_to: [any_business]
+    effective_from: ""
+    url: ""

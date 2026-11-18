@@ -1,0 +1,10 @@
+# Letter to Industry: Artificial Intelligence
+SYNTHETIC TEST FIXTURE - not a real APRA letter.
+# Purpose
+APRA is writing to regulated entities to set out its expectations for the prudent use of artificial intelligence (AI), including generative AI models and AI agents.
+# Governance of AI
+APRA expects boards to maintain sufficient understanding of AI to provide effective challenge, and to ensure that the use of AI remains within the entity's risk appetite.
+# AI suppliers
+APRA expects entities to identify where third-party AI vendors and AI models are used in critical operations, and to manage these AI vendors as service provider arrangements under existing prudential standards.
+# Assurance of AI models
+Entities should ensure AI models are subject to independent validation and ongoing performance monitoring proportionate to their materiality.

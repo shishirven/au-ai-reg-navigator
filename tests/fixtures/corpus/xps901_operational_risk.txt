@@ -1,0 +1,16 @@
+# Prudential Standard XPS 901 Operational Risk Management
+SYNTHETIC TEST FIXTURE - not a real APRA standard.
+# Application
+1. This Prudential Standard applies to all APRA-regulated entities, including authorised deposit-taking institutions, general insurers and registrable superannuation entity licensees.
+# Service provider management
+2. An APRA-regulated entity must maintain a comprehensive service provider management policy covering how material service providers are identified, engaged and monitored.
+3. Before entering into or materially modifying a material arrangement with a service provider, an APRA-regulated entity must:
+(a) undertake appropriate due diligence on the provider, including its capability, financial soundness and its own reliance on downstream providers;
+(b) assess the financial and non-financial risks of the arrangement, including information security and business continuity risks; and
+(c) notify APRA within 20 business days after entering into the arrangement.
+4. An APRA-regulated entity must not enter into a material arrangement unless the agreement gives APRA access to documentation and information relating to the arrangement.
+# Governance
+5. The Board of an APRA-regulated entity is ultimately accountable for the oversight of operational risk management.
+6. An APRA-regulated entity should periodically review the tolerance levels it has set for each critical operation.
+# Commencement
+7. This Prudential Standard commences on 1 July 2025.

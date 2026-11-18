@@ -1,0 +1,10 @@
+# Guidance for AI Adoption: Foundations
+SYNTHETIC TEST FIXTURE - not the real National AI Centre guidance.
+# Decide who is accountable for AI
+Organisations should assign an accountable owner for each AI system and document the intended AI use case.
+# Understand your AI vendors
+When buying AI from an AI vendor, organisations should ask the AI vendor how the AI model was trained, how the AI was tested and what the known AI limitations are. Consider requesting AI vendor documentation such as AI model cards.
+# Test and monitor AI
+Organisations should test AI systems before deployment and monitor AI systems for drift and unexpected AI behaviour.
+# Be transparent about AI
+Organisations should consider telling people when they are interacting with AI or when AI is used to make decisions about them.

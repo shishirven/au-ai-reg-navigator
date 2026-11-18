@@ -1,0 +1,43 @@
+# One entry per source document in data/raw/.
+#  - `file` must match the PDF filename you place in data/raw/.
+#  - `sha256` is computed and written by the ingest script (`make ingest`) - do not edit.
+#  - url / effective_from left blank where not certain: please fill in (DECISIONS.md D-008).
+#  - tier: binding | expectation | voluntary
+#  - applies_to: any of bank | insurer | super | any_business
+documents:
+  - id: apra_cps230
+    file: ""            # TODO(user): e.g. CPS_230.pdf
+    title: "Prudential Standard CPS 230 Operational Risk Management"
+    issuer: APRA
+    tier: binding
+    applies_to: [bank, insurer, super]
+    effective_from: ""  # TODO(user)
+    url: ""             # TODO(user)
+    sha256: ""
+  - id: apra_ai_letter_2026
+    file: ""            # TODO(user)
+    title: "APRA Letter to Industry on Artificial Intelligence (30 April 2026)"
+    issuer: APRA
+    tier: expectation
+    applies_to: [bank, insurer, super]
+    effective_from: ""  # TODO(user): letter dated 2026-04-30 per brief; confirm whether to treat as effective date
+    url: ""             # TODO(user)
+    sha256: ""
+  - id: oaic_adm_guidance
+    file: ""            # TODO(user)
+    title: "OAIC guidance on automated decision-making transparency (APPs 1.7-1.9)"  # TODO(user): confirm exact title
+    issuer: OAIC
+    tier: expectation
+    applies_to: [any_business]
+    effective_from: ""  # TODO(user): obligation commences 2026-12-10 per brief; confirm
+    url: ""             # TODO(user)
+    sha256: ""
+  - id: nai_ai6_foundations
+    file: ""            # TODO(user)
+    title: "Guidance for AI Adoption: Foundations (AI6)"
+    issuer: National AI Centre
+    tier: voluntary
+    applies_to: [any_business]
+    effective_from: ""  # TODO(user)
+    url: ""             # TODO(user)
+    sha256: ""
