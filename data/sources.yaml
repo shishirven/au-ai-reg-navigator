@@ -1,43 +1,160 @@
-# One entry per source document in data/raw/.
-#  - `file` must match the PDF filename you place in data/raw/.
-#  - `sha256` is computed and written by the ingest script (`make ingest`) - do not edit.
-#  - url / effective_from left blank where not certain: please fill in (DECISIONS.md D-008).
-#  - tier: binding | expectation | voluntary
-#  - applies_to: any of bank | insurer | super | any_business
+# One entry per source document in data/raw/ (metadata from data/raw/manifest.csv).
+#  tier:       binding | expectation | voluntary            (legal force of the DOCUMENT)
+#  applies_to: any of bank | insurer | super | any_business (sector filter)
+#  status:     current | superseded  (superseded docs are indexed but excluded from retrieval by default)
+#  structure:  numbered | headings   (chunking mode; numbered = split at "12." paragraph markers)
+#  start_page / end_page: 1-indexed PDF page range to parse (skips determination cover pages, TOCs, back covers)
+#  drop_boxed_text: drop text inside shaded boxes (CPG 230 quotes CPS 230 paragraphs in blue boxes)
+#  sha256: computed and written by `make ingest` - do not edit by hand.
 documents:
-  - id: apra_cps230
-    file: ""            # TODO(user): e.g. CPS_230.pdf
-    title: "Prudential Standard CPS 230 Operational Risk Management"
+  - id: apra_cps230_2026
+    file: apra_cps230_2026-07.pdf
+    short_name: CPS 230
+    title: Prudential Standard CPS 230 Operational Risk Management (July 2026)
     issuer: APRA
     tier: binding
+    status: current
     applies_to: [bank, insurer, super]
-    effective_from: ""  # TODO(user)
-    url: ""             # TODO(user)
-    sha256: ""
-  - id: apra_ai_letter_2026
-    file: ""            # TODO(user)
-    title: "APRA Letter to Industry on Artificial Intelligence (30 April 2026)"
+    effective_from: "2026-07-01"
+    url: https://www.legislation.gov.au/F2026L00475/asmade/2026-04-29/text/original/pdf
+    structure: numbered
+    start_page: 4
+    sha256: "182a241027c4284d81b3aa6405ef47659594a66ece2648f6751cecb382320517"
+  - id: apra_cps230_2023
+    file: apra_cps230_2023-07.pdf
+    short_name: CPS 230 (2023 version)
+    title: Prudential Standard CPS 230 Operational Risk Management (July 2023 final, commenced 1 July 2025)
+    issuer: APRA
+    tier: binding
+    status: superseded
+    applies_to: [bank, insurer, super]
+    effective_from: "2025-07-01"
+    url: https://www.apra.gov.au/system/files/2023-07/Prudential%20Standard%20CPS%20230%20Operational%20Risk%20Management%20-%20clean.pdf
+    structure: numbered
+    sha256: "f296a7e0bead93df6d4ed0fcb242cb320501ccba18e014855516bd02656ecaec"
+  - id: apra_cps220
+    file: apra_cps220_2019-07.pdf
+    short_name: CPS 220
+    title: Prudential Standard CPS 220 Risk Management
+    issuer: APRA
+    tier: binding
+    status: current
+    applies_to: [bank, insurer]  # RSE licensees are covered by SPS 220, not CPS 220 (CPS 220 fn 1)
+    effective_from: "2019-07-01"
+    url: https://www.legislation.gov.au/F2019L00669/asmade/2019-05-07/text/original/pdf
+    structure: numbered
+    start_page: 4
+    sha256: "67ba3f292eb1613832cf53a244eac68fde2bef1fd25e7425a5ea9b77267b224b"
+  - id: apra_cps234
+    file: apra_cps234_2019-07.pdf
+    short_name: CPS 234
+    title: Prudential Standard CPS 234 Information Security
+    issuer: APRA
+    tier: binding
+    status: current
+    applies_to: [bank, insurer, super]
+    effective_from: "2019-07-01"
+    url: https://www.legislation.gov.au/F2018L01745/asmade/2018-12-12/text/original/pdf
+    structure: numbered
+    start_page: 3
+    sha256: "d86abbb56970dd46b3cb5e91f33a30ad1186450c52ee89eaafe302404ed8a9a9"
+  - id: apra_cpg230_2026
+    file: apra_cpg230_2026-07.pdf
+    short_name: CPG 230
+    title: Prudential Practice Guide CPG 230 Operational Risk Management (July 2026)
     issuer: APRA
     tier: expectation
+    status: current
     applies_to: [bank, insurer, super]
-    effective_from: ""  # TODO(user): letter dated 2026-04-30 per brief; confirm whether to treat as effective date
-    url: ""             # TODO(user)
-    sha256: ""
-  - id: oaic_adm_guidance
-    file: ""            # TODO(user)
-    title: "OAIC guidance on automated decision-making transparency (APPs 1.7-1.9)"  # TODO(user): confirm exact title
+    effective_from: "2026-07-01"
+    url: https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf
+    structure: numbered
+    start_page: 3
+    drop_boxed_text: true
+    sha256: "0927f6eea402f5d89e735ff91bedf675c2e21cb3ce523969b8699d667f78fcac"
+  - id: apra_cpg235
+    file: apra_cpg235_2013-09.pdf
+    short_name: CPG 235
+    title: Prudential Practice Guide CPG 235 Managing Data Risk
+    issuer: APRA
+    tier: expectation
+    status: current
+    applies_to: [bank, insurer, super]
+    effective_from: "2013-09-01"  # manifest gives "September 2013"; day not stated
+    url: https://www.apra.gov.au/system/files/CPG-235-Managing-Data-Risk.pdf
+    structure: numbered
+    start_page: 6
+    end_page: 16
+    sha256: "0013cf70eb7b5a215b848b147528776cc549a37dbca8c38741bfea0068d3c7bb"
+  - id: apra_ai_letter_2026
+    file: apra_ai_letter_2026-04.md
+    short_name: APRA AI letter
+    title: APRA Letter to Industry on Artificial Intelligence (AI), 30 April 2026
+    issuer: APRA
+    tier: expectation
+    status: current
+    applies_to: [bank, insurer, super]
+    effective_from: "2026-04-30"  # date of the letter
+    url: https://www.apra.gov.au/news-and-publications/apra-letter-industry-artificial-intelligence-ai
+    structure: headings
+    sha256: "785b8d524c18f7e633b06c76aa180f99e639f811ec5743ca0163d1f812e39269"
+  - id: oaic_app1_adm_2026
+    file: oaic_app1_adm_transparency_obligation_2026.md
+    short_name: OAIC APP 1.7-1.9 fact sheet
+    title: APP 1.7-1.9 Transparency Obligation Fact Sheet (automated decision-making)
     issuer: OAIC
     tier: expectation
+    status: current
     applies_to: [any_business]
-    effective_from: ""  # TODO(user): obligation commences 2026-12-10 per brief; confirm
-    url: ""             # TODO(user)
-    sha256: ""
-  - id: nai_ai6_foundations
-    file: ""            # TODO(user)
-    title: "Guidance for AI Adoption: Foundations (AI6)"
-    issuer: National AI Centre
+    effective_from: "2026-12-10"  # obligations commence; fact sheet published 30 Sep 2026
+    url: https://www.oaic.gov.au/__data/assets/pdf_file/0021/269013/APP-1.7-1.9-Transparency-Obligation-Fact-Sheet.PDF
+    structure: headings
+    sha256: "8c0249654e0cfd57465cbe9b8cebf4b1f33a3c0e879f0425c5c7a38c1655f4e0"
+  - id: oaic_ai_products_2025
+    file: oaic_privacy_commercially_available_ai_products_2025-01.md
+    short_name: OAIC AI products guidance
+    title: Guidance on privacy and the use of commercially available AI products
+    issuer: OAIC
+    tier: expectation
+    status: current
+    applies_to: [any_business]
+    effective_from: "2024-10-21"  # published; updated 17 Jan 2025
+    url: https://www.oaic.gov.au/privacy/privacy-guidance-for-organisations-and-government-agencies/guidance-on-privacy-and-the-use-of-commercially-available-ai-products
+    structure: headings
+    sha256: "700060790e416f282f7edc94899c8b408b226f4aaa679435495e7014048f09dc"
+  - id: naic_ai6_foundations
+    file: naic_guidance_ai_adoption_foundations_2025-10.md
+    short_name: AI6 Foundations
+    title: "Guidance for AI adoption: foundations (AI6)"
+    issuer: National AI Centre (DISR)
     tier: voluntary
+    status: current
     applies_to: [any_business]
-    effective_from: ""  # TODO(user)
-    url: ""             # TODO(user)
-    sha256: ""
+    effective_from: "2025-10-21"  # published 21 Oct 2025 per manifest notes
+    url: https://www.ai.gov.au/sites/default/files/2026-05/Guidance-for-AI-adoption-foundations_2.pdf
+    structure: headings
+    sha256: "f2e0d41257fa4cd2b9b4ed0559841216d41776dd5031d9dea2a270ccdb722368"
+  - id: disr_vaiss_2024
+    file: disr_voluntary_ai_safety_standard_2024-09.md
+    short_name: Voluntary AI Safety Standard
+    title: Voluntary AI Safety Standard (the 10 guardrails)
+    issuer: National AI Centre (DISR)
+    tier: voluntary
+    status: superseded
+    applies_to: [any_business]
+    effective_from: "2024-09-05"
+    url: https://www.industry.gov.au/publications/voluntary-ai-safety-standard/10-guardrails
+    structure: headings
+    sha256: "8fce1c5a9025fe32905e71f7314b2e5a3a7b1aa7817747254aea04219246a527"
+  - id: disr_ai_ethics_2019
+    file: disr_australias_ai_ethics_principles_2019-11.md
+    short_name: AI Ethics Principles
+    title: Australia's AI Ethics Principles
+    issuer: DISR
+    tier: voluntary
+    status: superseded
+    applies_to: [any_business]
+    effective_from: "2019-11-07"
+    url: https://www.industry.gov.au/publications/australias-ai-ethics-principles
+    structure: headings
+    sha256: "a912cafc8c0226df97e38d617483fb1c395c48f071fdbdbf49b15406f5e74a7a"

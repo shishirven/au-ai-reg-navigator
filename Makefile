@@ -6,7 +6,7 @@ UV := uv run
 
 .PHONY: help install lint format typecheck test test-unit test-integration test-adversarial \
         coverage regression-gate ingest ask eval eval-all compare judge-calibration \
-        release-check app docker-build up down clean
+        release-check chunks app docker-build up down clean
 
 help:  ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -45,6 +45,9 @@ regression-gate:  ## Retrieval regression gate on fixtures vs configs/ci_thresho
 
 ingest:  ## Parse, chunk, tag, embed and index data/raw (skips unchanged files)
 	$(UV) python -m regnav.cli ingest --config $(CONFIG)
+
+chunks:  ## List chunk ids for gold labelling: make chunks DOC=apra_cps230_2026
+	$(UV) python -m regnav.cli chunks --config $(CONFIG) $(if $(DOC),--doc $(DOC),)
 
 ask:  ## Ask one question: make ask Q="..." SECTOR=bank CONFIG=...
 	$(UV) python -m regnav.cli ask --config $(CONFIG) --sector $(SECTOR) "$(Q)"
