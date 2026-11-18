@@ -38,7 +38,7 @@ test-adversarial:  ## Adversarial/safety tests - needs ANTHROPIC_API_KEY
 	$(UV) pytest tests/adversarial -m llm -q
 
 coverage:  ## Unit + integration with coverage report (target ~80% on regnav/)
-	$(UV) pytest tests/unit tests/integration --cov=regnav --cov-report=term-missing --cov-report=xml
+	$(UV) pytest --cov=regnav --cov-report=term-missing --cov-report=xml
 
 regression-gate:  ## Retrieval regression gate on fixtures vs configs/ci_thresholds.yaml
 	$(UV) python -m regnav.eval.regression_gate
