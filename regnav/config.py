@@ -58,32 +58,50 @@ class ChunkingConfig(BaseModel):
 
 class RetrievalConfig(BaseModel):
     mode: Literal["dense", "hybrid", "stratified"] = "stratified"
-    top_k: int = 8  # final number of chunks passed to the generator
+    top_k: int = 9  # final number of chunks passed to the generator (pooled modes)
     candidate_k: int = 40  # per-retriever candidate pool before fusion
-    per_tier_k: int = 3  # stratified: quota per tier
+    per_tier_k: int = 3  # stratified: quota per tier (3 tiers x 3 = 9 = top_k)
     rrf_k: int = 60  # reciprocal-rank-fusion constant (Cormack et al. 2009)
     sector_filter: bool = True
+    include_superseded: bool = False
 
 
-class GenerationConfig(BaseModel):
-    provider: Literal["anthropic", "stub"] = "anthropic"
-    model: str = "claude-opus-5-5"
-    max_tokens: int = 4000
-    effort: Literal["low", "medium", "high", "xhigh", "max"] | None = "medium"
-    # Current Claude models reject sampling params; kept for older models only.
-    temperature: float | None = None
+Provider = Literal["ollama", "anthropic", "stub"]
+Effort = Literal["low", "medium", "high", "xhigh", "max"]
+
+
+class LLMConfig(BaseModel):
+    """One LLM endpoint. ``provider`` selects the client; everything else is data."""
+
+    provider: Provider = "ollama"
+    model: str = "qwen3:4b"
+    max_tokens: int = 1500
+    timeout_s: float = 600.0
+    # Sampling. Honoured by Ollama; current Claude models reject sampling params, so the
+    # Anthropic client never sends them (DECISIONS D-004).
+    temperature: float | None = 0.0
+    # Ollama-only
+    base_url: str = "http://localhost:11434"
+    num_ctx: int = 8192  # Ollama's small default silently truncates long prompts
+    think: bool = False  # Qwen3 thinking mode off: faster, whole budget goes to the answer
+    # How to request JSON from Ollama: "none" = schema in the prompt only, parsed and checked by
+    # our validator (default - grammar-constrained decoding made Qwen3-4B over-abstain, D-023);
+    # "json" = generic JSON mode; "schema" = constrained decoding against the JSON schema.
+    ollama_format: Literal["none", "json", "schema"] = "none"
+    # Anthropic-only
+    effort: Effort | None = "medium"
+    # USD per million tokens (0 for local models) - used for cost tracking.
+    price_input_per_mtok: float = 0.0
+    price_output_per_mtok: float = 0.0
+
+
+class GenerationConfig(LLMConfig):
     max_validation_retries: int = 1
-    # USD per million tokens - used for cost tracking.
-    price_input_per_mtok: float = 4.0
-    price_output_per_mtok: float = 20.0
 
 
-class JudgeConfig(BaseModel):
-    model: str = "claude-sonnet-5-5"
-    max_tokens: int = 2000
-    effort: Literal["low", "medium", "high", "xhigh", "max"] | None = "medium"
-    price_input_per_mtok: float = 2.0
-    price_output_per_mtok: float = 10.0
+class JudgeConfig(LLMConfig):
+    model: str = "gemma3:4b"
+    max_tokens: int = 800
 
 
 class PathsConfig(BaseModel):

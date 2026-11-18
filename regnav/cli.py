@@ -52,6 +52,76 @@ def cmd_chunks(args: argparse.Namespace) -> int:
     return 0
 
 
+SECTION_TITLES = {
+    "mandatory": "MANDATORY (binding standards)",
+    "regulator_expects": "REGULATOR EXPECTS (guidance - not itself enforceable)",
+    "recommended": "RECOMMENDED (voluntary guidance)",
+}
+
+
+def format_answer(result) -> str:
+    from regnav.generate.schema import SECTIONS
+
+    by_id = {c.chunk_id: c for c in result.retrieved}
+    out = [f"Q: {result.question}  [sector: {result.sector or 'any'}]", ""]
+    if result.answer.abstained:
+        out.append(f"ABSTAINED: {result.answer.abstain_reason}")
+    for section in SECTIONS:
+        claims = getattr(result.answer, section)
+        if not claims:
+            continue
+        out.append(SECTION_TITLES[section])
+        for c in claims:
+            src = by_id.get(c.citation_id)
+            label = src.metadata.get("short_name", "") if src else "?"
+            para = f" para {src.metadata['para']}" if src and src.metadata.get("para") else ""
+            out.append(f"  - {c.claim}  [{label}{para} | {c.citation_id}]")
+        out.append("")
+    out.append(f"Note: {result.disclaimer}")
+    out.append(
+        f"config={result.config_name} index={result.index_version} prompt={result.prompt_version} "
+        f"valid={result.valid} attempts={len(result.attempts)} fallback={result.fallback} "
+        f"latency={result.total_latency_s:.1f}s tokens={result.input_tokens}/{result.output_tokens} "
+        f"cost=${result.cost_usd:.4f}"
+    )
+    if result.error:
+        out.append(f"error: {result.error}")
+    if result.trace_url:
+        out.append(f"trace: {result.trace_url}")
+    return "\n".join(out)
+
+
+def cmd_ask(args: argparse.Namespace) -> int:
+    from regnav.config import Secrets
+    from regnav.generate.answer import answer_question
+    from regnav.generate.llm import make_llm
+    from regnav.observability.langfuse import get_tracer
+    from regnav.retrieve import build_retrieval
+
+    cfg = load_config(args.config)
+    if args.model:
+        cfg.generation.model = args.model
+    secrets = Secrets()
+    retrieval = build_retrieval(cfg)
+    llm = make_llm(cfg.generation, cfg.seed, secrets.anthropic_api_key)
+    tracer = get_tracer(secrets)
+    for question in args.question:
+        result = answer_question(question, cfg, retrieval, llm, sector=args.sector, tracer=tracer)
+        if args.json:
+            print(json.dumps(result.to_dict(), indent=2, default=str))
+        else:
+            print(format_answer(result))
+            if args.show_sources:
+                print("\nRetrieved:")
+                for c in result.retrieved:
+                    print(
+                        f"  {c.rank}. {c.chunk_id:38s} {c.tier:11s} {c.modality:6s} {c.score:.4f}"
+                    )
+        print("-" * 80)
+    tracer.flush()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="regnav")
     parser.add_argument("--log-level", default="WARNING")
@@ -67,6 +137,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--doc", default=None)
     p.add_argument("--full", action="store_true")
     p.set_defaults(func=cmd_chunks)
+
+    p = sub.add_parser("ask", help="answer one or more questions")
+    p.add_argument("question", nargs="+")
+    p.add_argument("--config", default=None)
+    p.add_argument("--sector", default=None, choices=["bank", "insurer", "super", "any_business"])
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--show-sources", action="store_true")
+    p.add_argument("--model", default=None, help="override generation.model (e.g. qwen3:4b)")
+    p.set_defaults(func=cmd_ask)
 
     args = parser.parse_args(argv)
     setup_logging(args.log_level)

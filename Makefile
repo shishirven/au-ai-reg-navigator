@@ -4,12 +4,15 @@ Q ?= What do we need to do before engaging a third-party AI vendor?
 SECTOR ?= bank
 UV := uv run
 
-.PHONY: help install lint format typecheck test test-unit test-integration test-adversarial \
+.PHONY: help setup-local install lint format typecheck test test-unit test-integration test-adversarial \
         coverage regression-gate ingest ask eval eval-all compare judge-calibration \
         release-check chunks app docker-build up down clean
 
 help:  ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+
+setup-local:  ## One-command laptop setup: uv, deps, Ollama models, index, smoke test
+	bash scripts/setup_local.sh
 
 install:  ## Create venv from uv.lock and install pre-commit hooks
 	uv sync --frozen
