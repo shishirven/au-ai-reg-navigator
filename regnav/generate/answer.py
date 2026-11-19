@@ -22,7 +22,8 @@ from regnav.generate.prompts import (
     build_user_prompt,
 )
 from regnav.generate.schema import DISCLAIMER, StructuredAnswer, answer_json_schema
-from regnav.generate.validate import validate_answer
+from regnav.generate.scope import check_scope, corpus_instruments
+from regnav.generate.validate import repair_answer, validate_answer
 from regnav.retrieve import RetrievalSystem, RetrievedChunk
 
 log = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class Attempt:
     raw: str
     errors: list[str]
     error_types: list[str]
+    repairs: list[str]
     input_tokens: int
     output_tokens: int
     latency_s: float
@@ -52,6 +54,8 @@ class AnswerResult:
     attempts: list[Attempt] = field(default_factory=list)
     valid: bool = True  # final answer passed validation
     fallback: bool = False  # safe abstention returned after repeated validation failure
+    repaired: bool = False  # final answer needed deterministic claim-level repair
+    gate_reason: str | None = None  # scope gate abstained before calling the LLM
     error: str | None = None
     retrieval_latency_s: float = 0.0
     generation_latency_s: float = 0.0
@@ -117,6 +121,17 @@ def answer_question(
         result.total_latency_s = time.perf_counter() - t0
         _trace(tracer, result, cfg)
         return result
+    gen = cfg.generation
+    if gen.scope_gate:
+        known = corpus_instruments(str(c.metadata.get("short_name", "")) for c in chunks)
+        known |= corpus_instruments(getattr(retrieval, "known_instruments", set()))
+        reason = check_scope(question, chunks, known, gen.min_dense_similarity)
+        if reason:
+            result.gate_reason = reason
+            result.answer = safe_abstention(reason)
+            result.total_latency_s = time.perf_counter() - t0
+            _trace(tracer, result, cfg)
+            return result
 
     meta = {c.chunk_id: c.metadata for c in chunks}
     messages = [{"role": "user", "content": build_user_prompt(question, chunks, sector, today)}]
@@ -134,11 +149,22 @@ def answer_question(
             )
             break
         check = validate_answer(resp.text, meta)
+        repairs: list[str] = []
+        final = check.answer if check.ok else None
+        if (
+            check.answer is not None
+            and gen.claim_repair
+            and (not check.ok or _over_cap(check.answer, gen))
+        ):
+            repaired, repairs = repair_answer(check.answer, meta, gen.max_claims_per_section)
+            recheck = validate_answer(repaired.model_dump_json(), meta)
+            final = recheck.answer if recheck.ok else None
         result.attempts.append(
             Attempt(
                 resp.text,
                 check.errors,
                 check.error_types,
+                repairs,
                 resp.input_tokens,
                 resp.output_tokens,
                 resp.latency_s,
@@ -148,9 +174,10 @@ def answer_question(
         result.input_tokens += resp.input_tokens
         result.output_tokens += resp.output_tokens
         result.generation_latency_s += resp.latency_s
-        if check.ok and check.answer is not None:
-            result.answer = check.answer
+        if final is not None:
+            result.answer = final
             result.valid = True
+            result.repaired = bool(repairs) and not check.ok
             break
         log.info("validation failed", extra={"extra_fields": {"errors": check.error_types}})
         messages = [
@@ -168,6 +195,13 @@ def answer_question(
     result.total_latency_s = time.perf_counter() - t0
     _trace(tracer, result, cfg)
     return result
+
+
+def _over_cap(answer: StructuredAnswer, gen) -> bool:
+    cap = gen.max_claims_per_section
+    return bool(cap) and any(
+        len(getattr(answer, s)) > cap for s in ("mandatory", "regulator_expects", "recommended")
+    )
 
 
 def _trace(tracer: Any | None, result: AnswerResult, cfg: AppConfig) -> None:

@@ -32,4 +32,10 @@ jobs:
         run: uv run mypy regnav
       - name: Unit + integration tests (no network, no API key)
         run: uv run pytest --cov=regnav --cov-report=term-missing --cov-report=xml
-      # Retrieval regression gate (real embedding model) is added in Phase 4.
+      - name: Cache embedding model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-bge-small-en-v1.5
+      - name: Retrieval regression gate (fixture corpus, real BGE embeddings, no LLM)
+        run: uv run python -m regnav.eval.regression_gate

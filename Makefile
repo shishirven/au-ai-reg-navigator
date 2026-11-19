@@ -6,7 +6,7 @@ UV := uv run
 
 .PHONY: help setup-local install lint format typecheck test test-unit test-integration test-adversarial \
         coverage regression-gate ingest ask eval eval-all compare judge-calibration \
-        release-check chunks app docker-build up down clean
+        release-check chunks eval-draft eval-retrieval mlflow-ui app docker-build up down clean
 
 help:  ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -55,20 +55,30 @@ chunks:  ## List chunk ids for gold labelling: make chunks DOC=apra_cps230_2026
 ask:  ## Ask one question: make ask Q="..." SECTOR=bank CONFIG=...
 	$(UV) python -m regnav.cli ask --config $(CONFIG) --sector $(SECTOR) "$(Q)"
 
-eval:  ## Full eval of one config on the gold set, logged to MLflow
-	$(UV) python -m regnav.eval.run_eval --config $(CONFIG)
+eval:  ## Full eval of one config on the gold set (data/eval/questions.jsonl), logged to MLflow
+	$(UV) python -m regnav.eval.run_eval --config $(CONFIG) $(EVAL_ARGS)
 
-eval-all:  ## Full eval of all three retrieval configs
-	for c in baseline_dense hybrid_pooled hybrid_stratified; do $(UV) python -m regnav.eval.run_eval --config configs/$$c.yaml || exit 1; done
+eval-all:  ## Full eval of all three retrieval configs on the gold set
+	for c in baseline_dense hybrid_pooled hybrid_stratified; do $(UV) python -m regnav.eval.run_eval --config configs/$$c.yaml $(EVAL_ARGS) || exit 1; done
+
+eval-draft:  ## PROVISIONAL eval of all three configs on the DRAFT questions (clearly labelled)
+	for c in baseline_dense hybrid_pooled hybrid_stratified; do $(UV) python -m regnav.eval.run_eval --config configs/$$c.yaml --questions data/eval/questions_draft.jsonl --allow-draft $(EVAL_ARGS) || exit 1; done
+
+eval-retrieval:  ## Retrieval-only eval (no LLM, deterministic) of all three configs
+	for c in baseline_dense hybrid_pooled hybrid_stratified; do $(UV) python -m regnav.eval.run_eval --config configs/$$c.yaml --retrieval-only $(EVAL_ARGS) || exit 1; done
+
+mlflow-ui:  ## MLflow UI on http://localhost:5000
+	$(UV) mlflow ui --backend-store-uri sqlite:///mlruns/mlflow.db --port 5000
 
 compare:  ## Write docs/results.md comparing the latest run of each config
 	$(UV) python -m regnav.eval.compare
 
-judge-calibration:  ## Export judged answers for human labelling / compute Cohen's kappa
+judge-calibration:  ## 1st run: export 10 judged answers to label; 2nd run: Cohen's kappa -> MLflow
 	$(UV) python -m regnav.eval.judge calibrate --config $(CONFIG)
 
-release-check:  ## Release gate: tests + regression gate + full eval vs release thresholds
+release-check:  ## Release gate: lint, tests, regression gate, full gold eval, thresholds (SKIP_EVAL=1 reuses latest)
 	$(MAKE) lint typecheck test regression-gate
+	$(if $(SKIP_EVAL),,$(UV) python -m regnav.eval.run_eval --config $(CONFIG))
 	$(UV) python -m regnav.eval.release_check --config $(CONFIG)
 
 app:  ## Run the Streamlit app locally

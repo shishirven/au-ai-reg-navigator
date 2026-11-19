@@ -24,7 +24,7 @@ ollama pull $JudgeModel
 
 Write-Host "==> 5/6 .env and index"
 if (-not (Test-Path .env)) { Copy-Item .env.example .env }
-uv run python -m regnav.cli ingest --config configs/hybrid_stratified.yaml
+uv run python -m regnav.cli ingest --config configs/local_stratified.yaml
 
 Write-Host "==> 6/6 Smoke test (1-3 min on CPU)"
-uv run python -m regnav.cli ask --config configs/hybrid_stratified.yaml --model $GenModel --sector bank "What do we need to do before engaging a third-party AI vendor?"
+uv run python -m regnav.cli ask --config configs/local_stratified.yaml --model $GenModel --sector bank "What do we need to do before engaging a third-party AI vendor?"

@@ -110,7 +110,12 @@ def _pdf_raw_lines(
             height = page.rect.height
             boxes = _shaded_rects(page) if drop_boxed_text else []
             for bno, block in enumerate(page.get_text("dict")["blocks"]):
-                for line in block.get("lines", []):
+                # Some PDFs (e.g. CPS 220) emit a paragraph marker after its text; restore
+                # visual order within the block: top-to-bottom rows, then left-to-right.
+                block_lines = sorted(
+                    block.get("lines", []), key=lambda ln: (round(ln["bbox"][1] / 3), ln["bbox"][0])
+                )
+                for line in block_lines:
                     spans = [s for s in line["spans"] if s["text"].strip()]
                     if not spans:
                         continue

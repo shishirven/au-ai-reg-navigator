@@ -91,3 +91,19 @@ def test_unsupported_suffix(tmp_path: Path) -> None:
         assert "unsupported" in str(e)
     else:  # pragma: no cover
         raise AssertionError("expected ValueError")
+
+
+def test_marker_emitted_after_its_text_is_reordered(tmp_path: Path) -> None:
+    """CPS 220 PDFs emit '28.' after the paragraph text in the same block; visual order wins."""
+    doc = pymupdf.open()
+    page = doc.new_page()
+    # Insert text first, marker second, on the same baseline (as the CPS 220 PDF stream does).
+    page.insert_text(
+        (118, 300), "The risk appetite statement must, at a minimum, convey:", fontsize=10
+    )
+    page.insert_text((90, 300), "28.", fontsize=10)
+    page.insert_text((118, 330), "Another paragraph without marker.", fontsize=10)
+    path = tmp_path / "order.pdf"
+    doc.save(str(path))
+    texts = [ln.text for ln in parse_document(path)]
+    assert texts[0] == "28. The risk appetite statement must, at a minimum, convey:"

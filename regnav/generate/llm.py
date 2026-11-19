@@ -66,9 +66,9 @@ class OllamaClient:
             "options": options,
             "think": self.cfg.think,
         }
-        if schema is not None and self.cfg.ollama_format == "schema":
+        if schema is not None and self.cfg.json_mode == "schema":
             payload["format"] = schema
-        elif schema is not None and self.cfg.ollama_format == "json":
+        elif schema is not None and self.cfg.json_mode == "json":
             payload["format"] = "json"
         req = urllib.request.Request(
             f"{self.cfg.base_url.rstrip('/')}/api/chat",
@@ -91,6 +91,101 @@ class OllamaClient:
             output_tokens=int(data.get("eval_count", 0)),
             latency_s=time.perf_counter() - t0,
             raw={k: v for k, v in data.items() if k != "message"},
+        )
+
+
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+
+
+def _retry_after_seconds(value: str | None, default: float) -> float:
+    """Parse Retry-After / x-ratelimit-reset values like '7', '7.5s', '1m30s', '250ms'."""
+    if not value:
+        return default
+    import re
+
+    total, matched = 0.0, False
+    for num, unit in re.findall(r"([\d.]+)\s*(ms|s|m|h)?", value):
+        matched = True
+        total += float(num) * {"ms": 0.001, "s": 1, "m": 60, "h": 3600, "": 1}[unit]
+    return total if matched else default
+
+
+class OpenAICompatClient:
+    """OpenAI-compatible ``/chat/completions`` (Groq by default) with 429/5xx back-off.
+
+    The Groq key is injected by the session's network proxy (never stored in code or env); a
+    locally-set ``GROQ_API_KEY`` is used if present (e.g. on a laptop).
+    """
+
+    def __init__(self, cfg: LLMConfig, seed: int = 42) -> None:
+        import os
+
+        self.cfg = cfg
+        self.seed = seed
+        self.base_url = (
+            cfg.base_url
+            if cfg.provider == "openai_compat"
+            else (cfg.base_url if "11434" not in cfg.base_url else GROQ_BASE_URL)
+        )
+        self.api_key = os.environ.get(cfg.api_key_env) or "proxy-injected"
+        self.sleep = time.sleep  # injectable for tests
+
+    def complete(self, system, messages, schema=None) -> LLMResponse:
+        payload: dict[str, Any] = {
+            "model": self.cfg.model,
+            "messages": [{"role": "system", "content": system}, *messages],
+            "max_completion_tokens": self.cfg.max_tokens,
+            "seed": self.seed,
+        }
+        if self.cfg.temperature is not None:
+            payload["temperature"] = self.cfg.temperature
+        if self.cfg.reasoning_effort:
+            payload["reasoning_effort"] = self.cfg.reasoning_effort
+        if schema is not None and self.cfg.json_mode == "json":
+            payload["response_format"] = {"type": "json_object"}
+        elif schema is not None and self.cfg.json_mode == "schema":
+            payload["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {"name": "answer", "schema": schema, "strict": False},
+            }
+        data = json.dumps(payload).encode()
+        t0 = time.perf_counter()
+        for attempt in range(self.cfg.max_rate_limit_retries + 1):
+            req = urllib.request.Request(
+                f"{self.base_url.rstrip('/')}/chat/completions",
+                data=data,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.api_key}",
+                    # Cloudflare in front of Groq rejects Python-urllib's default UA (error 1010)
+                    "User-Agent": "regnav/0.1",
+                },
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=self.cfg.timeout_s) as resp:
+                    body = json.loads(resp.read())
+                break
+            except urllib.error.HTTPError as e:
+                retryable = e.code == 429 or e.code >= 500
+                if not retryable or attempt == self.cfg.max_rate_limit_retries:
+                    detail = e.read().decode(errors="replace")[:300]
+                    raise LLMError(f"{self.cfg.provider} HTTP {e.code}: {detail}") from e
+                wait = _retry_after_seconds(
+                    e.headers.get("retry-after") or e.headers.get("x-ratelimit-reset-tokens"),
+                    default=min(60.0, 2.0**attempt),
+                )
+                self.sleep(min(wait + 0.5, 120.0))
+            except urllib.error.URLError as e:
+                raise LLMError(f"{self.cfg.provider} not reachable at {self.base_url}: {e}") from e
+        choice = body["choices"][0]
+        usage = body.get("usage", {})
+        return LLMResponse(
+            text=choice["message"].get("content") or "",
+            model=body.get("model", self.cfg.model),
+            input_tokens=int(usage.get("prompt_tokens", 0)),
+            output_tokens=int(usage.get("completion_tokens", 0)),
+            latency_s=time.perf_counter() - t0,
+            raw={"finish_reason": choice.get("finish_reason"), "usage": usage},
         )
 
 
@@ -189,6 +284,8 @@ def default_stub_answer(user_prompt: str) -> str:
 def make_llm(cfg: LLMConfig, seed: int = 42, api_key: str | None = None) -> LLMClient:
     if cfg.provider == "ollama":
         return OllamaClient(cfg, seed)
+    if cfg.provider in ("groq", "openai_compat"):
+        return OpenAICompatClient(cfg, seed)
     if cfg.provider == "anthropic":
         return AnthropicClient(cfg, api_key)
     return StubClient(cfg)

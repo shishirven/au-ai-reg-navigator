@@ -32,7 +32,7 @@ class _Static:
     def search(self, q, k, f):
         return [
             RetrievedChunk(
-                "cps:p52", "t", {"tier": "binding", "modality": "must"}, 0.1, 1, {"dense": 0.5}
+                "cps:p52", "t", {"tier": "binding", "modality": "must"}, 0.1, 1, {"dense": 0.9}
             )
         ]
 

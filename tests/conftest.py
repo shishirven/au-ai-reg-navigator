@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from regnav.config import AppConfig, EmbeddingConfig, PathsConfig
+from regnav.config import AppConfig, EmbeddingConfig, GenerationConfig, PathsConfig
 from regnav.fixtures import build_fixture_pdfs
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -37,6 +37,8 @@ def make_fixture_config(tmp_path: Path, raw_dir: Path, **overrides) -> AppConfig
     data = {
         "name": "fixture",
         "embedding": EmbeddingConfig(backend="hashing", dim=256),
+        # hashing-embedder similarities are not on BGE's scale: disable the similarity floor
+        "generation": GenerationConfig(provider="stub", min_dense_similarity=0.0),
         "paths": PathsConfig(
             raw_dir=raw,
             sources_file=sources,

@@ -66,7 +66,7 @@ class RetrievalConfig(BaseModel):
     include_superseded: bool = False
 
 
-Provider = Literal["ollama", "anthropic", "stub"]
+Provider = Literal["ollama", "groq", "openai_compat", "anthropic", "stub"]
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -84,10 +84,16 @@ class LLMConfig(BaseModel):
     base_url: str = "http://localhost:11434"
     num_ctx: int = 8192  # Ollama's small default silently truncates long prompts
     think: bool = False  # Qwen3 thinking mode off: faster, whole budget goes to the answer
-    # How to request JSON from Ollama: "none" = schema in the prompt only, parsed and checked by
-    # our validator (default - grammar-constrained decoding made Qwen3-4B over-abstain, D-023);
-    # "json" = generic JSON mode; "schema" = constrained decoding against the JSON schema.
-    ollama_format: Literal["none", "json", "schema"] = "none"
+    # How to request JSON (Ollama / OpenAI-compatible): "none" = schema in the prompt only, parsed
+    # and checked by our validator (default - grammar-constrained decoding made Qwen3-4B
+    # over-abstain, D-023); "json" = generic JSON mode; "schema" = constrained decoding.
+    json_mode: Literal["none", "json", "schema"] = "none"
+    # Groq / OpenAI-compatible: reasoning control passed through as-is (e.g. Qwen "none",
+    # gpt-oss "low"); None = provider default. API key is injected by the network proxy or
+    # read from `api_key_env`.
+    reasoning_effort: str | None = None
+    api_key_env: str = "GROQ_API_KEY"
+    max_rate_limit_retries: int = 8
     # Anthropic-only
     effort: Effort | None = "medium"
     # USD per million tokens (0 for local models) - used for cost tracking.
@@ -97,6 +103,13 @@ class LLMConfig(BaseModel):
 
 class GenerationConfig(LLMConfig):
     max_validation_retries: int = 1
+    max_claims_per_section: int = 3
+    # Deterministic per-claim repair before asking the LLM again (D-029).
+    claim_repair: bool = True
+    # Scope gate before generation (D-030): abstain without calling the LLM when the best
+    # dense match is very weak or the question names a jurisdiction / instrument not in corpus.
+    scope_gate: bool = True
+    min_dense_similarity: float = 0.62
 
 
 class JudgeConfig(LLMConfig):
@@ -143,6 +156,8 @@ class AppConfig(BaseModel):
         out: dict[str, str] = {}
         for section in ("embedding", "chunking", "retrieval", "generation", "judge"):
             for k, v in getattr(self, section).model_dump().items():
+                if k == "api_key_env":  # name of an env var, but keep anything key-like out of logs
+                    continue
                 out[f"{section}.{k}"] = str(v)
         out["name"] = self.name
         out["seed"] = str(self.seed)

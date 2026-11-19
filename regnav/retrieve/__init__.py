@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from regnav.config import AppConfig
 from regnav.retrieve.base import Filters, RetrievedChunk, Retriever
@@ -15,6 +15,7 @@ class RetrievalSystem:
     index_version: str
     include_superseded: bool
     sector_filter: bool
+    known_instruments: set[str] = field(default_factory=set)
 
     def search(self, query: str, sector: str | None = None) -> list[RetrievedChunk]:
         filters = Filters(
@@ -35,6 +36,8 @@ def build_retrieval(cfg: AppConfig) -> RetrievalSystem:
     manifest = load_manifest(cfg)
     if manifest is None:
         raise FileNotFoundError("no index found - run `make ingest` first")
+    rows = load_chunk_rows(cfg)
+    instruments = {str(r.get("short_name", "")) for r in rows}
     r = cfg.retrieval
     dense = DenseRetriever(get_collection(cfg), get_embedder(cfg.embedding))
     retriever: Retriever
@@ -50,7 +53,12 @@ def build_retrieval(cfg: AppConfig) -> RetrievalSystem:
         else:
             retriever, top_k = StratifiedRetriever(hybrid, r.per_tier_k), r.per_tier_k * 3
     return RetrievalSystem(
-        retriever, top_k, manifest["index_version"], r.include_superseded, r.sector_filter
+        retriever,
+        top_k,
+        manifest["index_version"],
+        r.include_superseded,
+        r.sector_filter,
+        instruments,
     )
 
 

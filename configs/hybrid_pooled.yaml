@@ -16,23 +16,27 @@ retrieval:
   sector_filter: true
   include_superseded: false
 generation:
-  # Local, free: Qwen3 4B via Ollama (see README "Run on a laptop"). qwen3:8b is better but ~2x slower.
-  provider: ollama
-  model: qwen3:4b
-  base_url: http://localhost:11434
+  # Groq free tier (key injected by the network proxy, or GROQ_API_KEY locally). See D-031.
+  provider: groq
+  model: qwen/qwen3.8-27b
+  base_url: https://api.groq.com/openai/v1
+  reasoning_effort: none   # Qwen thinking off: faster; whole token budget goes to the answer
   temperature: 0.0
-  num_ctx: 8192
-  think: false
-  ollama_format: none
+  json_mode: none
   max_tokens: 1500
   max_validation_retries: 1
-  price_input_per_mtok: 0.0
+  max_claims_per_section: 3
+  claim_repair: true
+  scope_gate: true
+  min_dense_similarity: 0.62
+  price_input_per_mtok: 0.0   # free tier
   price_output_per_mtok: 0.0
 judge:
   # Different model family from the generator, to limit self-preference bias.
-  provider: ollama
-  model: gemma3:4b
-  base_url: http://localhost:11434
+  provider: groq
+  model: openai/gpt-oss-120b
+  base_url: https://api.groq.com/openai/v1
+  reasoning_effort: low
   temperature: 0.0
-  num_ctx: 8192
-  max_tokens: 800
+  json_mode: json
+  max_tokens: 2000

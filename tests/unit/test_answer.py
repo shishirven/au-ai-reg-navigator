@@ -46,6 +46,28 @@ GOOD = json.dumps(
     }
 )
 BAD = json.dumps({**json.loads(GOOD), "mandatory": [{"claim": "x", "citation_id": "nope:1"}]})
+# Unrepairable: every claim cites an unknown id -> nothing survives repair.
+BAD_ALL = json.dumps(
+    {
+        "mandatory": [{"claim": "x", "citation_id": "nope:1"}],
+        "regulator_expects": [],
+        "recommended": [],
+        "abstained": False,
+        "abstain_reason": "",
+    }
+)
+MISFILED = json.dumps(
+    {
+        "mandatory": [],
+        "regulator_expects": [],
+        "recommended": [
+            {"claim": "Entities must undertake due diligence.", "citation_id": "cps:p52"},
+            {"claim": "Assign an AI owner.", "citation_id": "ai6:s1"},
+        ],
+        "abstained": False,
+        "abstain_reason": "",
+    }
+)
 
 
 def _system(chunks=CHUNKS) -> RetrievalSystem:
@@ -62,8 +84,33 @@ def test_valid_first_time() -> None:
     assert r.to_dict()["answer"]["mandatory"][0]["citation_id"] == "cps:p52"
 
 
-def test_retry_once_then_success_includes_feedback() -> None:
+def test_claim_level_repair_drops_bad_citation_without_llm_retry() -> None:
+    llm = StubClient(responses=[BAD])
+    r = answer_question("q", AppConfig(), _system(), llm)
+    assert r.valid and r.repaired and len(llm.calls) == 1
+    assert [cid for _, _, cid in r.cited()] == ["ai6:s1"]
+    assert r.attempts[0].repairs == ["dropped claim with unknown citation 'nope:1'"]
+
+
+def test_claim_level_repair_moves_misfiled_claim_to_tier_section() -> None:
+    r = answer_question("q", AppConfig(), _system(), StubClient(responses=[MISFILED]))
+    assert r.valid and r.repaired
+    assert [(s, cid) for s, _, cid in r.cited()] == [
+        ("mandatory", "cps:p52"),
+        ("recommended", "ai6:s1"),
+    ]
+
+
+def test_repair_disabled_falls_back_to_llm_retry() -> None:
+    cfg = AppConfig()
+    cfg.generation.claim_repair = False
     llm = StubClient(responses=[BAD, GOOD])
+    r = answer_question("q", cfg, _system(), llm)
+    assert r.valid and not r.repaired and len(r.attempts) == 2
+
+
+def test_retry_once_then_success_includes_feedback() -> None:
+    llm = StubClient(responses=[BAD_ALL, GOOD])
     r = answer_question("q", AppConfig(), _system(), llm)
     assert r.valid and len(r.attempts) == 2
     assert r.attempts[0].error_types == ["citation_invalid"]
@@ -72,7 +119,7 @@ def test_retry_once_then_success_includes_feedback() -> None:
 
 
 def test_two_failures_give_safe_abstention() -> None:
-    llm = StubClient(responses=[BAD, BAD])
+    llm = StubClient(responses=[BAD_ALL, BAD_ALL])
     r = answer_question("q", AppConfig(), _system(), llm)
     assert r.fallback and not r.valid and r.answer.abstained
     assert r.answer.claims() == []
@@ -84,6 +131,17 @@ def test_llm_error_gives_safe_abstention() -> None:
 
     r = answer_question("q", AppConfig(), _system(), StubClient(responses=[boom]))
     assert r.fallback and r.answer.abstained and r.error == "down"
+
+
+def test_scope_gate_abstains_without_calling_llm() -> None:
+    llm = StubClient()
+    r = answer_question("What does the EU AI Act require?", AppConfig(), _system(), llm)
+    assert r.answer.abstained and r.gate_reason and "EU" in r.gate_reason and llm.calls == []
+    weak = [
+        RetrievedChunk("x:1", "t", {"tier": "binding", "modality": "info"}, 0.1, 1, {"dense": 0.3})
+    ]
+    r = answer_question("Some question", AppConfig(), _system(weak), llm)
+    assert r.answer.abstained and "similarity" in r.gate_reason and llm.calls == []
 
 
 def test_no_chunks_abstains_without_calling_llm() -> None:

@@ -113,3 +113,57 @@ def validate_answer(raw: str, retrieved: dict[str, dict[str, Any]]) -> Validatio
                 f"Claim citing {cid} ('should' guidance) uses mandatory language: {c.claim[:80]!r}",
             )
     return res
+
+
+def repair_answer(
+    answer: StructuredAnswer,
+    retrieved: dict[str, dict[str, Any]],
+    max_per_section: int | None = None,
+) -> tuple[StructuredAnswer, list[str]]:
+    """Deterministic per-claim repair of a schema-valid answer.
+
+    * claim in the wrong section -> moved to the section matching its cited source's tier
+      (section is fully determined by the cited tier, so this is safe);
+    * citation missing / not retrieved -> claim dropped;
+    * mandatory language on a 'should' source -> claim dropped;
+    * duplicates removed; optional cap per section.
+    Returns the repaired answer and a human-readable log of every change.
+    """
+    from regnav.config import TIER_TO_SECTION
+    from regnav.generate.schema import SECTIONS, Claim
+
+    log: list[str] = []
+    buckets: dict[str, list[Claim]] = {s: [] for s in SECTIONS}
+    seen: set[tuple[str, str]] = set()
+    for section, c in answer.claims():
+        meta = retrieved.get(c.citation_id.strip())
+        if meta is None:
+            log.append(f"dropped claim with unknown citation {c.citation_id!r}")
+            continue
+        target = TIER_TO_SECTION.get(str(meta.get("tier")), section)
+        if target != section:
+            log.append(f"moved claim citing {c.citation_id} from {section} to {target}")
+        if meta.get("modality") == "should" and (
+            target == "mandatory" or uses_mandatory_language(c.claim)
+        ):
+            log.append(
+                f"dropped claim citing 'should' source {c.citation_id} with mandatory wording"
+            )
+            continue
+        key = (c.claim.strip().lower(), c.citation_id)
+        if key in seen:
+            log.append(f"dropped duplicate claim citing {c.citation_id}")
+            continue
+        seen.add(key)
+        buckets[target].append(c)
+    if max_per_section:
+        for s_ in SECTIONS:
+            if len(buckets[s_]) > max_per_section:
+                log.append(f"trimmed {s_} from {len(buckets[s_])} to {max_per_section} claims")
+                buckets[s_] = buckets[s_][:max_per_section]
+    repaired = StructuredAnswer(
+        **buckets,
+        abstained=answer.abstained and not any(buckets.values()),
+        abstain_reason=answer.abstain_reason if not any(buckets.values()) else "",
+    )
+    return repaired, log

@@ -1,6 +1,9 @@
-# Release gate (make release-check). Evaluated on the 30 gold questions.
+# Release gate (make release-check). Evaluated on the latest full eval of the chosen config,
+# which must be on the reviewed gold set AND the current index version.
 min_faithfulness: 0.85
 min_citation_validity: 0.98
 max_modality_error_rate: 0.02
 min_authority_label_accuracy: 0.95
 min_binding_coverage: 0.90
+min_abstention_recall: 0.80
+max_fallback_rate: 0.10
