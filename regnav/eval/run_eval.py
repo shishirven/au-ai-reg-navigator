@@ -141,15 +141,22 @@ def evaluate_question(
     elif result.answer.abstained or not claims:
         row.update(correctness=0.0, correctness_raw=None, faithfulness=None)
     elif judge_llm is not None:
-        from regnav.eval.judge import judge_answer
-
-        judged = judge_answer(
-            judge_llm,
+        # Deferred: judged by run() in a background thread (separate rate-limit quota), so the
+        # judge call for this question overlaps generation of the next one.
+        row["_judge_payload"] = (
             q.question,
             q.reference_answer,
             [{**c, "source_text": text.get(c["citation_id"], "")} for c in claims],
         )
-        row.update(judged)
+    return row
+
+
+def finish_judging(row: dict[str, Any], judge_llm) -> dict[str, Any]:
+    payload = row.pop("_judge_payload", None)
+    if payload is not None and judge_llm is not None:
+        from regnav.eval.judge import judge_answer
+
+        row.update(judge_answer(judge_llm, *payload))
     return row
 
 
@@ -346,26 +353,35 @@ def run(args: argparse.Namespace) -> int:
         else {}
     )
     rows: list[dict[str, Any]] = []
-    with pq.open("a") as f:
+    from concurrent.futures import Future, ThreadPoolExecutor
+
+    def write(f, i: int, row: dict[str, Any]) -> None:
+        rows.append(row)
+        f.write(json.dumps(row, default=str) + "\n")
+        f.flush()
+        status = (
+            ""
+            if llm is None
+            else f" abst={row.get('abstained')} faith={row.get('faithfulness')} corr={row.get('correctness')}"
+        )
+        print(
+            f"[{i}/{len(questions)}] {row['id']} recall@5={row['recall_at_5']} rr={row['rr']}{status}",
+            flush=True,
+        )
+
+    pending: list[tuple[int, Future]] = []
+    with pq.open("a") as f, ThreadPoolExecutor(max_workers=1) as judge_pool:
         for i, q in enumerate(questions, start=1):
             if q.id in done:
                 rows.append(done[q.id])
                 continue
             row = evaluate_question(q, cfg, retrieval, llm, judge_llm, tracer, tier_of)
-            rows.append(row)
-            f.write(json.dumps(row, default=str) + "\n")
-            f.flush()
-            status = (
-                ""
-                if llm is None
-                else (
-                    f" abst={row.get('abstained')} faith={row.get('faithfulness')} corr={row.get('correctness')}"
-                )
-            )
-            print(
-                f"[{i}/{len(questions)}] {q.id} recall@5={row['recall_at_5']} rr={row['rr']}{status}",
-                flush=True,
-            )
+            pending.append((i, judge_pool.submit(finish_judging, row, judge_llm)))
+            while pending and pending[0][1].done():  # write completed rows in question order
+                j, fut = pending.pop(0)
+                write(f, j, fut.result())
+        for j, fut in pending:
+            write(f, j, fut.result())
     if tracer is not None:
         tracer.flush()
 
