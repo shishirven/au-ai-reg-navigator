@@ -54,12 +54,13 @@ def cmd_chunks(args: argparse.Namespace) -> int:
 
 SECTION_TITLES = {
     "mandatory": "MANDATORY (binding standards)",
-    "regulator_expects": "REGULATOR EXPECTS (guidance - not itself enforceable)",
+    "regulator_expects": "REGULATOR EXPECTS (regulator guidance - the document itself is not law; see notes)",
     "recommended": "RECOMMENDED (voluntary guidance)",
 }
 
 
 def format_answer(result) -> str:
+    from regnav.authority import note_for
     from regnav.generate.schema import SECTIONS
 
     by_id = {c.chunk_id: c for c in result.retrieved}
@@ -76,6 +77,9 @@ def format_answer(result) -> str:
             label = src.metadata.get("short_name", "") if src else "?"
             para = f" para {src.metadata['para']}" if src and src.metadata.get("para") else ""
             out.append(f"  - {c.claim}  [{label}{para} | {c.citation_id}]")
+            note = note_for(str(src.metadata.get("doc_id", ""))) if src else None
+            if note and section != "mandatory":
+                out.append(f"      ⚖️ {note.badge}")
         out.append("")
     if result.llm_provider:
         where = "LOCAL" if result.llm_provider == "ollama" else "API"

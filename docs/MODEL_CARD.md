@@ -83,7 +83,9 @@ modality error rate and abstention precision/recall, each with 95% bootstrap CIs
 
 1. **Tier is a property of the document, not the obligation.** The OAIC APP 1.7–1.9 fact sheet is
    labelled "Regulator expects" although it explains a *binding* Privacy Act obligation (from
-   10 Dec 2026). Users must not read "Regulator expects" as "optional" for OAIC content.
+   10 Dec 2026). Claims citing such guidance carry a "⚖️ Explains binding law" note (D-043), but the
+   obligation itself is not shown under "Mandatory" until the statutory text is added to the corpus.
+   Never read "Regulator expects" as "optional".
 2. **Corpus coverage**: no Privacy Act text, ASIC guidance, SPS standards (super-specific risk
    management), APRA capital standards or proposed mandatory AI guardrails.
 3. **Point-in-time snapshot**: documents retrieved November 2026; no automated change detection

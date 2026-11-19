@@ -1,0 +1,27 @@
+# Display-only authority notes (D-043). The answer tier is assigned per DOCUMENT (sources.yaml).
+# Some guidance documents explain obligations that are themselves binding law; these notes make
+# that visible next to every claim citing them, so "Regulator expects" is never read as "optional".
+# Not used for retrieval, chunking or the LLM prompt (no index/eval change).
+notes:
+  oaic_app1_adm_2026:
+    explains_binding: "Privacy Act 1988 (Cth) - APP 1.7-1.9 (automated decision-making transparency)"
+    in_force_from: "2026-12-10"
+    note: >-
+      This OAIC fact sheet is guidance, but the APP 1.7-1.9 obligations it explains are binding law
+      under the Privacy Act (inserted by the Privacy and Other Legislation Amendment Act 2024),
+      enforceable from 10 December 2026.
+  oaic_ai_products_2025:
+    explains_binding: "Privacy Act 1988 (Cth) - Australian Privacy Principles"
+    note: >-
+      OAIC guidance. Where it states what the Australian Privacy Principles require (e.g. APP 3, APP 5,
+      APP 6), those requirements are binding law; its recommendations and "best practice" are guidance.
+  apra_cpg230_2026:
+    explains_binding: "APRA Prudential Standard CPS 230"
+    note: >-
+      Prudential practice guide: not itself enforceable, but it explains how to comply with CPS 230,
+      which is binding. Check the CPS 230 paragraph it relates to.
+  apra_cpg235:
+    explains_binding: "APRA prudential standards (e.g. CPS 220, CPS 234)"
+    note: >-
+      Prudential practice guide: not itself enforceable; it supports compliance with binding
+      prudential standards.

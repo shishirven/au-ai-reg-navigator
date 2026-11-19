@@ -11,6 +11,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from regnav.authority import note_for
 from regnav.config import TIER_LABELS, AppConfig, Secrets, load_config
 from regnav.generate.answer import AnswerResult, answer_question
 from regnav.generate.llm import FallbackClient, LLMConfig, StubClient, make_llm
@@ -42,7 +43,7 @@ SECTION_STYLE = {
     "mandatory": ("Mandatory", "binding standard - legally enforceable", "#b42318", "#fef3f2"),
     "regulator_expects": (
         "Regulator expects",
-        "guidance - not itself enforceable",
+        "regulator guidance - the document itself is not law; see any ⚖️ note below",
         "#b54708",
         "#fffaeb",
     ),
@@ -209,9 +210,15 @@ if result is not None:
                 src = by_id.get(c.citation_id)
                 label = src.metadata.get("short_name", "?") if src else "?"
                 para = f" para {src.metadata['para']}" if src and src.metadata.get("para") else ""
+                note = note_for(str(src.metadata.get("doc_id", ""))) if src else None
+                note_html = (
+                    f"<div style='font-size:0.8rem;color:#6941c6;margin-top:2px'>⚖️ {html.escape(note.badge)}</div>"
+                    if note and section != "mandatory"
+                    else ""
+                )
                 items.append(
                     f"<li style='margin-bottom:6px'>{html.escape(c.claim)} "
-                    f"<code style='font-size:0.75rem'>{html.escape(label + para)}</code></li>"
+                    f"<code style='font-size:0.75rem'>{html.escape(label + para)}</code>{note_html}</li>"
                 )
             st.markdown(
                 f"<div style='border-left:5px solid {color};background:{bg};padding:10px 14px;"
@@ -249,6 +256,11 @@ if result is not None:
                 f"{badge(TIER_LABELS.get(c.tier, c.tier), TIER_COLOR.get(c.tier, '#475467'))} "
                 f"{badge(c.modality, '#475467')} "
                 + (badge("cited", "#155eef") + " " if c.chunk_id in cited else "")
+                + (
+                    badge("⚖️ explains binding law", "#6941c6") + " "
+                    if note_for(str(m.get("doc_id", "")))
+                    else ""
+                )
                 + f"<b>{html.escape(title)}</b>"
             )
             st.markdown(head, unsafe_allow_html=True)
@@ -257,6 +269,8 @@ if result is not None:
                 st.markdown(f"**{m.get('doc_title', '')}**  \nSection: {m.get('section', '')}")
                 if m.get("effective_from"):
                     st.markdown(f"Effective from: `{m['effective_from']}`")
+                if note := note_for(str(m.get("doc_id", ""))):
+                    st.info(f"⚖️ {note.note}")
                 st.text(body)
                 if m.get("url"):
                     st.markdown(f"[Source document ↗]({m['url']})")
