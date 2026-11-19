@@ -13,3 +13,4 @@ mlruns/
 mlartifacts/
 results/
 .DS_Store
+chroma_staging/

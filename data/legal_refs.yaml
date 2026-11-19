@@ -1,0 +1,35 @@
+# Instrument registry for reference resolution and applicability (D-044).
+# Maps how documents CITE provisions ("paragraph 60(a) of CPS 230", "APP 1.7") to corpus doc ids.
+instruments:
+  CPS 230: {doc_id: apra_cps230_2026, kind: standard, regime: prudential}
+  CPS 220: {doc_id: apra_cps220, kind: standard, regime: prudential}
+  CPS 234: {doc_id: apra_cps234, kind: standard, regime: prudential}
+  CPG 230: {doc_id: apra_cpg230_2026, kind: guide, regime: prudential}
+  CPG 235: {doc_id: apra_cpg235, kind: guide, regime: prudential}
+  # Australian Privacy Principles: "APP n" / "APP n.m" resolve to Schedule 1 (template below);
+  # APP 1.7-1.9 (commencing 10 Dec 2026) resolve to the amending-Act extract.
+  "APP *": {doc_id: privacy_act_apps, kind: statute, regime: privacy, heading: "APP {n}"}
+  APP 1.7: {doc_id: privacy_act_app1_7_9, kind: statute, regime: privacy, heading: "APP 1.7"}
+  APP 1.8: {doc_id: privacy_act_app1_7_9, kind: statute, regime: privacy, heading: "APP 1.8"}
+  APP 1.9: {doc_id: privacy_act_app1_7_9, kind: statute, regime: privacy, heading: "APP 1.9"}
+  Privacy Act s 6D: {doc_id: privacy_act_app_entity_sb, kind: statute, regime: privacy, heading: "6D"}
+  Privacy Act s 6C: {doc_id: privacy_act_app_entity_sb, kind: statute, regime: privacy, heading: "6C"}
+  Privacy Act s 6EA: {doc_id: privacy_act_app_entity_sb, kind: statute, regime: privacy, heading: "6EA"}
+
+# Regulatory regime of each document (drives "binding on whom").
+documents:
+  apra_cps230_2026: {regime: prudential, kind: standard}
+  apra_cps230_2023: {regime: prudential, kind: standard}
+  apra_cps220: {regime: prudential, kind: standard}
+  apra_cps234: {regime: prudential, kind: standard}
+  apra_cpg230_2026: {regime: prudential, kind: guide}
+  apra_cpg235: {regime: prudential, kind: guide}
+  apra_ai_letter_2026: {regime: prudential, kind: letter}
+  oaic_app1_adm_2026: {regime: privacy, kind: guide}
+  oaic_ai_products_2025: {regime: privacy, kind: guide}
+  privacy_act_app1_7_9: {regime: privacy, kind: statute}
+  privacy_act_app_entity_sb: {regime: privacy, kind: statute}
+  privacy_act_apps: {regime: privacy, kind: statute}
+  naic_ai6_foundations: {regime: voluntary, kind: voluntary}
+  disr_vaiss_2024: {regime: voluntary, kind: voluntary}
+  disr_ai_ethics_2019: {regime: voluntary, kind: voluntary}

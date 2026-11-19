@@ -6,7 +6,7 @@ UV := uv run
 
 .PHONY: help setup-local install lint format typecheck test test-unit test-integration test-adversarial \
         coverage regression-gate ingest ask eval eval-all compare judge-calibration \
-        release-check chunks eval-draft eval-retrieval retrieval-ablation mlflow-ui app docker-build up down clean
+        release-check chunks eval-draft eval-retrieval retrieval-ablation authority-staging clause-eval mlflow-ui app docker-build up down clean
 
 help:  ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -63,6 +63,12 @@ eval-all:  ## Full eval of all three retrieval configs on the gold set
 
 eval-draft:  ## PROVISIONAL eval of all three configs on the DRAFT questions (clearly labelled)
 	for c in baseline_dense hybrid_pooled hybrid_stratified; do $(UV) python -m regnav.eval.run_eval --config configs/$$c.yaml --questions data/eval/questions_draft.jsonl --allow-draft $(EVAL_ARGS) || exit 1; done
+
+authority-staging:  ## Statement-level authority on a STAGING index (live index untouched) -> docs/authority_staging_report.md
+	$(UV) python scripts/authority_staging.py
+
+clause-eval:  ## Score the authority tagger against human labels in data/eval/clause_labels.csv (kappa)
+	$(UV) python -m regnav.legal.evaluate
 
 retrieval-ablation:  ## Query expansion + re-ranking ablation (no LLM) -> docs/retrieval_ablation.md
 	$(UV) python scripts/retrieval_ablation.py

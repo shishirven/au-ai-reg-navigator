@@ -1,0 +1,40 @@
+# Sources fetched and verified but NOT yet in the live index (D-044). Registering them changes the
+# index_version, so they are merged into data/sources.yaml after the in-flight evaluation finishes.
+# scripts/authority_staging.py builds a separate staging index from sources.yaml + this file.
+documents:
+  - id: privacy_act_app1_7_9
+    file: privacy_act_app1_7-1_9_pola2024.md
+    short_name: Privacy Act APP 1.7-1.9
+    title: "Privacy Act 1988 (Cth) APP 1.7-1.9 (inserted by Privacy and Other Legislation Amendment Act 2024, Sch 1 Pt 15)"
+    issuer: Parliament of Australia
+    tier: binding
+    status: current
+    applies_to: [bank, insurer, super, any_business]  # all APP entities (see small business exemption)
+    effective_from: "2026-12-10"
+    url: https://www.legislation.gov.au/C2024A00128/asmade/text
+    structure: headings
+    sha256: ""
+  - id: privacy_act_app_entity_sb
+    file: privacy_act_app_entity_small_business_2026.md
+    short_name: Privacy Act ss 6C-6EA (APP entities, small business)
+    title: "Privacy Act 1988 (Cth) ss 6, 6C, 6D, 6EA - APP entities and the small business exemption"
+    issuer: Parliament of Australia
+    tier: binding
+    status: current
+    applies_to: [bank, insurer, super, any_business]
+    effective_from: "2026-06-04"
+    url: https://www.legislation.gov.au/C2004A03712/2026-06-04/text
+    structure: headings
+    sha256: ""
+  - id: privacy_act_apps
+    file: privacy_act_schedule1_apps_2026.md
+    short_name: Privacy Act Sch 1 (APPs)
+    title: "Privacy Act 1988 (Cth) Schedule 1 - Australian Privacy Principles 1-13 (Compilation No. 104)"
+    issuer: Parliament of Australia
+    tier: binding
+    status: current
+    applies_to: [bank, insurer, super, any_business]  # APP entities only - see small business exemption
+    effective_from: "2026-06-04"
+    url: https://www.legislation.gov.au/C2004A03712/2026-06-04/text
+    structure: headings
+    sha256: ""

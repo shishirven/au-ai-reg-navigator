@@ -1,0 +1,150 @@
+{"statement_id": "apra_cps230_2026:p19#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps230_2026:p18#3", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, should wording"}
+{"statement_id": "naic_ai6_foundations:s006#5", "label": "voluntary_recommendation", "confidence": "high", "evidence": "voluntary guidance, should wording"}
+{"statement_id": "oaic_ai_products_2025:s030.2#6", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "naic_ai6_foundations:s011#4", "label": "voluntary_recommendation", "confidence": "high", "evidence": "voluntary guidance, should wording"}
+{"statement_id": "oaic_ai_products_2025:s030.4#0", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "privacy_act_app1_7_9:s005#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_app1_adm_2026:s007.7#7", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg230_2026:s006#0", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_app1_adm_2026:s005#2", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "privacy_act_app1_7_9:s002#3", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cps230_2026:p1#3", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_ai_products_2025:s019.3#2", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'the OAIC considers'"}
+{"statement_id": "privacy_act_apps:s001#14", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_ai_letter_2026:s004.1#13", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "naic_ai6_foundations:s010#16", "label": "voluntary_recommendation", "confidence": "high", "evidence": "voluntary guidance, should wording"}
+{"statement_id": "privacy_act_apps:s004.1#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_ai_products_2025:s030.1#1", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'APP 10 requires'"}
+{"statement_id": "apra_ai_letter_2026:s002.1#12", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "apra_cpg230_2026:p40#0", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "privacy_act_app_entity_sb:s006#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_app1_adm_2026:s006#2", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'would generally be considered'"}
+{"statement_id": "oaic_ai_products_2025:s020.1#5", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "oaic_app1_adm_2026:s007.6#10", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_ai_letter_2026:s007#11", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_app1_7_9:s004#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cpg230_2026:p2#2", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'CPS 230 sets out'"}
+{"statement_id": "apra_cpg230_2026:p7#1", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cps220:p26#6", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cps234:p16#0", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_ai_products_2025:s035.3#0", "label": "information", "confidence": "high", "evidence": "footnote / citation line"}
+{"statement_id": "apra_ai_letter_2026:s004.2#5", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_ai_products_2025:s035.4#8", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_ai_products_2025:s030.3#0", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg235:p11#3", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cps230_2026:p21#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_ai_letter_2026:s004.1#3", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_apps:s014.1#4", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cpg235:p67#1", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cpg230_2026:p29#0", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "oaic_ai_products_2025:s032.1#3", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_ai_products_2025:s006.1#1", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cps234:p2#4", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_app1_adm_2026:s007.10#10", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cpg235:p4#1", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_apps:s008.3#8", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_app1_adm_2026:s004.1#14", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg230_2026:p54#1", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cps230_2026:s001#5", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_app1_adm_2026:s007.3#6", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "oaic_app1_adm_2026:s007.4#3", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_ai_products_2025:s003.2#0", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'The Privacy Act applies'"}
+{"statement_id": "apra_cps234:p21#0", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_ai_letter_2026:s002.2#9", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA requires regulated entities'"}
+{"statement_id": "oaic_app1_adm_2026:s006#9", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'would generally be considered'"}
+{"statement_id": "apra_cpg230_2026:p52#0", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'CPS 230 requires'"}
+{"statement_id": "apra_cpg230_2026:s003#10", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_ai_products_2025:s030.2#10", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "oaic_ai_products_2025:s030.4#4", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'APP 10 requires'"}
+{"statement_id": "apra_cpg230_2026:p19#1", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cps234:s001#1", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_ai_products_2025:s030.4#2", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'APP 10 requires'"}
+{"statement_id": "apra_ai_letter_2026:s006#10", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "apra_cpg230_2026:p23#1", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cps220:p51#1", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cps220:p20#1", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps230_2026:p18#1", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, should wording"}
+{"statement_id": "privacy_act_app1_7_9:s003#2", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_ai_products_2025:s008#3", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cps230_2026:p30#1", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_ai_letter_2026:s005#7", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cps220:p1#2", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "naic_ai6_foundations:s008#11", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_ai_products_2025:s030.3#2", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "privacy_act_app_entity_sb:s008#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps234:p12#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cpg230_2026:p34#0", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cpg230_2026:s007#2", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cps230_2026:p44#0", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_app1_adm_2026:s004.2#11", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "apra_cps230_2026:p1#2", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "privacy_act_apps:s010.1#11", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "naic_ai6_foundations:s002#5", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_app1_adm_2026:s007.4#4", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg230_2026:p50#0", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "oaic_app1_adm_2026:s001#0", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'obligations under APP'"}
+{"statement_id": "naic_ai6_foundations:s009#6", "label": "voluntary_recommendation", "confidence": "high", "evidence": "voluntary guidance, should wording"}
+{"statement_id": "oaic_app1_adm_2026:s007.10#8", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_app1_adm_2026:s006#3", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'would generally be considered'"}
+{"statement_id": "oaic_ai_products_2025:s003.2#8", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'Privacy obligations will apply'"}
+{"statement_id": "apra_cpg230_2026:p24#8", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_apps:s014.1#5", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_app1_adm_2026:s004.1#13", "label": "restates_law", "confidence": "medium", "evidence": "mandatory wording + citation of law"}
+{"statement_id": "privacy_act_app1_7_9:s002#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_app1_adm_2026:s005#9", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg235:p23#8", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "oaic_app1_adm_2026:s005#12", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "oaic_app1_adm_2026:s005#7", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "naic_ai6_foundations:s009#13", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_app_entity_sb:s006#5", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_ai_letter_2026:s005#11", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "oaic_ai_products_2025:s005#7", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg235:p54#4", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "privacy_act_app_entity_sb:s002#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_app1_adm_2026:s005#13", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cpg235:p53#0", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "naic_ai6_foundations:s007#6", "label": "voluntary_recommendation", "confidence": "high", "evidence": "voluntary guidance, should wording"}
+{"statement_id": "apra_cps220:p30#7", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cpg230_2026:p44#1", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "apra_cpg235:p43#2", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA envisages'"}
+{"statement_id": "apra_cpg235:p66#0", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "naic_ai6_foundations:s002#6", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_apps:s006.1#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_ai_letter_2026:s006#6", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "privacy_act_app1_7_9:s002#1", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cps220:p38#1", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cps220:p17#0", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cpg235:p61#3", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_ai_letter_2026:s006#8", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "apra_cpg235:p11#6", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_apps:s004.2#1", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_ai_products_2025:s030.3#3", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cps234:p27#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "oaic_ai_products_2025:s035.2#10", "label": "information", "confidence": "high", "evidence": "footnote / citation line"}
+{"statement_id": "oaic_app1_adm_2026:s006#1", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'would generally be considered'"}
+{"statement_id": "naic_ai6_foundations:s010#1", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_apps:s014.1#13", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cpg230_2026:p48#1", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'a prudent entity'"}
+{"statement_id": "apra_cpg230_2026:p47#0", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'does not intend to capture'"}
+{"statement_id": "apra_cps220:p1#3", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_ai_products_2025:s003.4#1", "label": "unclear", "confidence": "low", "evidence": "mandatory wording in guidance without identifying the law"}
+{"statement_id": "privacy_act_apps:s001#3", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps220:p29#0", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cpg230_2026:p9#5", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cpg235:p49#4", "label": "regulator_expectation", "confidence": "high", "evidence": "expectation phrase: 'APRA expects'"}
+{"statement_id": "oaic_ai_products_2025:s021.1#7", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'the OAIC considers'"}
+{"statement_id": "oaic_app1_adm_2026:s006#10", "label": "regulator_interpretation", "confidence": "high", "evidence": "interpretation phrase: 'would generally be considered'"}
+{"statement_id": "apra_cps234:p25#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "privacy_act_app1_7_9:s004#2", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps234:p1#1", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps234:p13#2", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cps230_2026:p59#1", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "apra_cpg230_2026:p14#0", "label": "restates_law", "confidence": "high", "evidence": "restates law: 'Where CPS 230 requires'"}
+{"statement_id": "apra_ai_letter_2026:s002.2#4", "label": "information", "confidence": "medium", "evidence": "no normative wording"}
+{"statement_id": "privacy_act_app_entity_sb:s007#0", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "apra_cps220:p1#4", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "oaic_app1_adm_2026:s004.2#6", "label": "regulator_expectation", "confidence": "medium", "evidence": "guidance with 'should'-type wording"}
+{"statement_id": "apra_cps234:p2#1", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
+{"statement_id": "privacy_act_app1_7_9:s002#0", "label": "binding_requirement", "confidence": "high", "evidence": "mandatory wording in binding instrument"}
+{"statement_id": "privacy_act_app1_7_9:s004#3", "label": "binding_context", "confidence": "high", "evidence": "binding instrument, info wording"}
