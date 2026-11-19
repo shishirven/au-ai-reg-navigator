@@ -13,7 +13,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import date
 from typing import Any
 
-from regnav.config import AppConfig
+from regnav.config import AppConfig, LLMConfig
 from regnav.generate.llm import LLMClient, LLMError, cost_usd
 from regnav.generate.prompts import (
     PROMPT_VERSION,
@@ -39,6 +39,8 @@ class Attempt:
     output_tokens: int
     latency_s: float
     model: str
+    provider: str = ""
+    fallback_reason: str | None = None
 
 
 @dataclass
@@ -64,6 +66,10 @@ class AnswerResult:
     output_tokens: int = 0
     cost_usd: float = 0.0
     trace_url: str | None = None
+    # Which model actually produced the final answer (D-041): primary API vs local fallback.
+    llm_provider: str = ""
+    llm_model: str = ""
+    llm_fallback_reason: str | None = None
     disclaimer: str = DISCLAIMER
 
     @property
@@ -169,8 +175,12 @@ def answer_question(
                 resp.output_tokens,
                 resp.latency_s,
                 resp.model,
+                resp.provider,
+                resp.fallback_reason,
             )
         )
+        result.llm_provider, result.llm_model = resp.provider, resp.model
+        result.llm_fallback_reason = resp.fallback_reason
         result.input_tokens += resp.input_tokens
         result.output_tokens += resp.output_tokens
         result.generation_latency_s += resp.latency_s
@@ -191,7 +201,10 @@ def answer_question(
         result.answer = safe_abstention(
             "A reliable, correctly cited answer could not be produced from the retrieved sources."
         )
-    result.cost_usd = cost_usd(cfg.generation, result.input_tokens, result.output_tokens)
+    priced: LLMConfig = cfg.generation
+    if result.llm_fallback_reason and cfg.generation.fallback is not None:
+        priced = cfg.generation.fallback  # the local fallback answered (usually free)
+    result.cost_usd = cost_usd(priced, result.input_tokens, result.output_tokens)
     result.total_latency_s = time.perf_counter() - t0
     _trace(tracer, result, cfg)
     return result

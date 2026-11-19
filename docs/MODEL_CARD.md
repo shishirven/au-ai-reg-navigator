@@ -45,7 +45,7 @@ miss because the standards never mention AI.
 | Embedding | `BAAI/bge-small-en-v1.5` (local, CPU) |
 | Keyword retrieval | BM25 (Okapi) |
 | Fusion / routing | reciprocal rank fusion (k = 60), per-tier quota of 3 chunks |
-| Generator | `qwen/qwen3.8-27b` on Groq (temperature 0, seed 42, reasoning off). Alternatives: Ollama `qwen3:4b` (local), Claude via Anthropic API |
+| Generator | `qwen/qwen3.8-27b` on Groq (temperature 0, seed 42, reasoning off). **Automatic local fallback** to Ollama `qwen3:4b` when Groq is rate-limited or down, clearly flagged on every answer (D-041). Alternative: Claude via Anthropic API |
 | Judge (evaluation only) | `openai/gpt-oss-120b` on Groq: a different model family from the generator |
 | Controls | scope gate → validator → claim-level repair → one retry → safe abstention; disclaimer on every answer |
 
@@ -92,8 +92,10 @@ modality error rate and abstention precision/recall, each with 95% bootstrap CIs
    may mis-parse. Paragraph ids depend on parsing.
 5. **Small evaluation set** written by the developer; the judge is itself an LLM (calibration
    against human labels is reported separately).
-6. **Model dependence**: a smaller local model (Qwen3-4B) makes more validation errors and needs
-   the repair/fallback path more often.
+6. **Model dependence**: a smaller local model (Qwen3-4B) makes more validation errors, needs
+   the repair path more often and gives less complete answers. When the app falls back to it, the
+   answer is flagged on screen ("Local model" badge and banner). Evaluation results describe the
+   Groq model only.
 7. **Scope gate is heuristic** (keyword list of jurisdictions/instrument codes, similarity floor)
    and was designed after seeing the draft questions.
 8. **Modality tagging is regex-based** and chunk-level: a chunk containing both "must" and "should"

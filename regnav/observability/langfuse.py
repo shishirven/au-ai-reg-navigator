@@ -56,6 +56,9 @@ class LangfuseTracer:
             "latency_retrieval_s": round(result.retrieval_latency_s, 3),
             "latency_generation_s": round(result.generation_latency_s, 3),
             "cost_usd": result.cost_usd,
+            "llm_provider": result.llm_provider,
+            "llm_model": result.llm_model,
+            "llm_fallback_reason": result.llm_fallback_reason or "",
         }
         with (
             propagate_attributes(

@@ -31,6 +31,18 @@ generation:
   min_dense_similarity: 0.62
   price_input_per_mtok: 0.0   # free tier
   price_output_per_mtok: 0.0
+  # Local fallback for the app/CLI when Groq is rate-limited or down (never used by evals). D-041.
+  # In Docker, OLLAMA_BASE_URL (docker-compose.yml) points this at Ollama on the host.
+  fallback:
+    provider: ollama
+    model: qwen3:4b
+    base_url: http://localhost:11434
+    temperature: 0.0
+    num_ctx: 8192
+    think: false
+    json_mode: none
+    max_tokens: 900
+    timeout_s: 600
 judge:
   # Different model family from the generator, to limit self-preference bias.
   provider: groq

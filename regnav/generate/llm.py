@@ -1,11 +1,15 @@
-"""LLM clients behind one interface: Ollama (local, default), Anthropic (API), Stub (tests).
+"""LLM clients behind one interface: Groq/OpenAI-compatible, Ollama (local), Anthropic, Stub.
 
-All return :class:`LLMResponse` with token usage, so cost/latency tracking is provider-agnostic.
+All return :class:`LLMResponse` with token usage and the provider that actually answered, so
+cost/latency tracking and "which model produced this?" are provider-agnostic.
+:class:`FallbackClient` wraps a primary API model with a local fallback (D-041).
 """
 
 from __future__ import annotations
 
 import json
+import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -24,10 +28,20 @@ class LLMResponse:
     output_tokens: int = 0
     latency_s: float = 0.0
     raw: dict[str, Any] = field(default_factory=dict)
+    provider: str = ""  # e.g. "groq", "ollama" - who actually produced this text
+    fallback_reason: str | None = None  # set when a fallback model answered instead of the primary
 
 
 class LLMError(RuntimeError):
-    pass
+    """``kind``: "quota" (daily/request-size limit - won't clear by retrying soon), "unavailable"
+    (network/server down), "auth", or "error". ``retry_after_s``: provider's hint, if any."""
+
+    def __init__(
+        self, message: str, kind: str = "error", retry_after_s: float | None = None
+    ) -> None:
+        super().__init__(message)
+        self.kind = kind
+        self.retry_after_s = retry_after_s
 
 
 class LLMClient(Protocol):
@@ -50,6 +64,8 @@ class OllamaClient:
     def __init__(self, cfg: LLMConfig, seed: int = 42) -> None:
         self.cfg = cfg
         self.seed = seed
+        # In Docker, Ollama runs on the host: OLLAMA_BASE_URL=http://host.docker.internal:11434
+        self.base_url = os.environ.get("OLLAMA_BASE_URL") or cfg.base_url
 
     def complete(self, system, messages, schema=None) -> LLMResponse:
         options: dict[str, Any] = {
@@ -71,7 +87,7 @@ class OllamaClient:
         elif schema is not None and self.cfg.json_mode == "json":
             payload["format"] = "json"
         req = urllib.request.Request(
-            f"{self.cfg.base_url.rstrip('/')}/api/chat",
+            f"{self.base_url.rstrip('/')}/api/chat",
             data=json.dumps(payload).encode(),
             headers={"Content-Type": "application/json"},
         )
@@ -79,10 +95,16 @@ class OllamaClient:
         try:
             with urllib.request.urlopen(req, timeout=self.cfg.timeout_s) as resp:
                 data = json.loads(resp.read())
-        except urllib.error.URLError as e:
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode(errors="replace")[:200]
             raise LLMError(
-                f"Ollama not reachable at {self.cfg.base_url} ({e}). Is `ollama serve` running and "
-                f"`ollama pull {self.cfg.model}` done?"
+                f"Ollama HTTP {e.code} for model {self.cfg.model}: {detail}", "unavailable"
+            ) from e
+        except (urllib.error.URLError, TimeoutError) as e:
+            raise LLMError(
+                f"Ollama not reachable at {self.base_url} ({e}). Is Ollama running and "
+                f"`ollama pull {self.cfg.model}` done?",
+                "unavailable",
             ) from e
         return LLMResponse(
             text=data.get("message", {}).get("content", ""),
@@ -91,20 +113,24 @@ class OllamaClient:
             output_tokens=int(data.get("eval_count", 0)),
             latency_s=time.perf_counter() - t0,
             raw={k: v for k, v in data.items() if k != "message"},
+            provider="ollama",
         )
 
 
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 
+# 429s that will not clear within a normal back-off: daily token/request caps, or a request
+# larger than the per-minute budget. Retrying these only adds latency - fail fast instead.
+_QUOTA_PATTERNS = ("per day", "(TPD)", "(RPD)", "Request too large")
+
+
 def _retry_after_seconds(value: str | None, default: float) -> float:
     """Parse Retry-After / x-ratelimit-reset values like '7', '7.5s', '1m30s', '250ms'."""
     if not value:
         return default
-    import re
-
     total, matched = 0.0, False
-    for num, unit in re.findall(r"([\d.]+)\s*(ms|s|m|h)?", value):
+    for num, unit in re.findall(r"(\d+(?:\.\d+)?)\s*(ms|s|m|h)?", value):
         matched = True
         total += float(num) * {"ms": 0.001, "s": 1, "m": 60, "h": 3600, "": 1}[unit]
     return total if matched else default
@@ -118,8 +144,6 @@ class OpenAICompatClient:
     """
 
     def __init__(self, cfg: LLMConfig, seed: int = 42) -> None:
-        import os
-
         self.cfg = cfg
         self.seed = seed
         self.base_url = (
@@ -168,22 +192,36 @@ class OpenAICompatClient:
                     body = json.loads(resp.read())
                 break
             except urllib.error.HTTPError as e:
+                detail = e.read().decode(errors="replace")[:400]
+                if e.code == 429 and any(p in detail for p in _QUOTA_PATTERNS):
+                    m = re.search(r"try again in ((?:\d+(?:\.\d+)?(?:ms|h|m|s))+)", detail)
+                    raise LLMError(
+                        f"{self.cfg.provider} HTTP 429 (quota): {detail[:300]}",
+                        "quota",
+                        _retry_after_seconds(m.group(1) if m else None, 900.0),
+                    ) from e
                 retryable = e.code == 429 or e.code >= 500
                 if not retryable or attempt == self.cfg.max_rate_limit_retries:
-                    detail = e.read().decode(errors="replace")[:300]
                     hint = ""
                     if e.code == 401 and self.api_key == "proxy-injected":
                         hint = f" - {self.cfg.api_key_env} is not set (add it to .env and recreate the container)"
                     elif e.code == 401:
                         hint = f" - check {self.cfg.api_key_env} in .env (expected a full key, e.g. 56 chars for Groq)"
-                    raise LLMError(f"{self.cfg.provider} HTTP {e.code}{hint}: {detail}") from e
+                    kind = (
+                        "auth" if e.code in (401, 403) else "unavailable" if retryable else "error"
+                    )
+                    raise LLMError(
+                        f"{self.cfg.provider} HTTP {e.code}{hint}: {detail[:300]}", kind
+                    ) from e
                 wait = _retry_after_seconds(
                     e.headers.get("retry-after") or e.headers.get("x-ratelimit-reset-tokens"),
                     default=min(60.0, 2.0**attempt),
                 )
                 self.sleep(min(wait + 0.5, 120.0))
-            except urllib.error.URLError as e:
-                raise LLMError(f"{self.cfg.provider} not reachable at {self.base_url}: {e}") from e
+            except (urllib.error.URLError, TimeoutError) as e:
+                raise LLMError(
+                    f"{self.cfg.provider} not reachable at {self.base_url}: {e}", "unavailable"
+                ) from e
         choice = body["choices"][0]
         usage = body.get("usage", {})
         return LLMResponse(
@@ -193,6 +231,7 @@ class OpenAICompatClient:
             output_tokens=int(usage.get("completion_tokens", 0)),
             latency_s=time.perf_counter() - t0,
             raw={"finish_reason": choice.get("finish_reason"), "usage": usage},
+            provider=self.cfg.provider,
         )
 
 
@@ -290,7 +329,78 @@ def default_stub_answer(user_prompt: str) -> str:
     return json.dumps(out)
 
 
-def make_llm(cfg: LLMConfig, seed: int = 42, api_key: str | None = None) -> LLMClient:
+FALLBACK_REASONS = {
+    "quota": "{p} usage limit reached",
+    "unavailable": "{p} unavailable",
+    "auth": "{p} rejected the API key",
+    "error": "{p} request failed",
+}
+
+
+class FallbackClient:
+    """Primary model (e.g. Groq) with a local fallback (e.g. Ollama Qwen3-4B).
+
+    * quota errors (daily limits) open a circuit: the fallback is used directly until the reset
+      time the provider reported (clamped to 1 min - 1 h), so users don't wait on doomed calls;
+    * other primary errors fall back for that call only;
+    * every response says which provider answered and why (``fallback_reason``).
+    Never used for evaluation runs - mixing models would contaminate config comparisons.
+    """
+
+    def __init__(
+        self, primary: LLMClient, fallback: LLMClient, clock: Callable[[], float] = time.time
+    ) -> None:
+        self.primary = primary
+        self.fallback = fallback
+        self.cfg = primary.cfg
+        self.clock = clock
+        self.blocked_until = 0.0
+        self.block_reason = ""
+
+    def _remaining(self) -> str:
+        mins = max(1, round((self.blocked_until - self.clock()) / 60))
+        return f"{self.primary.cfg.provider.capitalize()} retried in ~{mins} min"
+
+    def status(self) -> dict[str, Any]:
+        active = self.clock() < self.blocked_until
+        return {
+            "primary": f"{self.primary.cfg.provider} · {self.primary.cfg.model}",
+            "fallback": f"{self.fallback.cfg.provider} · {self.fallback.cfg.model}",
+            "fallback_active": active,
+            "reason": f"{self.block_reason} ({self._remaining()})" if active else "",
+            "until": self.blocked_until if active else None,
+        }
+
+    def _use_fallback(self, system, messages, schema, reason: str) -> LLMResponse:
+        try:
+            resp = self.fallback.complete(system, messages, schema)
+        except LLMError as e:
+            raise LLMError(f"{reason}; local fallback also failed: {e}", e.kind) from e
+        resp.provider = resp.provider or self.fallback.cfg.provider
+        resp.fallback_reason = reason
+        return resp
+
+    def complete(self, system, messages, schema=None) -> LLMResponse:
+        if self.clock() < self.blocked_until:
+            return self._use_fallback(
+                system, messages, schema, f"{self.block_reason} ({self._remaining()})"
+            )
+        try:
+            resp = self.primary.complete(system, messages, schema)
+            resp.provider = resp.provider or self.primary.cfg.provider
+            return resp
+        except LLMError as e:
+            name = self.primary.cfg.provider.capitalize()
+            reason = FALLBACK_REASONS.get(e.kind, FALLBACK_REASONS["error"]).format(p=name)
+            if e.kind == "quota":
+                wait = min(max(e.retry_after_s or 900.0, 60.0), 3600.0)
+                self.blocked_until = self.clock() + wait
+                self.block_reason = f"{reason} - using the local model"
+                reason = f"{self.block_reason} ({self._remaining()})"
+            return self._use_fallback(system, messages, schema, reason)
+
+
+def _make_single(cfg: LLMConfig, seed: int, api_key: str | None) -> LLMClient:
     if cfg.provider == "ollama":
         return OllamaClient(cfg, seed)
     if cfg.provider in ("groq", "openai_compat"):
@@ -298,3 +408,21 @@ def make_llm(cfg: LLMConfig, seed: int = 42, api_key: str | None = None) -> LLMC
     if cfg.provider == "anthropic":
         return AnthropicClient(cfg, api_key)
     return StubClient(cfg)
+
+
+def make_llm(
+    cfg: LLMConfig, seed: int = 42, api_key: str | None = None, use_fallback: bool = True
+) -> LLMClient:
+    """Build the client for ``cfg``; wrap it with ``cfg.fallback`` when configured and allowed.
+
+    With a fallback, the primary gets a short rate-limit retry budget so a user isn't kept
+    waiting minutes before the local model takes over.
+    """
+    if not (use_fallback and cfg.fallback is not None):
+        return _make_single(cfg, seed, api_key)
+    primary_cfg = cfg.model_copy(
+        update={"max_rate_limit_retries": min(cfg.max_rate_limit_retries, 2)}
+    )
+    return FallbackClient(
+        _make_single(primary_cfg, seed, api_key), _make_single(cfg.fallback, seed, api_key)
+    )

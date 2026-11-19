@@ -109,6 +109,26 @@ docker compose up --build
   (~3.8 GB, mostly torch, onnxruntime and MLflow). Behind a TLS-inspecting corporate proxy:
   `docker build --secret id=ca_bundle,src=ca.pem --build-arg HTTPS_PROXY=... .`
 
+### Local fallback model (keeps working when Groq's free tier runs out)
+
+The app and CLI use Groq first. When Groq's limits are hit (or it's down), answers come from
+**Qwen3-4B running locally in Ollama**, and the screen says so: a 💻 **Local model** badge, an
+amber "Fallback in use" banner with the reason, and the sidebar's **Model status**. After a
+*daily* limit, the app stays on the local model until Groq's reported reset, instead of waiting
+on a failing call every time. Evaluations never fall back, so config comparisons stay clean.
+
+One-time setup on your laptop:
+
+1. Install Ollama from **ollama.com/download** and start it.
+2. Download the model (~2.5 GB):
+
+```bash
+ollama pull qwen3:4b
+```
+
+The Docker app reaches it automatically at `host.docker.internal:11434`. Local answers take about
+1–3 minutes on a CPU-only laptop.
+
 ### Local (uv)
 
 ```bash

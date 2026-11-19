@@ -337,9 +337,12 @@ def run(args: argparse.Namespace) -> int:
         from regnav.observability.langfuse import get_tracer
 
         secrets = Secrets()
-        llm = make_llm(cfg.generation, cfg.seed, secrets.anthropic_api_key)
+        # Evaluation never uses the local fallback: mixing models would contaminate comparisons.
+        llm = make_llm(cfg.generation, cfg.seed, secrets.anthropic_api_key, use_fallback=False)
         judge_llm = (
-            None if args.no_judge else make_llm(cfg.judge, cfg.seed, secrets.anthropic_api_key)
+            None
+            if args.no_judge
+            else make_llm(cfg.judge, cfg.seed, secrets.anthropic_api_key, use_fallback=False)
         )
         tracer = get_tracer(secrets)
         mode = "full" if judge_llm else "generation-no-judge"

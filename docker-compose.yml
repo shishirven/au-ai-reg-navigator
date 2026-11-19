@@ -16,6 +16,10 @@ services:
     environment:
       HOME: /tmp
       REGNAV_CONFIG: ${REGNAV_CONFIG:-configs/hybrid_stratified.yaml}
+      # Local fallback model (Ollama running on your laptop, outside Docker)
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # needed on Linux; Docker Desktop provides it already
     volumes:
       - ./chroma:/app/chroma
       - ./mlruns:/app/mlruns

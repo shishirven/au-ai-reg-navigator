@@ -77,10 +77,16 @@ def format_answer(result) -> str:
             para = f" para {src.metadata['para']}" if src and src.metadata.get("para") else ""
             out.append(f"  - {c.claim}  [{label}{para} | {c.citation_id}]")
         out.append("")
+    if result.llm_provider:
+        where = "LOCAL" if result.llm_provider == "ollama" else "API"
+        line = f"Model: {where} {result.llm_provider}/{result.llm_model}"
+        if result.llm_fallback_reason:
+            line += f"  [fallback: {result.llm_fallback_reason}]"
+        out.append(line)
     out.append(f"Note: {result.disclaimer}")
     out.append(
         f"config={result.config_name} index={result.index_version} prompt={result.prompt_version} "
-        f"valid={result.valid} attempts={len(result.attempts)} fallback={result.fallback} "
+        f"valid={result.valid} attempts={len(result.attempts)} safe_abstention={result.fallback} "
         f"latency={result.total_latency_s:.1f}s tokens={result.input_tokens}/{result.output_tokens} "
         f"cost=${result.cost_usd:.4f}"
     )

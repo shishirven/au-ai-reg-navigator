@@ -13,7 +13,7 @@ import streamlit as st
 
 from regnav.config import TIER_LABELS, AppConfig, Secrets, load_config
 from regnav.generate.answer import AnswerResult, answer_question
-from regnav.generate.llm import LLMConfig, StubClient, make_llm
+from regnav.generate.llm import FallbackClient, LLMConfig, StubClient, make_llm
 from regnav.generate.schema import SECTIONS
 from regnav.observability.langfuse import get_tracer
 from regnav.retrieve import RetrievalSystem, build_retrieval
@@ -97,6 +97,33 @@ with st.sidebar:
 config_path = CONFIGS[config_label]
 sector = SECTORS[sector_label]
 
+
+def model_status_html(llm) -> str:
+    """Which model will answer the next question: API, local fallback, or offline stub."""
+    if isinstance(llm, StubClient):
+        return badge("OFFLINE DEMO", "#475467") + " deterministic stub, no LLM"
+    if isinstance(llm, FallbackClient):
+        st_ = llm.status()
+        if st_["fallback_active"]:
+            return (
+                badge("💻 LOCAL", "#b54708") + f" {html.escape(st_['fallback'])}<br>"
+                f"<span style='font-size:0.8rem'>{html.escape(st_['reason'])}</span>"
+            )
+        return (
+            badge("🌐 API", "#155eef") + f" {html.escape(st_['primary'])}<br>"
+            f"<span style='font-size:0.8rem'>fallback if limited: {html.escape(st_['fallback'])}</span>"
+        )
+    where = "💻 LOCAL" if llm.cfg.provider == "ollama" else "🌐 API"
+    return (
+        badge(where, "#b54708" if where.endswith("LOCAL") else "#155eef")
+        + f" {html.escape(llm.cfg.provider)} · {html.escape(llm.cfg.model)}"
+    )
+
+
+with st.sidebar:
+    st.subheader("Model status")
+    status_slot = st.empty()  # filled at the end of the run, after any fallback has happened
+
 # ----------------------------------------------------------------------------- main
 st.title("⚖️ AU AI Regulation Navigator")
 st.markdown(
@@ -124,7 +151,15 @@ ask = st.button("Ask", type="primary")
 
 if ask and question.strip():
     llm = get_llm(config_path, offline)
-    with st.spinner("Retrieving and generating..."):
+    local = (
+        isinstance(llm, FallbackClient) and llm.status()["fallback_active"]
+    ) or llm.cfg.provider == "ollama"
+    spinner = (
+        "Generating with the local model on this machine - this can take 1-3 minutes on CPU..."
+        if local
+        else "Retrieving and generating..."
+    )
+    with st.spinner(spinner):
         result: AnswerResult = answer_question(
             question.strip(),
             cfg,
@@ -141,6 +176,26 @@ if result is not None:
     left, right = st.columns([3, 2], gap="large")
     with left:
         st.subheader("Answer")
+        if result.llm_provider:
+            is_local = result.llm_provider == "ollama"
+            label = "💻 Local model" if is_local else "🌐 API model"
+            color = "#b54708" if is_local else "#155eef"
+            if result.llm_provider == "stub":
+                label, color = "Offline demo stub", "#475467"
+            text = f"{badge(label, color)} <code>{html.escape(result.llm_provider)} · {html.escape(result.llm_model)}</code>"
+            if result.llm_fallback_reason:
+                text += (
+                    f"<div style='background:#fffaeb;border:1px solid #fedf89;border-radius:6px;padding:6px 10px;"
+                    f"margin-top:6px;color:#93370d;font-size:0.85rem'>⚠️ Fallback in use: "
+                    f"{html.escape(result.llm_fallback_reason)}. Answers from the smaller local model can be less "
+                    f"complete.</div>"
+                )
+            st.markdown(text, unsafe_allow_html=True)
+        elif result.gate_reason:
+            st.markdown(
+                badge("No model call", "#475467") + " answered by the scope gate",
+                unsafe_allow_html=True,
+            )
         if result.answer.abstained:
             st.warning(f"**No answer given.** {result.answer.abstain_reason}")
         for section in SECTIONS:
@@ -172,7 +227,7 @@ if result is not None:
         if result.repaired:
             flags.append("claims repaired")
         if result.fallback:
-            flags.append("safe fallback")
+            flags.append("safe abstention")
         st.caption(
             f"config `{result.config_name}` · index `{result.index_version}` · prompt `{result.prompt_version}` · "
             f"{result.total_latency_s:.1f}s · tokens {result.input_tokens}/{result.output_tokens}"
@@ -204,3 +259,6 @@ if result is not None:
                 st.text(body)
                 if m.get("url"):
                     st.markdown(f"[Source document ↗]({m['url']})")
+
+# Model status reflects the state *after* this run (e.g. a fallback that just opened).
+status_slot.markdown(model_status_html(get_llm(config_path, offline)), unsafe_allow_html=True)

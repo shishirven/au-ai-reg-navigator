@@ -99,6 +99,9 @@ class LLMConfig(BaseModel):
     # USD per million tokens (0 for local models) - used for cost tracking.
     price_input_per_mtok: float = 0.0
     price_output_per_mtok: float = 0.0
+    # Optional local fallback used by the app/CLI when this model is rate-limited or down
+    # (never by evaluation runs). D-041.
+    fallback: LLMConfig | None = None
 
 
 class GenerationConfig(LLMConfig):

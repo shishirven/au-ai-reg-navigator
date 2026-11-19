@@ -37,10 +37,11 @@ def test_run_eval_full_with_stubs_and_resume(
     )
     real_make = llm_mod.make_llm
 
-    def fake_make(cfg, seed=42, api_key=None):
+    def fake_make(cfg, seed=42, api_key=None, use_fallback=True):
+        assert use_fallback is False  # evals must never fall back to another model
         if cfg.model == "stub-judge":
             return llm_mod.StubClient(cfg, responses=[judge_reply] * 50)
-        return real_make(cfg, seed, api_key)
+        return real_make(cfg, seed, api_key, use_fallback=False)
 
     monkeypatch.setattr(llm_mod, "make_llm", fake_make)
     args = argparse.Namespace(
