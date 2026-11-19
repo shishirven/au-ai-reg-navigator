@@ -36,18 +36,25 @@ become "must".
 
 ## Results
 
-Binding-source coverage (share of questions with a binding answer where a binding chunk reached
-the model):
+*Provisional: 40 DRAFT questions written by the developer; an expert-reviewed gold set is next.*
 
-| config | binding coverage [95% CI] |
-|---|---|
-| dense, pooled (naive) | see `docs/results.md` |
-| hybrid, pooled | |
-| **hybrid, tier-stratified** | |
+**Retrieval** (all three configs). Binding-source coverage is the share of the 23 questions whose
+answer involves a binding standard where at least one binding chunk reached the model:
 
-Full table with faithfulness, citation validity, authority-label accuracy, modality errors,
-abstention and latency: **[docs/results.md](docs/results.md)**. Validation write-up:
-**[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)**.
+| config | binding coverage [95% CI] | recall@5 | MRR |
+|---|---|---|---|
+| dense, pooled (naive) | **0.48** [0.27, 0.68] | 0.52 | 0.70 |
+| hybrid (dense + BM25), pooled | **0.61** [0.40, 0.80] | 0.55 | 0.77 |
+| **hybrid, tier-stratified** | **1.00** [1.00, 1.00] | 0.58 | 0.63 |
+
+**Generation** (tier-stratified; Qwen 27B generator, gpt-oss-120b judge): faithfulness **0.97**,
+answer correctness 0.77, authority-label accuracy **1.00**, modality error rate **0.00**,
+abstention precision/recall 1.00 / 0.80. The pooled-baseline generation runs are in progress (free-tier
+quota). Answers are faithful but sometimes incomplete, because the key paragraph isn't always
+retrieved; that is the next thing to improve.
+
+Full table: **[docs/results.md](docs/results.md)** · validation write-up:
+**[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)** · per-question outputs: `docs/eval_runs/`.
 
 ## Architecture
 
@@ -140,7 +147,7 @@ Fully offline on a laptop (Ollama, Qwen3-4B on CPU): `bash scripts/setup_local.s
 
 * **Stack:** Python 3.12, uv (pinned `uv.lock`, CPU-only torch), PyMuPDF, Chroma, rank-bm25,
   sentence-transformers, Groq/Ollama/Anthropic behind one interface, Langfuse, MLflow, Streamlit.
-* **Quality:** ruff, mypy, pytest with 165 hermetic tests and ~80% coverage, pre-commit, GitHub
+* **Quality:** ruff, mypy, pytest with 167 hermetic tests and ~82% coverage, pre-commit, GitHub
   Actions CI (lint, types, tests, retrieval regression gate, Docker build).
 * **Reproducibility:** content-addressed `index_version` covering source hashes, metadata,
   chunking, embedding and ingest code; fixed seeds; temperature 0; every answer and eval run tagged
