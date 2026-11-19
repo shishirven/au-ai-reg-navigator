@@ -6,12 +6,15 @@ services:
   app:
     build: .
     image: au-ai-reg-navigator:latest
+    # Run as your host user so the mounted chroma/ and mlruns/ stay writable (Chroma's SQLite).
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "8501:8501"
     env_file:
       - path: .env
         required: false
     environment:
+      HOME: /tmp
       REGNAV_CONFIG: ${REGNAV_CONFIG:-configs/hybrid_stratified.yaml}
     volumes:
       - ./chroma:/app/chroma
@@ -22,6 +25,7 @@ services:
 
   mlflow:
     image: au-ai-reg-navigator:latest   # same image: MLflow is a project dependency
+    user: "${UID:-1000}:${GID:-1000}"
     depends_on:
       - app
     command: ["mlflow", "ui", "--host", "0.0.0.0", "--port", "5000",

@@ -95,6 +95,12 @@ docker compose up --build
 
 * App: http://localhost:8501 (toggle **Offline demo** if you have no API key)
 * MLflow: http://localhost:5000
+* The containers run as your host user (`UID`/`GID`, default 1000) so they can write to the mounted
+  `chroma/` and `mlruns/`. If your Linux UID isn't 1000, prefix the command with
+  `UID=$(id -u) GID=$(id -g)`.
+* Image: multi-stage build, CPU-only torch, embedding model baked in, non-root, healthcheck
+  (~3.8 GB, mostly torch, onnxruntime and MLflow). Behind a TLS-inspecting corporate proxy:
+  `docker build --secret id=ca_bundle,src=ca.pem --build-arg HTTPS_PROXY=... .`
 
 ### Local (uv)
 
