@@ -31,10 +31,11 @@ RUN --mount=type=secret,id=ca_bundle,required=false \
 COPY regnav ./regnav
 RUN uv sync --frozen --no-dev
 
-# 3) bake the embedding model into the image (no download at runtime)
+# 3) bake the embedding model and the re-ranking model into the image (the runtime is offline)
 RUN --mount=type=secret,id=ca_bundle,required=false \
     if [ -f /run/secrets/ca_bundle ]; then export SSL_CERT_FILE=/run/secrets/ca_bundle REQUESTS_CA_BUNDLE=/run/secrets/ca_bundle; fi && \
-    /app/.venv/bin/python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-small-en-v1.5')"
+    /app/.venv/bin/python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; \
+SentenceTransformer('BAAI/bge-small-en-v1.5'); CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
 
 # ---------------------------------------------------------------- runtime
 FROM python:${PYTHON_VERSION}-slim AS runtime
