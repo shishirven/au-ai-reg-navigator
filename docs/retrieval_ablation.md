@@ -10,7 +10,7 @@ Questions: `data/eval/questions_draft.jsonl` - 35 answerable (DRAFT, provisional
 | Binding gold hit | 0.65 [0.46, 0.85] | 0.78 [0.61, 0.95] | 0.74 [0.55, 0.91] | 0.83 [0.65, 0.96] | 0.87 [0.71, 1.00] | 0.65 [0.46, 0.85] | 0.91 [0.78, 1.00] |
 | Binding coverage | 1.00 [1.00, 1.00] | 1.00 [1.00, 1.00] | 1.00 [1.00, 1.00] | 1.00 [1.00, 1.00] | 1.00 [1.00, 1.00] | 1.00 [1.00, 1.00] | 1.00 [1.00, 1.00] |
 | MRR | 0.63 [0.50, 0.75] | 0.57 [0.44, 0.70] | 0.72 [0.60, 0.85] | 0.76 [0.63, 0.87] | 0.68 [0.53, 0.81] | 0.63 [0.51, 0.75] | 0.76 [0.63, 0.87] |
-| Retrieval latency / query (CPU) | 0.08s | 0.08s | 1.33s | 1.39s | 9.32s | 0.08s | 1.34s |
+| Retrieval latency / query (CPU) | 0.08s | 0.08s | 1.39s | 1.42s | 9.45s | 0.09s | 1.34s |
 
 **Paired difference vs A** (same questions, paired bootstrap, 4,000 resamples):
 
@@ -22,6 +22,8 @@ Questions: `data/eval/questions_draft.jsonl` - 35 answerable (DRAFT, provisional
 | E. + expansion + rerank (bge-reranker-base) | +0.08 [-0.02, +0.19] | 0.94 | +0.22 [+0.00, +0.43] |
 | G. A with 4 per tier (12 chunks): budget-only control | +0.04 [+0.01, +0.08] | 0.99 | +0.00 [+0.00, +0.00] |
 | F. D with 4 per tier (12 chunks) = hybrid_stratified_rerank | +0.13 [+0.04, +0.23] | 1.00 | +0.26 [+0.04, +0.48] |
+
+**Budget control - F vs G** (both 12 chunks, so this isolates expansion + re-ranking from the bigger context): Δ context recall +0.09 [+0.00, +0.19] (P(Δ>0) = 0.98); Δ binding gold hit +0.26 [+0.04, +0.48] (P(Δ>0) = 0.99). The larger budget alone (G vs A) adds no binding gold paragraphs.
 
 **Context recall by question type:**
 

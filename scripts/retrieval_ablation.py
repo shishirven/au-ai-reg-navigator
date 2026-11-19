@@ -144,6 +144,17 @@ def main() -> int:
         lines.append(
             f"| {n} | {d:+.2f} [{lo:+.2f}, {hi:+.2f}] | {p:.2f} | {db:+.2f} [{blo:+.2f}, {bhi:+.2f}] |"
         )
+    g = next(n for n in names if n.startswith("G."))
+    f_ = next(n for n in names if n.startswith("F."))
+    d, lo, hi, p = paired_delta(results[g], results[f_], "context_recall")
+    db, blo, bhi, pb = paired_delta(results[g], results[f_], "binding_gold_hit")
+    lines += [
+        "",
+        "**Budget control - F vs G** (both 12 chunks, so this isolates expansion + re-ranking from the "
+        f"bigger context): Δ context recall {d:+.2f} [{lo:+.2f}, {hi:+.2f}] (P(Δ>0) = {p:.2f}); "
+        f"Δ binding gold hit {db:+.2f} [{blo:+.2f}, {bhi:+.2f}] (P(Δ>0) = {pb:.2f}). "
+        "The larger budget alone (G vs A) adds no binding gold paragraphs.",
+    ]
     lines += [
         "",
         "**Context recall by question type:**",
