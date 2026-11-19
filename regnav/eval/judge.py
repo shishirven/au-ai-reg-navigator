@@ -176,7 +176,7 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument(
         "--run-dir", default=None, help="eval output dir (default: latest run of the config)"
     )
-    c.add_argument("--csv", default="results/judge_calibration.csv")
+    c.add_argument("--csv", default="data/eval/judge_calibration.csv")
     c.add_argument("-n", type=int, default=10)
     args = ap.parse_args(argv)
 
