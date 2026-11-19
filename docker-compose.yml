@@ -1,0 +1,39 @@
+# docker compose up --build
+#   app    -> http://localhost:8501  (Streamlit)
+#   mlflow -> http://localhost:5000  (MLflow UI over ./mlruns)
+# Build the index first (on the host: `make ingest`, or `docker compose run --rm app python -m regnav.cli ingest`).
+services:
+  app:
+    build: .
+    image: au-ai-reg-navigator:latest
+    ports:
+      - "8501:8501"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      REGNAV_CONFIG: ${REGNAV_CONFIG:-configs/hybrid_stratified.yaml}
+    volumes:
+      - ./chroma:/app/chroma
+      - ./mlruns:/app/mlruns
+      - ./data:/app/data
+      - ./results:/app/results
+    restart: unless-stopped
+
+  mlflow:
+    image: au-ai-reg-navigator:latest   # same image: MLflow is a project dependency
+    depends_on:
+      - app
+    command: ["mlflow", "ui", "--host", "0.0.0.0", "--port", "5000",
+              "--backend-store-uri", "sqlite:////app/mlruns/mlflow.db",
+              "--default-artifact-root", "/app/mlruns/artifacts"]
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/app/mlruns
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
