@@ -64,6 +64,11 @@ class RetrievalConfig(BaseModel):
     rrf_k: int = 60  # reciprocal-rank-fusion constant (Cormack et al. 2009)
     sector_filter: bool = True
     include_superseded: bool = False
+    # Opt-in improvements (D-042); defaults keep the original three configs unchanged.
+    query_expansion: bool = False  # AI wording -> tech-neutral terms (regnav/retrieve/expand.py)
+    rerank: bool = False  # cross-encoder re-ranking of each tier's candidate pool
+    rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    rerank_pool_k: int = 20  # candidates per tier passed to the cross-encoder
 
 
 Provider = Literal["ollama", "groq", "openai_compat", "anthropic", "stub"]

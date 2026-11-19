@@ -12,10 +12,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-CONFIGS = ["baseline_dense", "hybrid_pooled", "hybrid_stratified"]
+CONFIGS = ["baseline_dense", "hybrid_pooled", "hybrid_stratified", "hybrid_stratified_rerank"]
 ROWS = [
     ("Retrieval", None),
     ("recall_at_5", "Recall@5"),
+    ("context_recall", "Context recall (all chunks given to the model)"),
+    ("any_gold_hit", "Any gold chunk in context"),
     ("mrr", "MRR"),
     ("binding_coverage", "**Binding-source coverage**"),
     ("binding_gold_hit", "Binding gold chunk retrieved"),

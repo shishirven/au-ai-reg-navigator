@@ -46,6 +46,12 @@ answer involves a binding standard where at least one binding chunk reached the 
 | dense, pooled (naive) | **0.48** [0.27, 0.68] | 0.52 | 0.70 |
 | hybrid (dense + BM25), pooled | **0.61** [0.40, 0.80] | 0.55 | 0.77 |
 | **hybrid, tier-stratified** | **1.00** [1.00, 1.00] | 0.58 | 0.63 |
+| **+ query expansion + cross-encoder re-rank, 4/tier** (`hybrid_stratified_rerank`) | **1.00** | 0.62 | 0.76 |
+
+Re-ranking fixes the next problem down: getting the *right paragraph* within each tier.
+Context recall rises 0.61 → 0.74 and **binding gold-paragraph hit 0.65 → 0.91** (paired bootstrap
+Δ +0.26 [+0.04, +0.48]); a budget-only control shows the gain isn't just from the larger context.
+Details: [docs/retrieval_ablation.md](docs/retrieval_ablation.md).
 
 **Generation** (tier-stratified; Qwen 27B generator, gpt-oss-120b judge): faithfulness **0.97**,
 answer correctness 0.77, authority-label accuracy **1.00**, modality error rate **0.00**,
@@ -179,8 +185,7 @@ Fully offline on a laptop (Ollama, Qwen3-4B on CPU): `bash scripts/setup_local.s
 
 * **Parser comparison**: PyMuPDF vs Docling/Unstructured on the CPS PDFs, scored by chunk-boundary accuracy.
 * **Embedding comparison and fine-tuning**: bge-small vs bge-large/e5/legal-domain models; fine-tune on (question, paragraph) pairs mined from CPGs that cite CPS paragraphs.
-* **Cross-encoder re-ranking** within each tier quota.
-* **Query rewriting** from AI terms to technology-neutral terms ("AI vendor" → "service provider", "model" → "information asset") so pooled retrieval finds binding text without quotas.
+* ~~Cross-encoder re-ranking and AI→tech-neutral query expansion~~: **done** (`hybrid_stratified_rerank`, D-042). Next: a domain-tuned reranker, and LLM-free query expansion learned from CPG→CPS citations.
 * **AI6 crosswalk**: map each AI6 practice to the CPS/CPG paragraphs that make it mandatory for APRA-regulated entities.
 * **Long-context baseline**: put the whole current corpus (~200k tokens) in context and compare cost, latency and authority-label accuracy.
 * **Scheduled ingestion** from the Federal Register of Legislation, with source-hash change → re-eval → release gate.

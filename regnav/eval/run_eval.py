@@ -38,6 +38,8 @@ K = 5
 # metric name -> per-question field (bootstrapped as a mean over questions where not None)
 MEAN_METRICS = {
     "recall_at_5": "recall_at_5",
+    "context_recall": "context_recall",
+    "any_gold_hit": "any_gold_hit",
     "mrr": "rr",
     "binding_coverage": "binding_coverage",
     "binding_gold_hit": "binding_gold_hit",
@@ -172,6 +174,12 @@ def finish_judging(row: dict[str, Any], judge_llm) -> dict[str, Any]:
 
 def compute_metrics(rows: list[dict[str, Any]], seed: int = 42) -> dict[str, Any]:
     out: dict[str, Any] = {"n_questions": len(rows)}
+    from regnav.eval.retrieval_metrics import any_gold_hit, context_recall
+
+    for r in rows:  # derived from stored rankings, so older runs get these metrics too
+        if "retrieved_ids" in r and "context_recall" not in r:
+            r["context_recall"] = context_recall(r["retrieved_ids"], r.get("gold_chunk_ids", []))
+            r["any_gold_hit"] = any_gold_hit(r["retrieved_ids"], r.get("gold_chunk_ids", []))
 
     def mean_of(field: str) -> Callable[[Sequence[dict[str, Any]]], float | None]:
         def stat(rs: Sequence[dict[str, Any]]) -> float | None:

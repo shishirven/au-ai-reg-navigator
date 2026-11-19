@@ -45,13 +45,21 @@ def build_retrieval(cfg: AppConfig) -> RetrievalSystem:
         retriever = dense
         top_k = r.top_k
     else:
-        hybrid = HybridRetriever(
+        hybrid: Retriever = HybridRetriever(
             [dense, BM25Retriever(load_chunk_rows(cfg))], r.candidate_k, r.rrf_k
         )
+        if r.rerank:  # re-rank the fused candidates (inside each tier when stratified)
+            from regnav.retrieve.rerank import CrossEncoderScorer, RerankRetriever
+
+            hybrid = RerankRetriever(hybrid, CrossEncoderScorer(r.rerank_model), r.rerank_pool_k)
         if r.mode == "hybrid":
             retriever, top_k = hybrid, r.top_k
         else:
             retriever, top_k = StratifiedRetriever(hybrid, r.per_tier_k), r.per_tier_k * 3
+    if r.query_expansion:
+        from regnav.retrieve.rerank import ExpandingRetriever
+
+        retriever = ExpandingRetriever(retriever)
     return RetrievalSystem(
         retriever,
         top_k,

@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "config": "hybrid_stratified_rerank",
+    "questions_file": "data/eval/questions_draft.jsonl",
+    "questions_sha256": "f062a2c351eebd9e727a8a087b2454eda3e8a15b17c1cad1f6ddc35f799cc296",
+    "is_draft": true,
+    "index_version": "idx-2185d086e9c4",
+    "mode": "retrieval-only",
+    "started": "20261119-102550",
+    "run_dir": "results/hybrid_stratified_rerank__20261119-102550__DRAFT__retrieval",
+    "generator": "groq/qwen/qwen3.8-27b",
+    "judge": "groq/openai/gpt-oss-120b"
+  },
+  "metrics": {
+    "n_questions": 40,
+    "recall_at_5": {
+      "value": 0.6176190476190475,
+      "ci_low": 0.49321986607142854,
+      "ci_high": 0.7291824494949494,
+      "n": 35
+    },
+    "context_recall": {
+      "value": 0.74,
+      "ci_low": 0.6280910553410554,
+      "ci_high": 0.8333809523809521,
+      "n": 35
+    },
+    "any_gold_hit": {
+      "value": 0.9428571428571428,
+      "ci_low": 0.8529411764705882,
+      "ci_high": 1.0,
+      "n": 35
+    },
+    "mrr": {
+      "value": 0.7585714285714285,
+      "ci_low": 0.6276155083655084,
+      "ci_high": 0.8735364145658263,
+      "n": 35
+    },
+    "binding_coverage": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 23
+    },
+    "binding_gold_hit": {
+      "value": 0.9130434782608695,
+      "ci_low": 0.7856366459627329,
+      "ci_high": 1.0,
+      "n": 23
+    }
+  }
+}

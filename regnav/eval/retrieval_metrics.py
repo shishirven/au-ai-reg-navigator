@@ -39,3 +39,14 @@ def binding_gold_hit(
     if not binding_gold:
         return None
     return 1.0 if binding_gold & set(retrieved) else 0.0
+
+
+def context_recall(retrieved: Sequence[str], gold: Sequence[str]) -> float | None:
+    """Share of gold chunks anywhere in the context passed to the generator (all retrieved)."""
+    return recall_at_k(retrieved, gold, k=len(retrieved)) if gold else None
+
+
+def any_gold_hit(retrieved: Sequence[str], gold: Sequence[str]) -> float | None:
+    if not gold:
+        return None
+    return 1.0 if set(retrieved) & set(gold) else 0.0

@@ -20,7 +20,8 @@ from regnav.retrieve import RetrievalSystem, build_retrieval
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIGS = {
-    "Tier-stratified hybrid (recommended)": "configs/hybrid_stratified.yaml",
+    "Tier-stratified + re-ranking (recommended)": "configs/hybrid_stratified_rerank.yaml",
+    "Tier-stratified hybrid": "configs/hybrid_stratified.yaml",
     "Hybrid pooled (dense + BM25)": "configs/hybrid_pooled.yaml",
     "Dense pooled (naive baseline)": "configs/baseline_dense.yaml",
     "Tier-stratified, local Ollama": "configs/local_stratified.yaml",
