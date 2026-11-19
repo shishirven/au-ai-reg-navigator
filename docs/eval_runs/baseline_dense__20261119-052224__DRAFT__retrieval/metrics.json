@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "config": "baseline_dense",
+    "questions_file": "data/eval/questions_draft.jsonl",
+    "questions_sha256": "f062a2c351eebd9e727a8a087b2454eda3e8a15b17c1cad1f6ddc35f799cc296",
+    "is_draft": true,
+    "index_version": "idx-2185d086e9c4",
+    "mode": "retrieval-only",
+    "started": "20261119-052224",
+    "run_dir": "results/baseline_dense__20261119-052224__DRAFT__retrieval"
+  },
+  "metrics": {
+    "n_questions": 40,
+    "recall_at_5": {
+      "value": 0.5238095238095237,
+      "ci_low": 0.39646464646464646,
+      "ci_high": 0.652787162162162,
+      "n": 35
+    },
+    "mrr": {
+      "value": 0.7002721088435374,
+      "ci_low": 0.5580978641456583,
+      "ci_high": 0.8318291505791505,
+      "n": 35
+    },
+    "binding_coverage": {
+      "value": 0.4782608695652174,
+      "ci_low": 0.27263986013986014,
+      "ci_high": 0.6818779904306216,
+      "n": 23
+    },
+    "binding_gold_hit": {
+      "value": 0.43478260869565216,
+      "ci_low": 0.22727272727272727,
+      "ci_high": 0.6471323529411761,
+      "n": 23
+    }
+  }
+}
