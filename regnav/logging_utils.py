@@ -30,5 +30,8 @@ def setup_logging(level: str = "INFO", json_format: bool = True) -> None:
     root = logging.getLogger()
     root.handlers[:] = [handler]
     root.setLevel(level)
-    for noisy in ("httpx", "httpx2", "chromadb", "sentence_transformers", "urllib3"):
+    for noisy in ("httpx", "httpx2", "chromadb", "urllib3"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
+    # Offline-by-design containers: "could not reach the Hub ... using cached" is expected noise.
+    for offline_noise in ("huggingface_hub", "sentence_transformers", "transformers"):
+        logging.getLogger(offline_noise).setLevel(logging.ERROR)

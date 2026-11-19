@@ -127,6 +127,8 @@ class OpenAICompatClient:
             if cfg.provider == "openai_compat"
             else (cfg.base_url if "11434" not in cfg.base_url else GROQ_BASE_URL)
         )
+        # Locally the key comes from the env (e.g. .env via docker compose). In the cloud dev
+        # environment a network proxy injects it, so a placeholder is sent.
         self.api_key = os.environ.get(cfg.api_key_env) or "proxy-injected"
         self.sleep = time.sleep  # injectable for tests
 
@@ -169,7 +171,12 @@ class OpenAICompatClient:
                 retryable = e.code == 429 or e.code >= 500
                 if not retryable or attempt == self.cfg.max_rate_limit_retries:
                     detail = e.read().decode(errors="replace")[:300]
-                    raise LLMError(f"{self.cfg.provider} HTTP {e.code}: {detail}") from e
+                    hint = ""
+                    if e.code == 401 and self.api_key == "proxy-injected":
+                        hint = f" - {self.cfg.api_key_env} is not set (add it to .env and recreate the container)"
+                    elif e.code == 401:
+                        hint = f" - check {self.cfg.api_key_env} in .env (expected a full key, e.g. 56 chars for Groq)"
+                    raise LLMError(f"{self.cfg.provider} HTTP {e.code}{hint}: {detail}") from e
                 wait = _retry_after_seconds(
                     e.headers.get("retry-after") or e.headers.get("x-ratelimit-reset-tokens"),
                     default=min(60.0, 2.0**attempt),
@@ -273,7 +280,9 @@ def default_stub_answer(user_prompt: str) -> str:
         section = section_for[tier]
         if out[section] or (section == "mandatory" and modality != "must"):
             continue
-        first = body.split("\n", 1)[-1].split(". ")[0][:200]
+        text = body.split("\n", 1)[-1]
+        text = re.sub(r"^\s*\d{1,3}\.\s+", "", text)  # drop a leading paragraph number ("52. ")
+        first = re.split(r"(?<=[a-z\)])\.\s", text, maxsplit=1)[0][:200]
         out[section].append({"claim": first, "citation_id": cid})
     abstained = not any(out.values())
     out["abstained"] = abstained

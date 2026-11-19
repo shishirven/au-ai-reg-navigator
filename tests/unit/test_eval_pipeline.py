@@ -181,3 +181,16 @@ def test_regression_gate_runs_offline_with_hashing(tmp_path: Path) -> None:
     assert ok and metrics["binding_coverage"] == 1.0
     th.write_text("min_recall_at_5: 1.01\nmin_mrr: 0.0\nmin_binding_coverage: 0.0\n")
     assert run_gate("configs/hybrid_stratified.yaml", th, embedding_backend="hashing")[0] is False
+
+
+def test_infrastructure_errors_are_not_recorded_as_results() -> None:
+    from regnav.eval.run_eval import infrastructure_error
+
+    assert infrastructure_error({"error": "groq HTTP 429: tokens per day"}).startswith(
+        "groq HTTP 429"
+    )
+    assert infrastructure_error({"judge_unavailable": "HTTP 429"}).startswith("judge:")
+    assert (
+        infrastructure_error({"judge_error": "bad JSON from judge"}) is None
+    )  # model output problem: kept
+    assert infrastructure_error({"abstained": True}) is None

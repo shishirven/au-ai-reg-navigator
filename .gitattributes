@@ -1,0 +1,7 @@
+# Byte-identical checkouts on every OS: the index_version is a content hash of the source files
+# and the ingest code, so Windows CRLF conversion would silently create a different version.
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+# Source documents are hashed exactly as committed - never convert them.
+data/raw/** -text

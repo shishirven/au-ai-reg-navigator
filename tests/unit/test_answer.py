@@ -178,3 +178,14 @@ def test_tracing_failure_never_breaks_answering() -> None:
 
     r = answer_question("q", AppConfig(), _system(), StubClient(responses=[GOOD]), tracer=Broken())
     assert r.valid
+
+
+def test_stub_quote_skips_paragraph_number() -> None:
+    from regnav.generate.llm import default_stub_answer
+
+    prompt = (
+        '<source id="cps:p52" tier="binding" document="CPS" modality="must" effective_from="">\n'
+        "[CPS · Binding · para 52]\n52. Before entering into a material arrangement, an entity must: (a) do x.\n</source>"
+    )
+    out = json.loads(default_stub_answer(prompt))
+    assert out["mandatory"][0]["claim"].startswith("Before entering into a material arrangement")

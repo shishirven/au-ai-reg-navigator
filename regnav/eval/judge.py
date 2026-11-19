@@ -71,7 +71,20 @@ def judge_answer(
             "judge_output_tokens": resp.output_tokens,
             "judge_model": resp.model,
         }
-    except (LLMError, KeyError, TypeError, ValueError, json.JSONDecodeError) as e:
+    except LLMError as e:  # outage / rate limit: infrastructure, aborts the eval run
+        return {
+            "faithfulness": None,
+            "correctness": None,
+            "correctness_raw": None,
+            "supported": [],
+            "judge_unavailable": str(e)[:300],
+        }
+    except (
+        KeyError,
+        TypeError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:  # bad judge output: recorded
         return {
             "faithfulness": None,
             "correctness": None,

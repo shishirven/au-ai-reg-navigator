@@ -151,6 +151,16 @@ def evaluate_question(
     return row
 
 
+def infrastructure_error(row: dict[str, Any]) -> str | None:
+    """An LLM or judge outage (rate limit, auth, network) - not model behaviour. Such rows are
+    not recorded, so a quota hit can never masquerade as an abstention or a judge score."""
+    if row.get("error"):
+        return str(row["error"])[:300]
+    if row.get("judge_unavailable"):
+        return "judge: " + str(row["judge_unavailable"])[:300]
+    return None
+
+
 def finish_judging(row: dict[str, Any], judge_llm) -> dict[str, Any]:
     payload = row.pop("_judge_payload", None)
     if payload is not None and judge_llm is not None:
@@ -370,20 +380,41 @@ def run(args: argparse.Namespace) -> int:
         )
 
     pending: list[tuple[int, Future]] = []
+    aborted: str | None = None
+
+    def flush_ready(f, wait: bool) -> None:
+        nonlocal aborted
+        while pending and (wait or pending[0][1].done()):  # write completed rows in question order
+            j, fut = pending.pop(0)
+            row = fut.result()
+            problem = infrastructure_error(row)
+            if problem or aborted:
+                aborted = aborted or f"{row['id']}: {problem}"
+                continue  # never record an outage as a model result; --resume redoes it
+            write(f, j, row)
+
     with pq.open("a") as f, ThreadPoolExecutor(max_workers=1) as judge_pool:
         for i, q in enumerate(questions, start=1):
             if q.id in done:
                 rows.append(done[q.id])
                 continue
+            if aborted:
+                break
             row = evaluate_question(q, cfg, retrieval, llm, judge_llm, tracer, tier_of)
             pending.append((i, judge_pool.submit(finish_judging, row, judge_llm)))
-            while pending and pending[0][1].done():  # write completed rows in question order
-                j, fut = pending.pop(0)
-                write(f, j, fut.result())
-        for j, fut in pending:
-            write(f, j, fut.result())
+            flush_ready(f, wait=False)
+        flush_ready(f, wait=True)
     if tracer is not None:
         tracer.flush()
+    if aborted:
+        print(
+            f"\nABORTED - LLM/judge unavailable ({aborted[:300]}).\n"
+            f"Completed rows are saved. Continue later with:\n"
+            f"  python -m regnav.eval.run_eval --config {args.config} "
+            f"--questions {qpath}{' --allow-draft' if is_draft else ''} --resume {out_dir}",
+            file=sys.stderr,
+        )
+        return 2
 
     metrics = compute_metrics(rows, cfg.seed)
     meta = {
