@@ -111,9 +111,21 @@ docker compose up --build
 * The containers run as your host user (`UID`/`GID`, default 1000) so they can write to the mounted
   `chroma/` and `mlruns/`. If your Linux UID isn't 1000, prefix the command with
   `UID=$(id -u) GID=$(id -g)`.
-* Image: multi-stage build, CPU-only torch, embedding model baked in, non-root, healthcheck
-  (~3.8 GB, mostly torch, onnxruntime and MLflow). Behind a TLS-inspecting corporate proxy:
+* Image: multi-stage build, CPU-only torch, embedding model baked in, non-root, healthcheck.
+  The image also bakes `data/raw` and the Chroma index, and listens on `$PORT` (8501 if unset).
+  Compose mounts `./data` and `./chroma` over those baked copies and sets `REGNAV_PUBLIC_DEMO=0`,
+  so `docker compose up` still uses the host index from the ingest step above.
+  Behind a TLS-inspecting corporate proxy:
   `docker build --secret id=ca_bundle,src=ca.pem --build-arg HTTPS_PROXY=... .`
+
+Run the baked image the way Cloud Run will (no mounts, port 8080, guardrails on). In PowerShell:
+
+```powershell
+docker build -t au-ai-reg-navigator:latest --build-arg GIT_SHA=$(git rev-parse HEAD) .
+docker run --rm -p 8080:8080 -e PORT=8080 -e REGNAV_UI_OFFLINE=1 au-ai-reg-navigator:latest
+```
+
+Then open http://localhost:8080. `REGNAV_UI_OFFLINE=1` skips Groq.
 
 ### Local fallback model (keeps working when Groq's free tier runs out)
 

@@ -6,7 +6,6 @@
 mlruns
 chroma
 results
-data/raw
 .git
 .github
 **/__pycache__

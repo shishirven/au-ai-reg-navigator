@@ -11,7 +11,7 @@ import pytest
 from regnav.config import AppConfig, LLMConfig
 from regnav.generate.answer import answer_question
 from regnav.generate.llm import AnthropicClient, LLMError, StubClient
-from regnav.observability.langfuse import LangfuseTracer
+from regnav.observability.langfuse import LangfuseTracer, trace_tags
 from regnav.retrieve import RetrievalSystem
 from regnav.retrieve.base import RetrievedChunk
 
@@ -97,8 +97,25 @@ def test_langfuse_tracer_records_retrieval_generation_and_metadata(monkeypatch) 
     assert (
         seen["metadata"]["config_name"] == "cfgX" and seen["metadata"]["index_version"] == "idx-abc"
     )
+    assert seen["tags"] == trace_tags("cfgX", "idx-abc", AppConfig().generation.model)
     tracer.flush()
     assert tracer.client.log[-1] == ("flush",)
+
+
+def test_trace_tags_add_env_prod_only_for_the_public_demo(monkeypatch) -> None:
+    monkeypatch.delenv("REGNAV_PUBLIC_DEMO", raising=False)
+    assert trace_tags("prod", "idx-1", "qwen/qwen3.8-27b") == [
+        "prod",
+        "idx-1",
+        "qwen/qwen3.8-27b",
+    ]
+    monkeypatch.setenv("REGNAV_PUBLIC_DEMO", "1")
+    assert trace_tags("prod", "idx-1", "qwen/qwen3.8-27b") == [
+        "env:prod",
+        "prod",
+        "idx-1",
+        "qwen/qwen3.8-27b",
+    ]
 
 
 class _FakeMessages:

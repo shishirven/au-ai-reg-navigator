@@ -2,6 +2,11 @@
 #   app    -> http://localhost:8501  (Streamlit)
 #   mlflow -> http://localhost:5000  (MLflow UI over ./mlruns)
 # Build the index first (on the host: `make ingest`, or `docker compose run --rm app python -m regnav.cli ingest`).
+#
+# The image also bakes data/ and chroma/ for Cloud Run. The volume mounts below hide those
+# copies, so compose keeps using the host index. REGNAV_PUBLIC_DEMO=0 keeps the password
+# gate, question cap and forced prod config off. To run the baked image with no mounts:
+#   docker run --rm -p 8080:8080 -e PORT=8080 -e REGNAV_UI_OFFLINE=1 au-ai-reg-navigator
 services:
   app:
     build: .
@@ -15,6 +20,8 @@ services:
         required: false
     environment:
       HOME: /tmp
+      PORT: "8501"
+      REGNAV_PUBLIC_DEMO: "0"
       REGNAV_CONFIG: ${REGNAV_CONFIG:-configs/hybrid_stratified.yaml}
       # Local fallback model (Ollama running on your laptop, outside Docker)
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
