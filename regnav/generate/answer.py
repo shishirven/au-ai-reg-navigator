@@ -14,7 +14,7 @@ from datetime import date
 from typing import Any
 
 from regnav.config import AppConfig, LLMConfig
-from regnav.generate.llm import LLMClient, LLMError, cost_usd
+from regnav.generate.llm import LLMClient, LLMError, cost_usd, llm_failure_fields
 from regnav.generate.prompts import (
     PROMPT_VERSION,
     SYSTEM_PROMPT,
@@ -144,6 +144,7 @@ def answer_question(
     schema = answer_json_schema()
     max_attempts = 1 + cfg.generation.max_validation_retries
     for _ in range(max_attempts):
+        t_call = time.perf_counter()
         try:
             resp = llm.complete(SYSTEM_PROMPT, messages, schema)
         except LLMError as e:
@@ -152,6 +153,16 @@ def answer_question(
             result.fallback = True
             result.answer = safe_abstention(
                 "The language model was unavailable; no answer was generated."
+            )
+            log.error(
+                "llm call failed; abstaining",
+                extra={
+                    "extra_fields": llm_failure_fields(
+                        e,
+                        model=cfg.generation.model,
+                        elapsed_s=time.perf_counter() - t_call,
+                    )
+                },
             )
             break
         check = validate_answer(resp.text, meta)
@@ -200,6 +211,23 @@ def answer_question(
         result.fallback = True
         result.answer = safe_abstention(
             "A reliable, correctly cited answer could not be produced from the retrieved sources."
+        )
+        log.error(
+            "llm abstained after validation",
+            extra={
+                "extra_fields": {
+                    "event": "llm_abstained",
+                    "exception_class": None,
+                    "http_status": None,
+                    "error_type": "validation",
+                    "error_message": "safe abstention after validation",
+                    "retry_after": None,
+                    "model": result.llm_model or cfg.generation.model,
+                    "prompt_tokens": result.input_tokens,
+                    "completion_tokens": result.output_tokens,
+                    "elapsed_s": round(result.generation_latency_s, 3),
+                }
+            },
         )
     priced: LLMConfig = cfg.generation
     if result.llm_fallback_reason and cfg.generation.fallback is not None:

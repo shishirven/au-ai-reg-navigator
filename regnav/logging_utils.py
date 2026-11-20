@@ -22,8 +22,9 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(payload, default=str)
 
 
-def setup_logging(level: str = "INFO", json_format: bool = True) -> None:
-    handler = logging.StreamHandler(sys.stderr)
+def setup_logging(level: str = "INFO", json_format: bool = True, stream=None) -> None:
+    """Configure root logging. The public demo passes ``stream=sys.stdout`` so Cloud Run keeps it."""
+    handler = logging.StreamHandler(sys.stderr if stream is None else stream)
     handler.setFormatter(
         JsonFormatter() if json_format else logging.Formatter("%(levelname)s %(name)s: %(message)s")
     )

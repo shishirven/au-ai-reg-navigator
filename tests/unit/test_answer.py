@@ -133,6 +133,43 @@ def test_llm_error_gives_safe_abstention() -> None:
     assert r.fallback and r.answer.abstained and r.error == "down"
 
 
+def test_llm_failure_log_has_status_and_not_the_prompt(caplog) -> None:
+    import logging
+
+    caplog.set_level(logging.ERROR, logger="regnav.generate.answer")
+    secret = "gsk_notarealkey"
+    prompt = "FULL PROMPT " + ("paragraph " * 80)
+
+    def boom(system, messages):
+        raise LLMError(
+            f"groq HTTP 429: Bearer {secret} {prompt}",
+            "quota",
+            http_status=429,
+            error_type="rate_limit_exceeded",
+            retry_after_header="7s",
+            model="qwen/qwen3.8-27b",
+            prompt_tokens=1200,
+            completion_tokens=0,
+            elapsed_s=1.25,
+            safe_message="Rate limit reached",
+        )
+
+    r = answer_question("q", AppConfig(), _system(), StubClient(responses=[boom]))
+    assert r.answer.abstained
+    fields = caplog.records[-1].extra_fields
+    assert fields["event"] == "llm_call_failed"
+    assert fields["exception_class"] == "LLMError"
+    assert fields["http_status"] == 429
+    assert fields["error_type"] == "rate_limit_exceeded"
+    assert fields["retry_after"] == "7s"
+    assert fields["model"] == "qwen/qwen3.8-27b"
+    assert fields["prompt_tokens"] == 1200
+    assert fields["completion_tokens"] == 0
+    assert fields["elapsed_s"] == 1.25
+    dumped = str(fields)
+    assert secret not in dumped and "FULL PROMPT" not in dumped and "Bearer" not in dumped
+
+
 def test_scope_gate_abstains_without_calling_llm() -> None:
     llm = StubClient()
     r = answer_question("What does the EU AI Act require?", AppConfig(), _system(), llm)
