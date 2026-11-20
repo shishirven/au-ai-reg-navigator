@@ -34,14 +34,81 @@ class LLMResponse:
 
 class LLMError(RuntimeError):
     """``kind``: "quota" (daily/request-size limit - won't clear by retrying soon), "unavailable"
-    (network/server down), "auth", or "error". ``retry_after_s``: provider's hint, if any."""
+    (network/server down), "auth", or "error". ``retry_after_s``: provider's hint, if any.
+
+    The extra fields are safe to log: no API key, no request headers, no prompt.
+    """
 
     def __init__(
-        self, message: str, kind: str = "error", retry_after_s: float | None = None
+        self,
+        message: str,
+        kind: str = "error",
+        retry_after_s: float | None = None,
+        *,
+        http_status: int | None = None,
+        error_type: str | None = None,
+        retry_after_header: str | None = None,
+        model: str | None = None,
+        prompt_tokens: int | None = None,
+        completion_tokens: int | None = None,
+        elapsed_s: float | None = None,
+        safe_message: str | None = None,
     ) -> None:
         super().__init__(message)
         self.kind = kind
         self.retry_after_s = retry_after_s
+        self.http_status = http_status
+        self.error_type = error_type
+        self.retry_after_header = retry_after_header
+        self.model = model
+        self.prompt_tokens = prompt_tokens
+        self.completion_tokens = completion_tokens
+        self.elapsed_s = elapsed_s
+        self.safe_message = safe_message
+
+
+_SECRET_RE = re.compile(
+    r"(?i)(bearer\s+)[A-Za-z0-9._\-]+|gsk_[A-Za-z0-9]+|(api[_-]?key[\"']?\s*[:=]\s*[\"']?)[^\"'\s,}]+"
+)
+
+
+def redact_secrets(text: str, limit: int = 180) -> str:
+    """Short provider text for logs. Drops tokens and cuts anything prompt-sized."""
+    cleaned = _SECRET_RE.sub(lambda m: (m.group(1) or "") + "[redacted]", text or "")
+    cleaned = " ".join(cleaned.split())
+    if len(cleaned) > limit:
+        return cleaned[: limit - 1] + "…"
+    return cleaned
+
+
+def provider_error_parts(body: str) -> tuple[str | None, str]:
+    """``(error code or type, short message)`` from a Groq/OpenAI error JSON body."""
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError:
+        return None, redact_secrets(body)
+    err = data.get("error") if isinstance(data, dict) else None
+    if not isinstance(err, dict):
+        return None, redact_secrets(body)
+    code = err.get("code") or err.get("type")
+    return (str(code) if code else None), redact_secrets(str(err.get("message") or ""))
+
+
+def llm_failure_fields(exc: LLMError, *, model: str = "", elapsed_s: float | None = None) -> dict:
+    """Allow-listed fields for a stdout log line. Never the prompt or the API key."""
+    elapsed = exc.elapsed_s if exc.elapsed_s is not None else elapsed_s
+    return {
+        "event": "llm_call_failed",
+        "exception_class": type(exc).__name__,
+        "http_status": exc.http_status,
+        "error_type": exc.error_type or exc.kind,
+        "error_message": exc.safe_message or "",
+        "retry_after": exc.retry_after_header,
+        "model": exc.model or model,
+        "prompt_tokens": exc.prompt_tokens,
+        "completion_tokens": exc.completion_tokens,
+        "elapsed_s": None if elapsed is None else round(elapsed, 3),
+    }
 
 
 class LLMClient(Protocol):
@@ -193,12 +260,25 @@ class OpenAICompatClient:
                 break
             except urllib.error.HTTPError as e:
                 detail = e.read().decode(errors="replace")[:400]
+                error_type, safe_message = provider_error_parts(detail)
+                retry_header = e.headers.get("retry-after") or e.headers.get(
+                    "x-ratelimit-reset-tokens"
+                )
+                elapsed = time.perf_counter() - t0
+                if e.code == 429 and error_type is None:
+                    error_type = "rate_limit_exceeded"
                 if e.code == 429 and any(p in detail for p in _QUOTA_PATTERNS):
                     m = re.search(r"try again in ((?:\d+(?:\.\d+)?(?:ms|h|m|s))+)", detail)
                     raise LLMError(
                         f"{self.cfg.provider} HTTP 429 (quota): {detail[:300]}",
                         "quota",
                         _retry_after_seconds(m.group(1) if m else None, 900.0),
+                        http_status=e.code,
+                        error_type=error_type,
+                        retry_after_header=retry_header,
+                        model=self.cfg.model,
+                        elapsed_s=elapsed,
+                        safe_message=safe_message,
                     ) from e
                 retryable = e.code == 429 or e.code >= 500
                 if not retryable or attempt == self.cfg.max_rate_limit_retries:
@@ -211,16 +291,30 @@ class OpenAICompatClient:
                         "auth" if e.code in (401, 403) else "unavailable" if retryable else "error"
                     )
                     raise LLMError(
-                        f"{self.cfg.provider} HTTP {e.code}{hint}: {detail[:300]}", kind
+                        f"{self.cfg.provider} HTTP {e.code}{hint}: {detail[:300]}",
+                        kind,
+                        http_status=e.code,
+                        error_type=error_type,
+                        retry_after_header=retry_header,
+                        model=self.cfg.model,
+                        elapsed_s=elapsed,
+                        safe_message=safe_message,
                     ) from e
                 wait = _retry_after_seconds(
-                    e.headers.get("retry-after") or e.headers.get("x-ratelimit-reset-tokens"),
+                    retry_header,
                     default=min(60.0, 2.0**attempt),
                 )
                 self.sleep(min(wait + 0.5, 120.0))
             except (urllib.error.URLError, TimeoutError) as e:
+                kind = "timeout" if isinstance(e, TimeoutError) else "unavailable"
                 raise LLMError(
-                    f"{self.cfg.provider} not reachable at {self.base_url}: {e}", "unavailable"
+                    f"{self.cfg.provider} not reachable at {self.base_url}: {e}",
+                    "unavailable",
+                    http_status=None,
+                    error_type=kind,
+                    model=self.cfg.model,
+                    elapsed_s=time.perf_counter() - t0,
+                    safe_message=redact_secrets(str(e)),
                 ) from e
         choice = body["choices"][0]
         usage = body.get("usage", {})

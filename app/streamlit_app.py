@@ -7,9 +7,16 @@ from __future__ import annotations
 
 import html
 import os
+import sys
 from pathlib import Path
 
 import streamlit as st
+
+from regnav.logging_utils import setup_logging
+
+# Cloud Run keeps stdout. INFO so an LLM failure is visible next to the request log.
+if os.environ.get("REGNAV_PUBLIC_DEMO") == "1" or os.environ.get("K_SERVICE"):
+    setup_logging("INFO", stream=sys.stdout)
 
 from regnav.authority import note_for
 from regnav.config import TIER_LABELS, AppConfig, Secrets, load_config
