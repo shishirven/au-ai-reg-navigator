@@ -1,0 +1,27 @@
+# One-shot. The agent token cannot call workflow_dispatch. Adding this file
+# on main runs it, and the job dispatches Deploy Cloud Run for the logging commit.
+# Delete this file after that dispatch exists.
+name: Dispatch Cloud Run deploy once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/dispatch-cloudrun-once.yml
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Deploy Cloud Run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh workflow run "Deploy Cloud Run"
+          --repo "${{ github.repository }}"
+          --ref main
+          --raw-field ref=d9bf2274e915ccf61129315f1524764963bcdb99
