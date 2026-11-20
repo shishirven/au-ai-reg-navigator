@@ -5,7 +5,7 @@
 | System | Retrieval-augmented question answering over Australian AI/financial regulation |
 | Version | prompt `v3`, index `idx-2185d086e9c4` (see `chroma/index_manifest_*.json`) |
 | Owner | Shishir (portfolio project) |
-| Status | **Demonstration / research prototype.** Not validated for production use. |
+| Status | **Demonstration / research prototype.** Not validated for production use. Public demo: https://regnav-onlvzgx6fq-ts.a.run.app |
 | Last reviewed | November 2026 |
 
 ## Purpose
@@ -45,7 +45,7 @@ miss because the standards never mention AI.
 | Embedding | `BAAI/bge-small-en-v1.5` (local, CPU) |
 | Keyword retrieval | BM25 (Okapi) |
 | Fusion / routing | reciprocal rank fusion (k = 60), per-tier quota of 3 chunks |
-| Generator | `qwen/qwen3.8-27b` on Groq (temperature 0, seed 42, reasoning off). **Automatic local fallback** to Ollama `qwen3:4b` when Groq is rate-limited or down, clearly flagged on every answer (D-041). Alternative: Claude via Anthropic API |
+| Generator | `qwen/qwen3.8-27b` on Groq (temperature 0, seed 42, reasoning off). On a laptop, **automatic local fallback** to Ollama `qwen3:4b` when Groq is rate-limited or down, clearly flagged on every answer (D-041). The public demo (`configs/prod.yaml`) does not fall back: Groq `qwen/qwen3.8-27b` only, then a safe abstention. Alternative for local experiments: Claude via Anthropic API |
 | Judge (evaluation only) | `openai/gpt-oss-120b` on Groq: a different model family from the generator |
 | Controls | scope gate → validator → claim-level repair → one retry → safe abstention; disclaimer on every answer |
 
@@ -86,8 +86,10 @@ modality error rate and abstention precision/recall, each with 95% bootstrap CIs
    10 Dec 2026). Claims citing such guidance carry a "⚖️ Explains binding law" note (D-043), but the
    obligation itself is not shown under "Mandatory" until the statutory text is added to the corpus.
    Never read "Regulator expects" as "optional".
-2. **Corpus coverage**: no Privacy Act text, ASIC guidance, SPS standards (super-specific risk
-   management), APRA capital standards or proposed mandatory AI guardrails.
+2. **Corpus coverage**: no Privacy Act text, including the **APP 11 statute**, ASIC guidance, SPS
+   standards (super-specific risk management), APRA capital standards or proposed mandatory AI
+   guardrails. A question about APP 11 can only be answered from guidance that mentions it, and
+   that guidance stays under Regulator expects. It is not labelled Mandatory.
 3. **Point-in-time snapshot**: documents retrieved November 2026; no automated change detection
    against the Federal Register of Legislation.
 4. **Parsing heuristics** (headers, footnotes, headings) were tuned on these PDFs; new layouts
@@ -106,6 +108,14 @@ modality error rate and abstention precision/recall, each with 95% bootstrap CIs
 ## Ethical and regulatory considerations
 
 * Every answer carries a "not legal advice" disclaimer and cites its sources, so users can verify it.
-* No personal information is collected; questions are traced (Langfuse) for quality monitoring.
-* Third-party model providers (Groq, optionally Anthropic) receive the question and retrieved
-  public-document text only.
+* The public demo shows that disclaimer in a banner, asks visitors not to enter personal or
+  customer information, and states that questions are logged to Langfuse. A session is capped at
+  20 questions and 500 characters. See `docs/DEPLOYMENT.md`.
+* No account or personal profile is collected. Questions on the demo are traced (Langfuse) for
+  quality monitoring, tagged `env:prod` with the config name and index version.
+* Third-party model providers (Groq, and locally Anthropic if that config is selected) receive the
+  question and retrieved public-document text only.
+* Deployment controls for the demo: scale-to-zero Cloud Run in `australia-southeast1`, keys in
+  Secret Manager, keyless GitHub OIDC deploy by a manual workflow, rollback by redeploying an
+  older commit, and an A$30 budget alert. Cold start is about 1.5 minutes, and the first answer
+  is slower. This does not change the status above: the demo is not a production validation.

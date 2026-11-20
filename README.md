@@ -1,6 +1,11 @@
 # AU AI Regulation Navigator
 
+[![Live demo](https://img.shields.io/badge/live%20demo-Cloud%20Run-1a73e8)](https://regnav-onlvzgx6fq-ts.a.run.app)
+
 **Tier-aware RAG over Australian AI regulation, built to model-risk standards.**
+
+Live demo: [https://regnav-onlvzgx6fq-ts.a.run.app](https://regnav-onlvzgx6fq-ts.a.run.app).
+Not legal advice. Do not enter personal or customer information. Questions are logged to Langfuse.
 
 Ask *"What do we need to do before engaging a third-party AI vendor?"* and get an answer split by
 legal force, with every claim cited:
@@ -59,8 +64,28 @@ abstention precision/recall 1.00 / 0.80. The pooled-baseline generation runs are
 quota). Answers are faithful but sometimes incomplete, because the key paragraph isn't always
 retrieved; that is the next thing to improve.
 
+These figures stay **provisional**. They are not measurements of the live demo.
+
 Full table: **[docs/results.md](docs/results.md)** · validation write-up:
 **[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)** · per-question outputs: `docs/eval_runs/`.
+
+### Smoke check (not an evaluation)
+
+Three questions on the live demo, 20 November 2026. This checks that the service answers, cites, and abstains. It does not update the provisional metrics above.
+
+| Question | What the demo did | Time on screen |
+|---|---|---|
+| What CPS 230 requires before engaging a third-party AI vendor | Cited answer in all three tiers, including CPS 230 para 52 | 47.3 s (first answer; models were loading) |
+| What APP 11 requires when AI handles personal information | Cited OAIC guidance and CPS 230 under Regulator expects and Recommended. The APP 11 statute is not indexed, so nothing was labelled Mandatory from that Act | 12.1 s |
+| Whether the EU AI Act requires a conformity assessment for a credit model | Abstained. The scope gate said the EU is outside this Australian corpus. No model call | 11.7 s |
+
+## Deployment
+
+The live demo runs on Cloud Run in `australia-southeast1` and scales to zero. A cold start is about **1.5 minutes**. The first answer after that is slower, because the embedding model and the cross-encoder load on that request. The generator is Groq `qwen/qwen3.8-27b` only. There is no local fallback on the demo. If Groq fails, the app abstains.
+
+Keys are in Secret Manager, not in the repo. Deploy is a manual GitHub Action (**Deploy Cloud Run**): keyless OIDC, `workflow_dispatch` only, so a push to `main` does not deploy. Rollback is the same workflow with the ref set to an older full commit SHA. A billing budget alert is set at **A$30**.
+
+On the demo, a banner says this is not legal advice, asks you not to enter personal or customer information, and says questions are logged to Langfuse. A session is capped at 20 questions and 500 characters. The config cannot be switched. Details: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Architecture
 
@@ -79,7 +104,7 @@ flowchart LR
     O -.-> T[("Langfuse")]
 ```
 
-More: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · decisions: [DECISIONS.md](DECISIONS.md) ·
+More: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) · decisions: [DECISIONS.md](DECISIONS.md) ·
 tests: [docs/TEST_PLAN.md](docs/TEST_PLAN.md) · model card: [docs/MODEL_CARD.md](docs/MODEL_CARD.md).
 
 ## Quickstart
