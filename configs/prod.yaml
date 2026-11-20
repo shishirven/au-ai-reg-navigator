@@ -49,7 +49,9 @@ generation:
     api_key_env: GEMINI_API_KEY
     temperature: 0.0
     json_mode: none
-    max_tokens: 900
+    # Thinking cannot be turned off on Gemini 3.x, and those tokens count as output.
+    # The primary stays at 900 because of Groq's per-minute output cap.
+    max_tokens: 2048
     max_rate_limit_retries: 0
     timeout_s: 45
     price_input_per_mtok: 0.0
