@@ -53,12 +53,32 @@ COPY --from=builder --chown=app:app /app/.cache /app/.cache
 COPY --chown=app:app regnav ./regnav
 COPY --chown=app:app app ./app
 COPY --chown=app:app configs ./configs
-COPY --chown=app:app pyproject.toml README.md ./
-# data/, chroma/, mlruns/ and results/ are mounted as volumes (see docker-compose.yml);
-# secrets come from env_file only and are never copied into the image.
-RUN mkdir -p data chroma mlruns results && chown -R app:app data chroma mlruns results
+COPY --chown=app:app data ./data
+COPY --chown=app:app pyproject.toml README.md serve.sh ./
+# Secrets come from the environment only and are never copied into the image.
+# chroma/ is built below as uid 1000. docker-compose mounts hide data/ and chroma/.
+ENV REGNAV_CONFIG=configs/prod.yaml \
+    REGNAV_PUBLIC_DEMO=1 \
+    PORT=8501 \
+    OMP_NUM_THREADS=1 \
+    MKL_NUM_THREADS=1 \
+    OPENBLAS_NUM_THREADS=1 \
+    TOKENIZERS_PARALLELISM=false
+RUN mkdir -p chroma mlruns results \
+    && chown -R app:app chroma mlruns results /app/serve.sh \
+    && chmod 755 /app/serve.sh
+USER app
+# Bake the index. HF_HUB_OFFLINE is already set, so this uses the models copied above.
+# The version assert fails the build if the corpus or ingest code drifted from the eval.
+# GIT_SHA is applied after this layer so a new commit does not rebuild the index.
+RUN python -m regnav.cli ingest --config configs/prod.yaml \
+    && python -c "from regnav.config import load_config; from regnav.ingest.index import load_manifest; m=load_manifest(load_config('configs/prod.yaml')); v=m['index_version']; assert v=='idx-2185d086e9c4', v; print('baked', v, 'chunks', m['total_chunks'])"
+USER root
+ARG GIT_SHA=unknown
+ENV GIT_SHA=${GIT_SHA}
+RUN printf '%s\n' "$GIT_SHA" > /app/REVISION && chown app:app /app/REVISION
 USER app
 EXPOSE 8501
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8501/_stcore/health', timeout=4).status == 200 else 1)"
-CMD ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD python -c "import os,urllib.request,sys; p=os.environ.get('PORT','8501'); r=urllib.request.urlopen(f'http://127.0.0.1:{p}/_stcore/health', timeout=4); sys.exit(0 if r.status==200 else 1)"
+CMD ["sh", "/app/serve.sh"]
