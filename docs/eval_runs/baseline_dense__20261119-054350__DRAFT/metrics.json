@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "config": "baseline_dense",
+    "questions_file": "data/eval/questions_draft.jsonl",
+    "questions_sha256": "f062a2c351eebd9e727a8a087b2454eda3e8a15b17c1cad1f6ddc35f799cc296",
+    "is_draft": true,
+    "index_version": "idx-2185d086e9c4",
+    "mode": "full",
+    "started": "20261120-073104",
+    "run_dir": "results/baseline_dense__20261119-054350__DRAFT",
+    "generator": "groq/qwen/qwen3.8-27b",
+    "judge": "groq/openai/gpt-oss-120b"
+  },
+  "metrics": {
+    "n_questions": 40,
+    "recall_at_5": {
+      "value": 0.5238095238095237,
+      "ci_low": 0.39644886363636356,
+      "ci_high": 0.6504739114114115,
+      "n": 35
+    },
+    "context_recall": {
+      "value": 0.5952380952380952,
+      "ci_low": 0.47791394335511983,
+      "ci_high": 0.704954954954955,
+      "n": 35
+    },
+    "any_gold_hit": {
+      "value": 0.9142857142857143,
+      "ci_low": 0.8,
+      "ci_high": 1.0,
+      "n": 35
+    },
+    "mrr": {
+      "value": 0.7002721088435374,
+      "ci_low": 0.5472660818713451,
+      "ci_high": 0.8324441964285714,
+      "n": 35
+    },
+    "binding_coverage": {
+      "value": 0.4782608695652174,
+      "ci_low": 0.2727272727272727,
+      "ci_high": 0.68,
+      "n": 23
+    },
+    "binding_gold_hit": {
+      "value": 0.43478260869565216,
+      "ci_low": 0.22727272727272727,
+      "ci_high": 0.64,
+      "n": 23
+    },
+    "faithfulness": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 35
+    },
+    "answer_correctness": {
+      "value": 0.775,
+      "ci_low": 0.66875,
+      "ci_high": 0.8689062499999992,
+      "n": 40
+    },
+    "citation_validity": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "authority_label_accuracy": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "modality_error_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 36
+    },
+    "raw_citation_validity": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "raw_authority_label_accuracy": {
+      "value": 0.9837962962962963,
+      "ci_low": 0.9572072072072071,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "raw_modality_error_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 36
+    },
+    "tier_recall": {
+      "value": 0.8047619047619047,
+      "ci_low": 0.6973684210526315,
+      "ci_high": 0.8958333333333333,
+      "n": 35
+    },
+    "fallback_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 40
+    },
+    "repair_rate": {
+      "value": 0.05,
+      "ci_low": 0.0,
+      "ci_high": 0.125,
+      "n": 40
+    },
+    "gate_abstain_rate": {
+      "value": 0.1,
+      "ci_low": 0.025,
+      "ci_high": 0.2,
+      "n": 40
+    },
+    "abstention_precision": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 40
+    },
+    "abstention_recall": {
+      "value": 0.8,
+      "ci_low": 0.3333333333333333,
+      "ci_high": 1.0,
+      "n": 40
+    },
+    "latency_p50_s": {
+      "value": 33.322700582500005,
+      "n": 36
+    },
+    "latency_p95_s": {
+      "value": 37.85301613550003,
+      "n": 36
+    },
+    "mean_input_tokens": {
+      "value": 3318.15
+    },
+    "mean_output_tokens": {
+      "value": 274.575
+    },
+    "mean_cost_usd": {
+      "value": 0.0
+    }
+  }
+}
