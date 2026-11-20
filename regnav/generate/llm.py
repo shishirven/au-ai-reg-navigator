@@ -8,6 +8,7 @@ cost/latency tracking and "which model produced this?" are provider-agnostic.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import time
@@ -18,6 +19,8 @@ from dataclasses import dataclass, field
 from typing import Any, Protocol
 
 from regnav.config import LLMConfig
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -469,9 +472,39 @@ class FallbackClient:
         try:
             resp = self.fallback.complete(system, messages, schema)
         except LLMError as e:
-            raise LLMError(f"{reason}; local fallback also failed: {e}", e.kind) from e
+            log.error(
+                "llm call failed",
+                extra={"extra_fields": llm_failure_fields(e, model=self.fallback.cfg.model)},
+            )
+            raise LLMError(
+                f"{reason}; fallback also failed: {e}",
+                e.kind,
+                e.retry_after_s,
+                http_status=e.http_status,
+                error_type=e.error_type,
+                retry_after_header=e.retry_after_header,
+                model=e.model or self.fallback.cfg.model,
+                prompt_tokens=e.prompt_tokens,
+                completion_tokens=e.completion_tokens,
+                elapsed_s=e.elapsed_s,
+                safe_message=e.safe_message,
+            ) from e
         resp.provider = resp.provider or self.fallback.cfg.provider
         resp.fallback_reason = reason
+        log.info(
+            "fallback used",
+            extra={
+                "extra_fields": {
+                    "event": "fallback_used",
+                    "provider": resp.provider,
+                    "model": resp.model,
+                    "reason": reason,
+                    "prompt_tokens": resp.input_tokens,
+                    "completion_tokens": resp.output_tokens,
+                    "elapsed_s": round(resp.latency_s, 3),
+                }
+            },
+        )
         return resp
 
     def complete(self, system, messages, schema=None) -> LLMResponse:
@@ -484,12 +517,18 @@ class FallbackClient:
             resp.provider = resp.provider or self.primary.cfg.provider
             return resp
         except LLMError as e:
+            log.error(
+                "llm call failed",
+                extra={"extra_fields": llm_failure_fields(e, model=self.primary.cfg.model)},
+            )
             name = self.primary.cfg.provider.capitalize()
             reason = FALLBACK_REASONS.get(e.kind, FALLBACK_REASONS["error"]).format(p=name)
             if e.kind == "quota":
-                wait = min(max(e.retry_after_s or 900.0, 60.0), 3600.0)
+                # Honour the provider's retry-after. Floor 60s, cap 24h, so a daily
+                # Groq 429 does not trigger another doomed call on every question.
+                wait = min(max(e.retry_after_s or 900.0, 60.0), 24 * 3600.0)
                 self.blocked_until = self.clock() + wait
-                self.block_reason = f"{reason} - using the local model"
+                self.block_reason = f"{reason} - using the fallback"
                 reason = f"{self.block_reason} ({self._remaining()})"
             return self._use_fallback(system, messages, schema, reason)
 

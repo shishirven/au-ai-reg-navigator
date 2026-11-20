@@ -63,7 +63,7 @@ def test_quota_opens_circuit_until_reset_then_retries_primary() -> None:
     r1 = fb.complete("s", [{"role": "user", "content": "q"}])
     assert r1.provider == "ollama" and "usage limit reached" in r1.fallback_reason
     assert fb.status()["fallback_active"] and "Groq retried in ~10 min" in fb.status()["reason"]
-    assert "using the local model" in r1.fallback_reason
+    assert "using the fallback" in r1.fallback_reason
     fb.complete("s", [{"role": "user", "content": "q"}])
     assert primary.calls == 1  # circuit open: primary not called again
     clock.t += 601
@@ -72,7 +72,7 @@ def test_quota_opens_circuit_until_reset_then_retries_primary() -> None:
     assert not fb.status()["fallback_active"] or fb.status()["until"] > clock.t
 
 
-@pytest.mark.parametrize("retry_after,expected", [(None, 900), (5, 60), (99999, 3600)])
+@pytest.mark.parametrize("retry_after,expected", [(None, 900), (5, 60), (99999, 24 * 3600)])
 def test_circuit_window_is_clamped(retry_after, expected) -> None:
     clock = _Clock()
     fb = FallbackClient(_Failing("quota", retry_after), _local(), clock=clock)
@@ -97,7 +97,7 @@ def test_primary_success_is_labelled_api() -> None:
 
 def test_both_failing_raises_combined_error() -> None:
     local = _Failing("unavailable", provider="ollama")
-    with pytest.raises(LLMError, match="local fallback also failed"):
+    with pytest.raises(LLMError, match="fallback also failed"):
         FallbackClient(_Failing("quota", 60), local).complete(
             "s", [{"role": "user", "content": "q"}]
         )

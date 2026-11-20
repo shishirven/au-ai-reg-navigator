@@ -157,8 +157,10 @@ def model_status_html(llm) -> str:
     if isinstance(llm, FallbackClient):
         st_ = llm.status()
         if st_["fallback_active"]:
+            local = "ollama" in st_["fallback"]
+            label = "💻 LOCAL" if local else "FALLBACK"
             return (
-                badge("💻 LOCAL", "#b54708") + f" {html.escape(st_['fallback'])}<br>"
+                badge(label, "#b54708") + f" {html.escape(st_['fallback'])}<br>"
                 f"<span style='font-size:0.8rem'>{html.escape(st_['reason'])}</span>"
             )
         return (
@@ -246,13 +248,19 @@ if result is not None:
             color = "#b54708" if is_local else "#155eef"
             if result.llm_provider == "stub":
                 label, color = "Offline demo stub", "#475467"
+            elif result.llm_fallback_reason and not is_local:
+                label, color = "Fallback model", "#b54708"
             text = f"{badge(label, color)} <code>{html.escape(result.llm_provider)} · {html.escape(result.llm_model)}</code>"
             if result.llm_fallback_reason:
+                note = (
+                    "Answers from the smaller local model can be less complete."
+                    if is_local
+                    else "This answer is from the fallback model, not Groq."
+                )
                 text += (
                     f"<div style='background:#fffaeb;border:1px solid #fedf89;border-radius:6px;padding:6px 10px;"
                     f"margin-top:6px;color:#93370d;font-size:0.85rem'>⚠️ Fallback in use: "
-                    f"{html.escape(result.llm_fallback_reason)}. Answers from the smaller local model can be less "
-                    f"complete.</div>"
+                    f"{html.escape(result.llm_fallback_reason)}. {note}</div>"
                 )
             st.markdown(text, unsafe_allow_html=True)
         elif result.gate_reason:
@@ -343,4 +351,9 @@ if result is not None:
 # Model status reflects the state *after* this run (e.g. a fallback that just opened).
 status_slot.markdown(model_status_html(get_llm(config_path, offline)), unsafe_allow_html=True)
 if demo:
-    st.caption(footer_text(retrieval.index_version))
+    answered = ""
+    if result is not None and result.llm_model:
+        answered = f" · answered by {result.llm_provider} {result.llm_model}"
+        if result.llm_fallback_reason:
+            answered += " (fallback)"
+    st.caption(footer_text(retrieval.index_version) + answered)

@@ -36,7 +36,7 @@ become "must".
 
 ## Results
 
-*Provisional: 40 DRAFT questions written by the developer; an expert-reviewed gold set is next.*
+*Provisional: 40 DRAFT questions written by the developer; an expert-reviewed gold set is next. The generation numbers below are for Groq `qwen/qwen3.8-27b` only. They stay provisional and do not describe the Gemini Flash fallback.*
 
 **Retrieval** (all three configs). Binding-source coverage is the share of the 23 questions whose
 answer involves a binding standard where at least one binding chunk reached the model:

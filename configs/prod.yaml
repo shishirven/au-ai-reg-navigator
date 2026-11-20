@@ -1,9 +1,9 @@
 name: prod
 description: >-
-  Public-demo config (D-046). Same retrieval and generation thresholds as
-  hybrid_stratified_rerank. The Ollama fallback is omitted: Cloud Run has no local
-  model, and a Groq failure becomes the existing safe abstention. Retries and the
-  HTTP timeout are shortened so one visitor cannot pin the process.
+  Public-demo config (D-046, D-050). Same retrieval and generation thresholds as
+  hybrid_stratified_rerank. Groq stays primary. A 429 or outage falls back to
+  Gemini Flash on the free tier. If that also fails, the answer is the existing
+  safe abstention. Retries and the HTTP timeout stay short.
 seed: 42
 embedding:
   backend: sentence_transformers
@@ -40,6 +40,20 @@ generation:
   min_dense_similarity: 0.62
   price_input_per_mtok: 0.0
   price_output_per_mtok: 0.0
+  # Free-tier Gemini Flash via the OpenAI-compatible endpoint. Same prompt and
+  # validator as Groq. A daily Groq 429 opens a skip window for retry-after.
+  fallback:
+    provider: openai_compat
+    model: gemini-3.8-flash
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    api_key_env: GEMINI_API_KEY
+    temperature: 0.0
+    json_mode: none
+    max_tokens: 900
+    max_rate_limit_retries: 0
+    timeout_s: 45
+    price_input_per_mtok: 0.0
+    price_output_per_mtok: 0.0
 judge:
   # Evaluation only. The Cloud Run service never constructs the judge.
   provider: groq
