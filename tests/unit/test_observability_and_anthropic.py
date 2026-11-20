@@ -97,7 +97,7 @@ def test_langfuse_tracer_records_retrieval_generation_and_metadata(monkeypatch) 
     assert (
         seen["metadata"]["config_name"] == "cfgX" and seen["metadata"]["index_version"] == "idx-abc"
     )
-    assert seen["tags"] == trace_tags("cfgX", "idx-abc", AppConfig().generation.model)
+    assert seen["tags"] == trace_tags("cfgX", "idx-abc", "stub")
     tracer.flush()
     assert tracer.client.log[-1] == ("flush",)
 

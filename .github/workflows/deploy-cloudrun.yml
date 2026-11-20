@@ -115,7 +115,7 @@ jobs:
             --port 8080 \
             --allow-unauthenticated \
             --set-env-vars "REGNAV_PUBLIC_DEMO=1,REGNAV_CONFIG=configs/prod.yaml,LANGFUSE_HOST=https://cloud.langfuse.com" \
-            --set-secrets "GROQ_API_KEY=groq-api-key:latest,LANGFUSE_PUBLIC_KEY=langfuse-public-key:latest,LANGFUSE_SECRET_KEY=langfuse-secret-key:latest"
+            --set-secrets "GROQ_API_KEY=groq-api-key:latest,GEMINI_API_KEY=gemini-api-key:latest,LANGFUSE_PUBLIC_KEY=langfuse-public-key:latest,LANGFUSE_SECRET_KEY=langfuse-secret-key:latest"
           gcloud run services describe regnav \
             --project "${PROJECT_ID}" \
             --region "${REGION}" \

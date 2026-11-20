@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Model / system | AU AI Regulation Navigator (tier-aware RAG), prompt `v3` |
-| Version under review | index `idx-2185d086e9c4` · config `hybrid_stratified` · generator `groq/qwen/qwen3.8-27b` · judge `groq/openai/gpt-oss-120b` |
+| Version under review | index `idx-2185d086e9c4` · config `hybrid_stratified` · generator `groq/qwen/qwen3.8-27b` · judge `groq/openai/gpt-oss-120b`. Metrics below are **provisional** and apply to Groq only, not to the Gemini Flash fallback. |
 | Validation type | Initial validation (pre-release) |
 | Model tier (proposed) | Low–moderate: decision-*support* tool, human in the loop, no automated decisions |
 | Validator | Self-assessment in Line-2 format (portfolio project). **Not independent**; see §9 |

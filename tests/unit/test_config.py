@@ -49,7 +49,12 @@ def test_prod_config_matches_rerank_without_a_local_fallback() -> None:
     assert prod.embedding.model_dump() == base.embedding.model_dump()
     assert prod.chunking.model_dump() == base.chunking.model_dump()
     assert prod.retrieval.model_dump() == base.retrieval.model_dump()
-    assert prod.generation.fallback is None
+    fb = prod.generation.fallback
+    assert fb is not None
+    assert fb.provider == "openai_compat"
+    assert fb.model == "gemini-3.8-flash"
+    assert fb.api_key_env == "GEMINI_API_KEY"
+    assert "generativelanguage.googleapis.com" in fb.base_url
     assert prod.generation.max_rate_limit_retries == 1
     assert prod.generation.timeout_s == 45.0
     excluded = {"fallback", "max_rate_limit_retries", "timeout_s"}

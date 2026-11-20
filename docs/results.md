@@ -1,6 +1,6 @@
 # Results
 
-> **PROVISIONAL - scored on DRAFT questions** (`data/eval/questions_draft.jsonl`) that have not yet been reviewed by a domain expert. Re-run `make eval-all && make compare` after the gold set (`data/eval/questions.jsonl`) is written.
+> **PROVISIONAL - scored on DRAFT questions** (`data/eval/questions_draft.jsonl`) that have not yet been reviewed by a domain expert. Re-run `make eval-all && make compare` after the gold set (`data/eval/questions.jsonl`) is written. These numbers are for Groq `qwen/qwen3.8-27b` only. They do not describe Gemini Flash answers.
 
 | Metric | `baseline_dense` | `hybrid_pooled` | `hybrid_stratified` | `hybrid_stratified_rerank` |
 |---|---|---|---|---|

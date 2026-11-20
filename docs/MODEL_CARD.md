@@ -45,7 +45,7 @@ miss because the standards never mention AI.
 | Embedding | `BAAI/bge-small-en-v1.5` (local, CPU) |
 | Keyword retrieval | BM25 (Okapi) |
 | Fusion / routing | reciprocal rank fusion (k = 60), per-tier quota of 3 chunks |
-| Generator | `qwen/qwen3.8-27b` on Groq (temperature 0, seed 42, reasoning off). **Automatic local fallback** to Ollama `qwen3:4b` when Groq is rate-limited or down, clearly flagged on every answer (D-041). Alternative: Claude via Anthropic API |
+| Generator | `qwen/qwen3.8-27b` on Groq (temperature 0, seed 42, reasoning off). On a laptop, **automatic local fallback** to Ollama `qwen3:4b` when Groq is rate-limited or down, clearly flagged (D-041). The public demo falls back to free-tier Gemini `gemini-3.8-flash` instead, then abstains if that also fails (D-050). Reported eval numbers are Groq only and stay **provisional**. Alternative for local experiments: Claude via Anthropic API |
 | Judge (evaluation only) | `openai/gpt-oss-120b` on Groq: a different model family from the generator |
 | Controls | scope gate → validator → claim-level repair → one retry → safe abstention; disclaimer on every answer |
 

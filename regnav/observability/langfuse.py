@@ -18,11 +18,22 @@ from regnav.generate.prompts import SYSTEM_PROMPT, build_user_prompt
 log = logging.getLogger(__name__)
 
 
-def trace_tags(config_name: str, index_version: str, model: str) -> list[str]:
-    """Trace tags. The public demo adds ``env:prod`` in front of the config and index."""
+def trace_tags(
+    config_name: str,
+    index_version: str,
+    model: str,
+    *,
+    provider: str = "",
+    fallback: bool = False,
+) -> list[str]:
+    """Trace tags. The public demo adds ``env:prod``. The model is the one that answered."""
     tags = [config_name, index_version, model]
     if os.environ.get("REGNAV_PUBLIC_DEMO") == "1":
-        return ["env:prod", *tags]
+        tags = ["env:prod", *tags]
+    if provider:
+        tags.append(provider)
+    if fallback:
+        tags.append("fallback")
     return tags
 
 
@@ -72,7 +83,13 @@ class LangfuseTracer:
         with (
             propagate_attributes(
                 trace_name="regnav-query",
-                tags=trace_tags(result.config_name, result.index_version, cfg.generation.model),
+                tags=trace_tags(
+                    result.config_name,
+                    result.index_version,
+                    result.llm_model or cfg.generation.model,
+                    provider=result.llm_provider or "",
+                    fallback=bool(result.llm_fallback_reason),
+                ),
                 metadata={k: str(v) for k, v in meta.items()},
                 version=result.prompt_version,
             ),
