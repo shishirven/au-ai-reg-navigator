@@ -1,0 +1,124 @@
+# Manual deploy of the public demo to Cloud Run (D-047).
+# This does not run on push. After CI is green on main, run it from the Actions tab.
+# Rollback: run it again with the ref input set to an older full commit SHA.
+#
+# Repository Actions variables (Settings → Secrets and variables → Actions → Variables):
+#   GCP_PROJECT_ID
+#   GCP_REGION
+#   GCP_SERVICE_ACCOUNT                  deployer, regnav-deploy@...
+#   GCP_WORKLOAD_IDENTITY_PROVIDER       projects/<number>/locations/global/workloadIdentityPools/github/providers/github
+#
+# The runtime service account is regnav-run@<project>.iam.gserviceaccount.com.
+# --allow-unauthenticated sets the Cloud Run invoker policy. roles/run.developer
+# cannot do that; the deployer also needs roles/run.admin (or run.services.setIamPolicy)
+# or this step fails before the service is public.
+
+name: Deploy Cloud Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to build (branch, tag, or full SHA). Empty uses the commit selected above.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cloudrun-regnav
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: build, push, deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      REGION: ${{ vars.GCP_REGION }}
+      SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+    steps:
+      - name: Require Actions variables
+        run: |
+          missing=0
+          for pair in \
+            "GCP_PROJECT_ID:${PROJECT_ID}" \
+            "GCP_REGION:${REGION}" \
+            "GCP_SERVICE_ACCOUNT:${SERVICE_ACCOUNT}" \
+            "GCP_WORKLOAD_IDENTITY_PROVIDER:${WORKLOAD_IDENTITY_PROVIDER}"
+          do
+            name="${pair%%:*}"
+            value="${pair#*:}"
+            if [ -z "${value}" ]; then
+              echo "Missing Actions variable: ${name}"
+              missing=1
+            fi
+          done
+          exit "${missing}"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+
+      - name: Image name
+        id: image
+        run: |
+          sha=$(git rev-parse HEAD)
+          image="${REGION}-docker.pkg.dev/${PROJECT_ID}/regnav/app:${sha}"
+          echo "sha=${sha}" >> "${GITHUB_OUTPUT}"
+          echo "image=${image}" >> "${GITHUB_OUTPUT}"
+          echo "Building ${image}"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.image.outputs.image }}
+          build-args: GIT_SHA=${{ steps.image.outputs.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy Cloud Run
+        run: |
+          gcloud run deploy regnav \
+            --project "${PROJECT_ID}" \
+            --region "${REGION}" \
+            --image "${IMAGE}" \
+            --service-account "regnav-run@${PROJECT_ID}.iam.gserviceaccount.com" \
+            --cpu 2 \
+            --memory 4Gi \
+            --cpu-boost \
+            --min-instances 0 \
+            --max-instances 1 \
+            --concurrency 10 \
+            --session-affinity \
+            --timeout 3600 \
+            --port 8080 \
+            --allow-unauthenticated \
+            --set-env-vars "REGNAV_PUBLIC_DEMO=1,REGNAV_CONFIG=configs/prod.yaml,LANGFUSE_HOST=https://cloud.langfuse.com" \
+            --set-secrets "GROQ_API_KEY=groq-api-key:latest,LANGFUSE_PUBLIC_KEY=langfuse-public-key:latest,LANGFUSE_SECRET_KEY=langfuse-secret-key:latest"
+          gcloud run services describe regnav \
+            --project "${PROJECT_ID}" \
+            --region "${REGION}" \
+            --format "value(status.url)"
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
