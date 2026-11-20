@@ -1,6 +1,8 @@
 # Results
 
 > **PROVISIONAL - scored on DRAFT questions** (`data/eval/questions_draft.jsonl`) that have not yet been reviewed by a domain expert. Re-run `make eval-all && make compare` after the gold set (`data/eval/questions.jsonl`) is written.
+>
+> These numbers stay provisional. The three-question check on the live demo (20 November 2026) is a smoke check, not a row in this table. See the README.
 
 | Metric | `baseline_dense` | `hybrid_pooled` | `hybrid_stratified` | `hybrid_stratified_rerank` |
 |---|---|---|---|---|

@@ -20,8 +20,12 @@ generation (prompting, structured output, scope gate, validator, claim repair, f
 observability, the evaluation harness itself, and the release gate.
 
 **Out of scope:** legal correctness of the source documents; the Streamlit UI beyond functional
-smoke tests; third-party model internals (Groq-hosted Qwen and gpt-oss); infrastructure security
-of a production deployment.
+smoke tests; third-party model internals (Groq-hosted Qwen and gpt-oss); treating the public
+Cloud Run demo as a production approval. That demo is documented in `docs/DEPLOYMENT.md`.
+A three-question check on 20 November 2026 (CPS 230 vendor due diligence, APP 11, EU AI Act)
+is a **smoke check**, not evidence in the tables below. The APP 11 statute is not indexed, so
+that answer could only cite guidance. All metrics in this report stay **provisional** until an
+expert-reviewed gold set replaces the draft questions.
 
 **Intended use under review:** surfacing and labelling, by legal force, what Australian regulatory
 documents say about AI-related questions, for compliance and risk staff who then read the cited
@@ -179,6 +183,7 @@ Without `--allow-draft` the gate **BLOCKS** (no gold-set run), as designed.
 | Production telemetry (Langfuse): fallback rate, repair rate, gate-abstain rate, p95 latency drift | Weekly review; investigate step changes |
 | New regulatory publication (APRA, OAIC, NAIC) | Add to corpus → new index version → full re-eval |
 | Retrieval regression gate fails in CI | Merge blocked |
+| Public demo (Cloud Run) | Keys in Secret Manager; manual keyless deploy; scale-to-zero; A$30 budget alert; questions logged to Langfuse. Smoke checks are not re-validation. See `docs/DEPLOYMENT.md` |
 
 ## 12. Mapping of this tool's own controls to the APRA AI letter (April 2026)
 
