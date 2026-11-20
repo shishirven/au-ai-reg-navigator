@@ -9,12 +9,21 @@ identifiers or other PII are collected by the app.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 from regnav.config import AppConfig, Secrets
 from regnav.generate.prompts import SYSTEM_PROMPT, build_user_prompt
 
 log = logging.getLogger(__name__)
+
+
+def trace_tags(config_name: str, index_version: str, model: str) -> list[str]:
+    """Trace tags. The public demo adds ``env:prod`` in front of the config and index."""
+    tags = [config_name, index_version, model]
+    if os.environ.get("REGNAV_PUBLIC_DEMO") == "1":
+        return ["env:prod", *tags]
+    return tags
 
 
 class NoopTracer:
@@ -63,7 +72,7 @@ class LangfuseTracer:
         with (
             propagate_attributes(
                 trace_name="regnav-query",
-                tags=[result.config_name, result.index_version, cfg.generation.model],
+                tags=trace_tags(result.config_name, result.index_version, cfg.generation.model),
                 metadata={k: str(v) for k, v in meta.items()},
                 version=result.prompt_version,
             ),

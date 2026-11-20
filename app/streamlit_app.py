@@ -13,6 +13,16 @@ import streamlit as st
 
 from regnav.authority import note_for
 from regnav.config import TIER_LABELS, AppConfig, Secrets, load_config
+from regnav.demo_guard import (
+    banner_text,
+    footer_text,
+    force_offline,
+    max_questions_per_session,
+    password_ok,
+    password_required,
+    public_demo_enabled,
+    question_block_reason,
+)
 from regnav.generate.answer import AnswerResult, answer_question
 from regnav.generate.llm import FallbackClient, LLMConfig, StubClient, make_llm
 from regnav.generate.schema import SECTIONS
@@ -81,22 +91,55 @@ def get_cached_tracer():
     return get_tracer(Secrets())
 
 
+demo = public_demo_enabled()
+
+# ----------------------------------------------------------------------------- main, before the index loads
+st.title("⚖️ AU AI Regulation Navigator")
+if demo:
+    st.warning(banner_text(langfuse_enabled=Secrets().langfuse_enabled))
+
+if password_required() and not st.session_state.get("demo_authed"):
+    with st.form("demo_login"):
+        pw = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Continue")
+    if submitted:
+        if password_ok(pw):
+            st.session_state.demo_authed = True
+            st.rerun()
+        else:
+            st.error("Incorrect password.")
+    st.caption(footer_text("not loaded"))
+    st.stop()
+
 # ----------------------------------------------------------------------------- sidebar
 with st.sidebar:
     st.header("Settings")
-    config_label = st.selectbox("Retrieval configuration", list(CONFIGS))
+    if demo:
+        config_path = os.environ.get("REGNAV_CONFIG") or "configs/prod.yaml"
+        st.caption(f"Retrieval configuration is locked to `{config_path}`.")
+    else:
+        config_label = st.selectbox("Retrieval configuration", list(CONFIGS))
+        config_path = CONFIGS[config_label]
     sector_label = st.selectbox("Your sector", list(SECTORS))
-    offline = st.toggle(
-        "Offline demo (no LLM)",
-        value=os.environ.get("REGNAV_UI_OFFLINE") == "1",
-        help="Uses a deterministic stub that quotes the top source of each tier - for demos without an API key.",
-    )
+    ui_offline = os.environ.get("REGNAV_UI_OFFLINE") == "1"
+    if demo and force_offline(ui_offline=False):
+        offline = True
+        st.info(
+            "GROQ_API_KEY is not set, so this demo is in offline mode. "
+            "Answers come from a deterministic stub, not the Groq model."
+        )
+    else:
+        offline = st.toggle(
+            "Offline demo (no LLM)",
+            value=ui_offline,
+            help="Uses a deterministic stub that quotes the top source of each tier - for demos without an API key.",
+        )
+        offline = force_offline(ui_offline=offline)
     st.caption(
         "Answers are grouped by legal force. Binding prudential standards are technology-neutral: they "
         "rarely say 'AI', which is why naive retrieval misses them."
     )
 
-config_path = CONFIGS[config_label]
 sector = SECTORS[sector_label]
 
 
@@ -126,8 +169,6 @@ with st.sidebar:
     st.subheader("Model status")
     status_slot = st.empty()  # filled at the end of the run, after any fallback has happened
 
-# ----------------------------------------------------------------------------- main
-st.title("⚖️ AU AI Regulation Navigator")
 st.markdown(
     "Ask about AI in Australian financial services. Every claim is cited and labelled as "
     f"{badge('Mandatory', TIER_COLOR['binding'])} {badge('Regulator expects', TIER_COLOR['expectation'])} "
@@ -139,6 +180,7 @@ try:
     cfg, retrieval = get_system(config_path)
 except FileNotFoundError as e:
     st.error(f"{e}. Build the index first: `make ingest`.")
+    st.caption(footer_text("not built"))
     st.stop()
 
 if "question" not in st.session_state:
@@ -149,9 +191,21 @@ for col, ex in zip(cols, EXAMPLES, strict=True):
         st.session_state.question = ex
 
 question = st.text_area("Question", key="question", height=80)
+if demo:
+    st.caption(
+        f"Public demo: {max_questions_per_session()} questions per session, "
+        f"500 characters each. Used {st.session_state.get('questions_asked', 0)}."
+    )
 ask = st.button("Ask", type="primary")
+blocked = None
+if ask and question.strip() and demo:
+    blocked = question_block_reason(question, st.session_state.get("questions_asked", 0))
+    if blocked:
+        st.warning(blocked)
 
-if ask and question.strip():
+if ask and question.strip() and not blocked:
+    if demo:
+        st.session_state.questions_asked = st.session_state.get("questions_asked", 0) + 1
     llm = get_llm(config_path, offline)
     local = (
         isinstance(llm, FallbackClient) and llm.status()["fallback_active"]
@@ -244,7 +298,10 @@ if result is not None:
         if result.trace_url:
             st.markdown(f"[Open Langfuse trace ↗]({result.trace_url})")
         if result.error:
-            st.error(result.error)
+            if demo:
+                st.error("The language model is unavailable right now. No answer was generated.")
+            else:
+                st.error(result.error)
 
     with right:
         st.subheader("Sources")
@@ -277,3 +334,5 @@ if result is not None:
 
 # Model status reflects the state *after* this run (e.g. a fallback that just opened).
 status_slot.markdown(model_status_html(get_llm(config_path, offline)), unsafe_allow_html=True)
+if demo:
+    st.caption(footer_text(retrieval.index_version))
