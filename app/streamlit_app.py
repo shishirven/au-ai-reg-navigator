@@ -191,11 +191,6 @@ for col, ex in zip(cols, EXAMPLES, strict=True):
         st.session_state.question = ex
 
 question = st.text_area("Question", key="question", height=80)
-if demo:
-    st.caption(
-        f"Public demo: {max_questions_per_session()} questions per session, "
-        f"500 characters each. Used {st.session_state.get('questions_asked', 0)}."
-    )
 ask = st.button("Ask", type="primary")
 blocked = None
 if ask and question.strip() and demo:
@@ -335,4 +330,8 @@ if result is not None:
 # Model status reflects the state *after* this run (e.g. a fallback that just opened).
 status_slot.markdown(model_status_html(get_llm(config_path, offline)), unsafe_allow_html=True)
 if demo:
+    st.caption(
+        f"Public demo: {max_questions_per_session()} questions per session, "
+        f"500 characters each. Used {st.session_state.get('questions_asked', 0)}."
+    )
     st.caption(footer_text(retrieval.index_version))
