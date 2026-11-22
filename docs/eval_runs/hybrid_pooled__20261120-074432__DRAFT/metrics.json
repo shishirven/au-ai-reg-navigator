@@ -6,7 +6,7 @@
     "is_draft": true,
     "index_version": "idx-2185d086e9c4",
     "mode": "full",
-    "started": "20261121-080234",
+    "started": "20261122-083642",
     "run_dir": "results/hybrid_pooled__20261120-074432__DRAFT",
     "generator": "groq/qwen/qwen3.8-27b",
     "judge": "groq/openai/gpt-oss-120b"

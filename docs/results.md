@@ -1,40 +1,40 @@
 # Results
 
-> **PROVISIONAL - scored on DRAFT questions** (`data/eval/questions_draft.jsonl`) that have not yet been reviewed by a domain expert. Re-run `make eval-all && make compare` after the gold set (`data/eval/questions.jsonl`) is written. These numbers are for Groq `qwen/qwen3.8-27b` only. They do not describe Gemini Flash answers.
+> **PROVISIONAL - scored on DRAFT questions** (`data/eval/questions_draft.jsonl`) that have not yet been reviewed by a domain expert. Re-run `make eval-all && make compare` after the gold set (`data/eval/questions.jsonl`) is written.
 
 | Metric | `baseline_dense` | `hybrid_pooled` | `hybrid_stratified` | `hybrid_stratified_rerank` |
 |---|---|---|---|---|
 | ***Retrieval*** | | | | |
 | Recall@5 | 0.524 [0.40, 0.65] | 0.545 [0.40, 0.68] | 0.576 [0.44, 0.70] | 0.618 [0.49, 0.73] |
-| Context recall (all chunks given to the model) | - | - | - | 0.740 [0.63, 0.83] |
-| Any gold chunk in context | - | - | - | 0.943 [0.85, 1.00] |
+| Context recall (all chunks given to the model) | 0.595 [0.48, 0.71] | 0.605 [0.48, 0.72] | - | 0.740 [0.63, 0.83] |
+| Any gold chunk in context | 0.914 [0.80, 1.00] | 0.914 [0.81, 1.00] | - | 0.943 [0.85, 1.00] |
 | MRR | 0.700 [0.56, 0.83] | 0.767 [0.63, 0.88] | 0.626 [0.49, 0.75] | 0.759 [0.63, 0.87] |
 | **Binding-source coverage** | 0.478 [0.27, 0.68] | 0.609 [0.40, 0.80] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
 | Binding gold chunk retrieved | 0.435 [0.23, 0.65] | 0.478 [0.26, 0.68] | 0.652 [0.44, 0.85] | 0.913 [0.79, 1.00] |
 | ***Generation (LLM judge)*** | | | | |
-| Faithfulness | - | - | 0.966 [0.93, 0.99] | - |
-| Answer correctness | - | - | 0.769 [0.66, 0.86] | - |
+| Faithfulness | 1.000 [1.00, 1.00] | 0.938 [0.86, 0.99] | 0.966 [0.93, 0.99] | 0.970 [0.93, 1.00] |
+| Answer correctness | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | 0.887 [0.82, 0.94] |
 | ***Generation (rule-based, final answer)*** | | | | |
-| Citation validity | - | - | 1.000 [1.00, 1.00] | - |
-| Authority-label accuracy | - | - | 1.000 [1.00, 1.00] | - |
-| Modality error rate (lower is better) | - | - | 0.000 [0.00, 0.00] | - |
-| Expected-tier recall | - | - | 1.000 [1.00, 1.00] | - |
+| Citation validity | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
+| Authority-label accuracy | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
+| Modality error rate (lower is better) | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] |
+| Expected-tier recall | 0.805 [0.70, 0.90] | 0.862 [0.78, 0.93] | 1.000 [1.00, 1.00] | 0.990 [0.97, 1.00] |
 | ***Model reliability (first raw attempt, before validation/repair)*** | | | | |
-| Raw citation validity | - | - | 1.000 [1.00, 1.00] | - |
-| Raw authority-label accuracy | - | - | 0.986 [0.96, 1.00] | - |
-| Raw modality error rate | - | - | 0.000 [0.00, 0.00] | - |
+| Raw citation validity | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
+| Raw authority-label accuracy | 0.984 [0.96, 1.00] | 0.994 [0.98, 1.00] | 0.986 [0.96, 1.00] | 0.989 [0.96, 1.00] |
+| Raw modality error rate | 0.000 [0.00, 0.00] | 0.006 [0.00, 0.02] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] |
 | ***Abstention & safety net*** | | | | |
-| Abstention precision | - | - | 1.000 [1.00, 1.00] | - |
-| Abstention recall | - | - | 0.800 [0.33, 1.00] | - |
-| Scope-gate abstentions | - | - | 0.100 [0.03, 0.20] | - |
-| Claim-repair rate | - | - | 0.025 [0.00, 0.07] | - |
-| Safe-fallback rate | - | - | 0.000 [0.00, 0.00] | - |
+| Abstention precision | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
+| Abstention recall | 0.800 [0.33, 1.00] | 0.800 [0.33, 1.00] | 0.800 [0.33, 1.00] | 0.800 [0.33, 1.00] |
+| Scope-gate abstentions | 0.100 [0.03, 0.20] | 0.100 [0.03, 0.20] | 0.100 [0.03, 0.20] | 0.100 [0.03, 0.20] |
+| Claim-repair rate | 0.050 [0.00, 0.12] | 0.025 [0.00, 0.07] | 0.025 [0.00, 0.07] | 0.025 [0.00, 0.07] |
+| Safe-fallback rate | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] |
 | ***System*** | | | | |
-| Latency p50 (s) | - | - | 28.5 | - |
-| Latency p95 (s) | - | - | 59.4 | - |
-| Input tokens / query | - | - | 3055.8 | - |
-| Output tokens / query | - | - | 373.4 | - |
-| Cost / query (USD) | - | - | 0.0000 | - |
+| Latency p50 (s) | 33.3 | 33.9 | 28.5 | 37.0 |
+| Latency p95 (s) | 37.9 | 39.1 | 59.4 | 41.6 |
+| Input tokens / query | 3318.2 | 3340.6 | 3055.8 | 3820.4 |
+| Output tokens / query | 274.6 | 263.1 | 373.4 | 371.6 |
+| Cost / query (USD) | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
 
 Values: mean [95% percentile-bootstrap CI over questions].
 
@@ -42,10 +42,10 @@ Values: mean [95% percentile-bootstrap CI over questions].
 
 | config | run | questions | n | index | generator / judge |
 |---|---|---|---|---|---|
-| `baseline_dense` | `baseline_dense__20261119-052224__DRAFT__retrieval` (retrieval-only) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` |  |
-| `hybrid_pooled` | `hybrid_pooled__20261119-052239__DRAFT__retrieval` (retrieval-only) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` |  |
+| `baseline_dense` | `baseline_dense__20261119-054350__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
+| `hybrid_pooled` | `hybrid_pooled__20261120-074432__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 | `hybrid_stratified` | `hybrid_stratified__20261119-052448__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
-| `hybrid_stratified_rerank` | `hybrid_stratified_rerank__20261119-102550__DRAFT__retrieval` (retrieval-only) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
+| `hybrid_stratified_rerank` | `hybrid_stratified_rerank__20261121-081024__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 
 ### How to read this
 

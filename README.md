@@ -53,11 +53,20 @@ Context recall rises 0.61 → 0.74 and **binding gold-paragraph hit 0.65 → 0.9
 Δ +0.26 [+0.04, +0.48]); a budget-only control shows the gain isn't just from the larger context.
 Details: [docs/retrieval_ablation.md](docs/retrieval_ablation.md).
 
-**Generation** (tier-stratified; Qwen 27B generator, gpt-oss-120b judge): faithfulness **0.97**,
-answer correctness 0.77, authority-label accuracy **1.00**, modality error rate **0.00**,
-abstention precision/recall 1.00 / 0.80. The pooled-baseline generation runs are in progress (free-tier
-quota). Answers are faithful but sometimes incomplete, because the key paragraph isn't always
-retrieved; that is the next thing to improve.
+**Generation** (Qwen 27B generator, gpt-oss-120b judge, same 40 questions):
+
+| config | answer correctness [95% CI] | correctness, binding questions | faithfulness |
+|---|---|---|---|
+| dense, pooled (naive) | 0.78 [0.66, 0.88] | 0.72 | 1.00 |
+| hybrid, pooled | 0.76 [0.65, 0.86] | 0.67 | 0.94 |
+| hybrid, tier-stratified | 0.77 [0.66, 0.86] | 0.77 | 0.97 |
+| **+ query expansion + re-rank** | **0.89** [0.82, 0.94] | **0.91** | 0.97 |
+
+Re-ranking is what moves answer correctness: **+0.12** over stratified (paired bootstrap
+[+0.03, +0.22]). Stratification on its own guarantees a binding source but not the *right paragraph*,
+and the judge scores completeness against a reference answer, so its correctness matches the naive
+baseline's. Citation validity, authority-label accuracy and modality are at ceiling for every config
+because the validator enforces them. Open issue: one document can take every slot in a tier (F-12).
 
 Full table: **[docs/results.md](docs/results.md)** · validation write-up:
 **[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)** · per-question outputs: `docs/eval_runs/`.

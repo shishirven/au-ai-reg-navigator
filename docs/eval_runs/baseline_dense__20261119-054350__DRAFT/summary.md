@@ -3,18 +3,18 @@
 - questions: `data/eval/questions_draft.jsonl` (n=40, sha256 f062a2c351ee)
 - index_version: `idx-2185d086e9c4`; retrieval mode: `dense`
 - generator: `groq/qwen/qwen3.8-27b`; judge: `groq/openai/gpt-oss-120b`
-- mode: full; started 20261120-073104
+- mode: full; started 20261122-083623
 
 | metric | value [95% bootstrap CI] | n |
 |---|---|---|
 | recall_at_5 | 0.524 [0.40, 0.65] | 35 |
-| context_recall | 0.595 [0.48, 0.70] | 35 |
+| context_recall | 0.595 [0.48, 0.71] | 35 |
 | any_gold_hit | 0.914 [0.80, 1.00] | 35 |
-| mrr | 0.700 [0.55, 0.83] | 35 |
+| mrr | 0.700 [0.56, 0.83] | 35 |
 | binding_coverage | 0.478 [0.27, 0.68] | 23 |
-| binding_gold_hit | 0.435 [0.23, 0.64] | 23 |
+| binding_gold_hit | 0.435 [0.23, 0.65] | 23 |
 | faithfulness | 1.000 [1.00, 1.00] | 35 |
-| answer_correctness | 0.775 [0.67, 0.87] | 40 |
+| answer_correctness | 0.775 [0.66, 0.88] | 40 |
 | citation_validity | 1.000 [1.00, 1.00] | 36 |
 | authority_label_accuracy | 1.000 [1.00, 1.00] | 36 |
 | modality_error_rate | 0.000 [0.00, 0.00] | 36 |
