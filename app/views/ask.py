@@ -25,6 +25,7 @@ from regnav.demo_guard import (
 from regnav.generate.answer import AnswerResult, answer_question
 from regnav.generate.llm import FallbackClient, LLMConfig, StubClient, make_llm
 from regnav.generate.schema import SECTIONS
+from regnav.links import citation_url
 from regnav.observability.langfuse import get_tracer
 from regnav.retrieve import RetrievalSystem, build_retrieval
 
@@ -266,9 +267,15 @@ if result is not None:
                     if note and section != "mandatory"
                     else ""
                 )
+                cite = f"<code style='font-size:0.75rem'>{html.escape(label + para)}</code>"
+                href = citation_url(src.metadata, src.text) if src else ""
+                if href:
+                    cite = (
+                        f"<a href='{html.escape(href)}' target='_blank' rel='noopener' "
+                        f"title='Open the source at this passage'>{cite}&nbsp;↗</a>"
+                    )
                 items.append(
-                    f"<li style='margin-bottom:6px'>{html.escape(c.claim)} "
-                    f"<code style='font-size:0.75rem'>{html.escape(label + para)}</code>{note_html}</li>"
+                    f"<li style='margin-bottom:6px'>{html.escape(c.claim)} {cite}{note_html}</li>"
                 )
             st.markdown(
                 f"<div style='border-left:5px solid {color};background:{bg};padding:10px 14px;"
@@ -320,7 +327,11 @@ if result is not None:
                     if note_for(str(m.get("doc_id", "")))
                     else ""
                 )
-                + f"<b>{html.escape(title)}</b>"
+                + (
+                    f"<a href='{html.escape(citation_url(m, c.text))}' target='_blank' rel='noopener'><b>{html.escape(title)}</b>&nbsp;↗</a>"
+                    if m.get("url")
+                    else f"<b>{html.escape(title)}</b>"
+                )
             )
             st.markdown(head, unsafe_allow_html=True)
             with st.expander(f"#{c.rank} {c.chunk_id} · score {c.score:.3f}", expanded=False):
@@ -332,7 +343,7 @@ if result is not None:
                     st.info(f"⚖️ {note.note}")
                 st.text(body)
                 if m.get("url"):
-                    st.markdown(f"[Source document ↗]({m['url']})")
+                    st.markdown(f"[Open the source at this passage ↗]({citation_url(m, c.text)})")
 
 # Model status reflects the state *after* this run (e.g. a fallback that just opened).
 status_slot.markdown(model_status_html(get_llm(config_path, offline)), unsafe_allow_html=True)

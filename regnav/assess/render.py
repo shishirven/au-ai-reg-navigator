@@ -45,6 +45,11 @@ DISCLAIMER = (
 )
 
 
+def _cite(i: ChecklistItem) -> str:
+    text = f"{i.document} {i.citation}".strip()
+    return f"[{text}]({i.url})" if i.url else text
+
+
 def _flags(i: ChecklistItem) -> str:
     out = []
     if i.not_yet_in_force:
@@ -115,7 +120,7 @@ def to_markdown(cl: Checklist, tracking: Tracking | None = None) -> str:
                 f"{k}: {tr[k]}" for k in ("status", "owner", "evidence", "notes") if tr.get(k)
             )
             lines.append(
-                f"- {box} **{TIER_MARK.get(i.tier, i.tier)}** · {i.document} {i.citation}{_flags(i)}  \n"
+                f"- {box} **{TIER_MARK.get(i.tier, i.tier)}** · {_cite(i)}{_flags(i)}  \n"
                 f"  {i.excerpt}" + (f"  \n  *{extra}*" if extra else "")
             )
     if cl.gaps:

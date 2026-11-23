@@ -23,6 +23,7 @@ from regnav.assess.usecase import UseCase
 from regnav.authority import note_for
 from regnav.config import TIER_LABELS, TIERS, AppConfig
 from regnav.coverage import CoverageGap, conditions_met, gaps_for_use_case
+from regnav.links import citation_url
 from regnav.retrieve.base import Filters, RetrievedChunk
 from regnav.retrieve.expand import expand_query
 from regnav.retrieve.stages import Playbook, Stage, load_playbooks
@@ -176,7 +177,7 @@ def _item(stage: Stage, c: RetrievedChunk, today: date) -> ChecklistItem:
         modality=c.modality,
         effective_from=eff,
         not_yet_in_force=bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", eff)) and eff > today.isoformat(),
-        url=str(m.get("url", "")),
+        url=citation_url(m, c.text),
         score=score,
         weak=score is not None and score < FLOORS.get(c.tier, (0.0, 0.0))[0],
         explains_law=note.note if note else "",

@@ -606,14 +606,14 @@ elif ss.mc_step == "result" and ss.get("mc_cl") is not None:
                         flags.append('<span class="mc-soft">⚖️ explains binding law</span>')
                     if it.weak:
                         flags.append('<span class="mc-soft">❔ weaker match</span>')
-                    link = (
-                        f' · <a href="{html.escape(it.url)}" target="_blank">source ↗</a>'
-                        if it.url
-                        else ""
-                    )
+                    cite = f"<b>{html.escape(it.document)} {html.escape(it.citation)}</b>"
+                    if it.url:
+                        cite = (
+                            f'<a href="{html.escape(it.url)}" target="_blank" rel="noopener" '
+                            f'title="Open the source at this passage">{cite}&nbsp;↗</a>'
+                        )
                     st.markdown(
-                        f"{tag(it.tier)} <b>{html.escape(it.document)} {html.escape(it.citation)}</b> "
-                        f"{''.join(flags)}<span class='mc-small'>{link}</span>"
+                        f"{tag(it.tier)} {cite} {''.join(flags)}"
                         f'<div class="mc-quote">{html.escape(it.excerpt)}</div>',
                         unsafe_allow_html=True,
                     )
