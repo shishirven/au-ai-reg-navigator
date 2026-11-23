@@ -33,6 +33,7 @@ def run_check(uc: UseCase, cfg: AppConfig, system: RetrievalSystem | None = None
 WARMUP_CASES = [
     UseCase(
         name="warm-up",
+        description="",
         sector=sector,
         personal_information="yes",
         sensitive_information="yes",
