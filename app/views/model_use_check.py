@@ -21,7 +21,7 @@ from regnav.assess import UseCase, run_check, warm_up
 from regnav.assess.checklist import Checklist, ChecklistItem
 from regnav.assess.render import DISCLAIMER, STATUSES, to_csv, to_markdown
 from regnav.config import load_config
-from regnav.demo_guard import footer_text, password_required, public_demo_enabled
+from regnav.demo_guard import footer_text, public_demo_enabled
 from regnav.retrieve import build_retrieval
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -122,7 +122,6 @@ TIER = {
     "voluntary": ("Recommended", "#079455", "voluntary guidance"),
 }
 
-st.set_page_config(page_title="Model-use check", page_icon="🧭", layout="wide")
 st.markdown(
     """
 <style>
@@ -163,9 +162,6 @@ st.markdown(
 )
 
 demo = public_demo_enabled()
-if password_required() and not st.session_state.get("demo_authed"):
-    st.info("Sign in on the main page first.")
-    st.stop()
 
 
 @st.cache_resource(show_spinner="Loading the regulation library...")

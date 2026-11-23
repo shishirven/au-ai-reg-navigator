@@ -33,6 +33,9 @@ No language model is called; every item quotes its source:
 >
 > ⬇ CSV with status / evidence / owner columns for the team to fill in
 
+The app opens on a **Home** page: the objective, how to use each tool, how to read the results,
+and the full list of regulatory documents in the library (read from the source registry).
+
 How it works, calibration and limits: [docs/model_use_check.md](docs/model_use_check.md) ·
 example outputs: [docs/examples/model_use_check/](docs/examples/model_use_check/).
 

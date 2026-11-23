@@ -49,7 +49,7 @@ flowchart LR
 | Generation | `regnav/generate/` | provider-agnostic LLM interface (Groq/OpenAI-compatible, Ollama, Anthropic, stub); scope gate; prompt v3; validator; claim-level repair; one retry; safe abstention |
 | Observability | `regnav/observability/langfuse.py` | one trace per query: retrieval span (ids, tiers, scores), a generation per attempt (tokens, cost, latency, validation errors), config + index + prompt version; no-op without keys |
 | Evaluation | `regnav/eval/` | retrieval metrics, rule-based generation metrics (final + raw), LLM judge, bootstrap CIs, MLflow, compare, judge calibration, regression gate, release check |
-| UI | `app/streamlit_app.py`, `app/pages/1_Model-use_check.py` | Ask page: config + sector selectors, tiered answer cards, sources panel with tier/modality badges, trace link, offline-stub mode. Model-use check page: intake form, examples, checklist by stage, CSV / Markdown download |
+| UI | `app/streamlit_app.py` (navigation, demo password), `app/views/{home,model_use_check,ask}.py`; Home lists the document library from `data/sources*.yaml` via `regnav/library.py` | Ask page: config + sector selectors, tiered answer cards, sources panel with tier/modality badges, trace link, offline-stub mode. Model-use check page: intake form, examples, checklist by stage, CSV / Markdown download |
 
 ## Data flow and versioning
 
