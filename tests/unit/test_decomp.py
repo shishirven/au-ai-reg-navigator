@@ -188,3 +188,19 @@ def test_planned_retriever_searches_each_stage_per_tier() -> None:
     assert n_queries > 1 and len(base.calls) == 3 * n_queries
     assert all(k == 5 for _, k, _ in base.calls)
     assert len(out) == 9 and {c.metadata["matched"] for c in out} - {"question"}
+
+
+def test_cap_can_be_limited_to_guidance_tiers_and_binding_is_unchanged() -> None:
+    base = _TierRetriever()
+    strat = StratifiedRetriever(
+        base, per_tier_k=2, per_doc_cap=1, depth=6, cap_tiers=("expectation", "voluntary")
+    )
+    out = strat.search_multi(["q"], 0, Filters())
+    by_tier = {t: [c for c in out if c.tier == t] for t in ("binding", "expectation", "voluntary")}
+    # binding: uncapped, single query -> fetched exactly like the original retriever (k = quota)
+    assert [k for _, k, tiers in base.calls if tiers == ("binding",)] == [2]
+    assert [c.chunk_id for c in by_tier["binding"]] == ["binding-q-1", "binding-q-2"]
+    # guidance tiers: capped (docs alternate expectation1, expectation0 ...) -> deeper fetch
+    assert [k for _, k, tiers in base.calls if tiers == ("expectation",)] == [6]
+    docs = [c.metadata["doc_id"] for c in by_tier["expectation"]]
+    assert len(set(docs)) == len(docs) == 2

@@ -1,0 +1,41 @@
+id,type,sector,recall_at_5,rr,binding_coverage,abstained,gated,fallback,repaired,n_claims,citation_validity,authority_label_accuracy,modality_error_rate,raw_modality_error_rate,tier_recall,faithfulness,correctness,total_latency_s,input_tokens,output_tokens,question
+D01,split,bank,0.5,1.0,1.0,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,1.0,1.0,11.110707989000275,3932,513,What do we need to do before engaging a third-party AI vendor?
+D02,split,insurer,0.3333333333333333,1.0,1.0,False,0.0,0.0,0.0,8,1.0,1.0,0.0,0.0,1.0,1.0,0.25,12.451646154000173,4018,562,What must the contract with a provider of an AI model include if we rely on it for a critical operation?
+D03,split,bank,1.0,0.5,1.0,False,0.0,0.0,0.0,6,1.0,1.0,0.0,0.0,1.0,1.0,1.0,30.636689869999827,3928,454,Do we have to tell APRA when we start using an AI provider for a critical operation?
+D04,split,bank,0.25,1.0,1.0,False,0.0,0.0,0.0,5,1.0,1.0,0.0,0.0,1.0,1.0,1.0,44.79086290799978,4195,345,Who in the organisation is accountable for risks from AI systems?
+D05,split,super,0.2,0.2,1.0,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,1.0,1.0,31.59916033799982,4651,587,What are our obligations to secure an AI system that processes customer data?
+D06,split,bank,0.0,0.1,1.0,False,0.0,0.0,0.0,6,1.0,1.0,0.0,0.0,1.0,1.0,0.25,34.805229084000075,4088,384,"If our AI vendor manages our information assets, what must we check about their security?"
+D07,split,insurer,0.6666666666666666,0.5,1.0,False,0.0,0.0,0.0,7,1.0,1.0,0.0,0.0,1.0,1.0,1.0,38.01701698399984,4371,489,We had a serious outage of our AI-driven claims triage system. What are our notification obligations?
+D08,split,bank,0.5,1.0,1.0,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,1.0,1.0,41.749328719999994,4841,810,We plan to use an AI model to approve loans. What controls and monitoring are required?
+D09,split,bank,0.6666666666666666,1.0,1.0,False,0.0,0.0,0.0,4,1.0,1.0,0.0,0.0,1.0,1.0,0.75,37.78146539599993,4601,293,Does our risk appetite statement need to cover AI?
+D10,split,super,0.6666666666666666,1.0,1.0,False,0.0,0.0,0.0,4,1.0,1.0,0.0,0.0,1.0,0.5,0.5,36.869328442000096,4215,313,Do we need an inventory of our AI systems?
+D11,split,insurer,0.3333333333333333,1.0,1.0,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,0.8888888888888888,1.0,37.418812823999815,4403,604,How should internal audit cover our use of AI?
+D12,split,bank,1.0,1.0,1.0,False,0.0,0.0,0.0,8,1.0,1.0,0.0,0.0,1.0,1.0,1.0,33.68705193699998,3923,564,What should we do about concentration risk from relying on a single AI provider?
+D13,split,super,0.3333333333333333,0.25,1.0,False,0.0,0.0,0.0,6,1.0,1.0,0.0,0.0,1.0,1.0,1.0,37.582371001999945,4294,429,Must we keep a business continuity plan for critical operations that depend on AI?
+D14,split,any_business,0.0,0.16666666666666666,,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,0.7777777777777778,0.75,38.26230052999972,4519,667,Our staff are using public generative AI chatbots. What rules apply?
+D15,factual,any_business,1.0,1.0,,False,0.0,0.0,0.0,1,1.0,1.0,0.0,0.0,1.0,1.0,1.0,34.9958681170001,4191,117,When does the APP 1.7-1.9 automated decision-making transparency obligation commence?
+D16,factual,any_business,0.5,1.0,,False,0.0,0.0,0.0,2,1.0,1.0,0.0,0.0,1.0,1.0,1.0,36.08325171599972,4172,236,When is an organisation in scope of the APP 1.7-1.9 transparency obligation?
+D17,factual,any_business,1.0,1.0,,False,0.0,0.0,0.0,5,1.0,1.0,0.0,0.0,1.0,1.0,1.0,42.6014933360002,4952,361,How much technical detail must a privacy policy include about automated decisions?
+D18,factual,any_business,1.0,1.0,,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,1.0,39.254010221000044,4534,267,What are examples of decisions in scope of the ADM transparency obligation?
+D19,factual,bank,0.0,0.1,1.0,False,0.0,0.0,0.0,1,1.0,1.0,0.0,0.0,1.0,1.0,1.0,33.49553292600012,4008,149,Within what time must APRA be notified of a material information security incident?
+D20,factual,insurer,1.0,1.0,1.0,False,0.0,0.0,0.0,4,1.0,1.0,0.0,0.0,1.0,1.0,1.0,33.95783663600014,3855,328,When must APRA be told about an information security control weakness we cannot fix in time?
+D21,factual,super,1.0,1.0,1.0,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,1.0,30.70954168599974,3681,279,What business operations must an RSE licensee classify as critical operations at a minimum?
+D22,factual,bank,1.0,1.0,1.0,False,0.0,0.0,0.0,5,1.0,1.0,0.0,0.0,1.0,1.0,1.0,34.98008711900047,4047,387,What tolerance levels must be set for each critical operation?
+D23,factual,bank,1.0,1.0,1.0,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,1.0,34.716779377999956,4003,266,Which service providers must a bank classify as material service providers at a minimum?
+D24,factual,bank,1.0,1.0,1.0,False,0.0,0.0,0.0,1,1.0,1.0,0.0,0.0,1.0,1.0,1.0,29.258569091000027,3513,98,When does CPS 230 (July 2026 version) commence?
+D25,factual,bank,1.0,0.25,,False,0.0,0.0,0.0,7,1.0,1.0,0.0,0.0,1.0,0.7142857142857143,0.25,37.69632885300052,4326,537,What governance arrangements does APRA expect for AI at a minimum?
+D26,factual,any_business,0.0,0.0,,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,1.0,34.32421036000051,4052,252,What are the six essential practices in the Guidance for AI Adoption?
+D27,factual,bank,1.0,1.0,,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,1.0,35.696159609999995,4179,217,What dimensions of data quality does APRA suggest assessing?
+D28,cross_doc,bank,0.5,1.0,1.0,False,0.0,0.0,0.0,8,1.0,1.0,0.0,0.0,1.0,1.0,1.0,32.8159295509995,3703,638,Compare what is mandatory versus only expected when managing AI suppliers.
+D29,cross_doc,any_business,0.3333333333333333,0.25,,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,0.5,38.93027366899969,4541,255,What privacy obligations apply if our AI generates or infers personal information about customers?
+D30,cross_doc,any_business,0.6666666666666666,0.3333333333333333,,False,0.0,0.0,0.0,8,1.0,1.0,0.0,0.0,1.0,1.0,0.75,37.90315545999965,4441,510,What due diligence should we do when buying a commercially available AI product?
+D31,cross_doc,insurer,0.6666666666666666,1.0,1.0,False,0.0,0.0,0.0,6,1.0,1.0,0.0,0.0,1.0,1.0,1.0,40.54403171899958,4751,464,How should model drift in AI systems be monitored?
+D32,cross_doc,bank,0.6666666666666666,1.0,,False,0.0,0.0,0.0,4,1.0,1.0,0.0,0.0,1.0,1.0,1.0,38.26251847799995,4483,285,What human oversight is expected for high-risk AI decisions?
+D33,cross_doc,super,0.3333333333333333,1.0,1.0,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,0.8888888888888888,0.5,39.62346685299963,4544,629,"What does APRA expect for assurance over AI systems, and is any of it mandatory?"
+D34,cross_doc,insurer,0.5,1.0,,False,0.0,0.0,0.0,6,1.0,1.0,0.0,0.0,1.0,1.0,0.25,36.632170948999374,4290,429,Is following the Guidance for AI Adoption mandatory for an insurer?
+D35,cross_doc,super,1.0,1.0,1.0,False,0.0,0.0,0.0,9,1.0,1.0,0.0,0.0,1.0,1.0,1.0,33.64740464699935,3886,586,What should a service provider management policy cover when we use AI providers?
+D36,unanswerable,bank,,,,True,1.0,0.0,0.0,0,,,,,,,1.0,2.8375808470000266,0,0,What penalties apply under the EU AI Act for prohibited AI practices?
+D37,unanswerable,bank,,,,True,1.0,0.0,0.0,0,,,,,,,1.0,2.879720926000118,0,0,What capital charge does APRA apply to AI model risk under APS 115?
+D38,unanswerable,any_business,,,,True,1.0,0.0,0.0,0,,,,,,,1.0,2.9977742789997137,0,0,What are ASIC's requirements for AI used in financial advice under RG 255?
+D39,unanswerable,any_business,,,,False,0.0,0.0,0.0,1,1.0,1.0,0.0,0.0,,,0.0,30.329853797000396,4677,110,What will the proposed mandatory guardrails for high-risk AI in Australia require?
+D40,unanswerable,any_business,,,,True,1.0,0.0,0.0,0,,,,,,,1.0,3.0777117589996124,0,0,How much does a Claude API call cost per million tokens?

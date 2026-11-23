@@ -100,12 +100,14 @@ class StratifiedRetriever:
         tiers: tuple[str, ...] = TIERS,
         per_doc_cap: int | None = None,
         depth: int = 40,
+        cap_tiers: tuple[str, ...] | None = None,
     ) -> None:
         self.base = base
         self.per_tier_k = per_tier_k
         self.tiers = tiers
         self.per_doc_cap = per_doc_cap
         self.depth = depth  # candidates considered per tier when capping or merging queries
+        self.cap_tiers = cap_tiers  # tiers the per-document cap applies to (None = all)
 
     def _allowed(self, filters: Filters) -> list[str]:
         return [t for t in self.tiers if not filters.tiers or t in filters.tiers]
@@ -131,7 +133,11 @@ class StratifiedRetriever:
         depth = max(self.depth, quota)
         per_tier = {}
         for t in self._allowed(filters):
-            rankings = [self.base.search(q, depth, filters.with_tier(t)) for q in queries]
-            per_tier[t] = select(rankings, quota, self.per_doc_cap, labels)
+            cap = self.per_doc_cap if self.cap_tiers is None or t in self.cap_tiers else None
+            # An uncapped tier searched with one query behaves exactly like the original
+            # retriever (top `quota`); only capped or multi-query tiers look deeper.
+            n = depth if (cap is not None or len(queries) > 1) else quota
+            rankings = [self.base.search(q, n, filters.with_tier(t)) for q in queries]
+            per_tier[t] = select(rankings, quota, cap, labels)
         merged = stratified_merge(per_tier)
         return merged[:k] if k else merged

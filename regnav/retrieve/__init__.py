@@ -57,7 +57,11 @@ def build_retrieval(cfg: AppConfig) -> RetrievalSystem:
         else:
             retriever, top_k = (
                 StratifiedRetriever(
-                    hybrid, r.per_tier_k, per_doc_cap=r.per_doc_cap, depth=r.tier_depth
+                    hybrid,
+                    r.per_tier_k,
+                    per_doc_cap=r.per_doc_cap,
+                    depth=r.tier_depth,
+                    cap_tiers=tuple(r.per_doc_cap_tiers) if r.per_doc_cap_tiers else None,
                 ),
                 r.per_tier_k * 3,
             )

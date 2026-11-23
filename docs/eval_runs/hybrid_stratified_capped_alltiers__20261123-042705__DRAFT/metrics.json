@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "config": "hybrid_stratified_capped_alltiers",
+    "questions_file": "data/eval/questions_draft.jsonl",
+    "questions_sha256": "f062a2c351eebd9e727a8a087b2454eda3e8a15b17c1cad1f6ddc35f799cc296",
+    "is_draft": true,
+    "index_version": "idx-2185d086e9c4",
+    "mode": "full",
+    "started": "20261123-042705",
+    "run_dir": "results/hybrid_stratified_capped__20261123-042705__DRAFT",
+    "generator": "groq/qwen/qwen3.8-27b",
+    "judge": "groq/openai/gpt-oss-120b",
+    "note": "First capped variant: cap 3 in all tiers (superseded; binding-tier cap lowered correctness). D-052."
+  },
+  "metrics": {
+    "n_questions": 40,
+    "recall_at_5": {
+      "value": 0.6176190476190475,
+      "ci_low": 0.49321986607142854,
+      "ci_high": 0.7291824494949494,
+      "n": 35
+    },
+    "context_recall": {
+      "value": 0.7480952380952381,
+      "ci_low": 0.6463541666666667,
+      "ci_high": 0.836111111111111,
+      "n": 35
+    },
+    "any_gold_hit": {
+      "value": 0.9714285714285714,
+      "ci_low": 0.90625,
+      "ci_high": 1.0,
+      "n": 35
+    },
+    "mrr": {
+      "value": 0.7614285714285713,
+      "ci_low": 0.6328564213564214,
+      "ci_high": 0.8750056306306306,
+      "n": 35
+    },
+    "binding_coverage": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 23
+    },
+    "binding_gold_hit": {
+      "value": 0.9130434782608695,
+      "ci_low": 0.7777777777777778,
+      "ci_high": 1.0,
+      "n": 23
+    },
+    "faithfulness": {
+      "value": 0.9648526077097507,
+      "ci_low": 0.9260035771065184,
+      "ci_high": 0.9936507936507937,
+      "n": 35
+    },
+    "answer_correctness": {
+      "value": 0.84375,
+      "ci_low": 0.75,
+      "ci_high": 0.925,
+      "n": 40
+    },
+    "citation_validity": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "authority_label_accuracy": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "modality_error_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 36
+    },
+    "raw_citation_validity": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "raw_authority_label_accuracy": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 36
+    },
+    "raw_modality_error_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 36
+    },
+    "tier_recall": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 35
+    },
+    "fallback_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 40
+    },
+    "repair_rate": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 40
+    },
+    "gate_abstain_rate": {
+      "value": 0.1,
+      "ci_low": 0.025,
+      "ci_high": 0.2,
+      "n": 40
+    },
+    "abstention_precision": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n": 40
+    },
+    "abstention_recall": {
+      "value": 0.8,
+      "ci_low": 0.3333333333333333,
+      "ci_high": 1.0,
+      "n": 40
+    },
+    "latency_p50_s": {
+      "value": 35.88970566299986,
+      "n": 36
+    },
+    "latency_p95_s": {
+      "value": 41.962369874000046,
+      "n": 36
+    },
+    "mean_input_tokens": {
+      "value": 3820.2
+    },
+    "mean_output_tokens": {
+      "value": 360.35
+    },
+    "mean_cost_usd": {
+      "value": 0.0
+    }
+  }
+}

@@ -72,6 +72,7 @@ class RetrievalConfig(BaseModel):
     # Opt-in (D-052): fixes for one document taking every slot in a tier (F-12) and for broad
     # questions. Off by default so earlier configs and their results are unchanged.
     per_doc_cap: int | None = None  # max chunks from one document per tier (stratified only)
+    per_doc_cap_tiers: list[str] | None = None  # tiers the cap applies to (None = all)
     strip_instructions: bool = False  # drop answer-format instructions before searching
     stage_queries: bool = False  # broad questions: also search playbook stage sub-queries
     max_stages: int = 6
