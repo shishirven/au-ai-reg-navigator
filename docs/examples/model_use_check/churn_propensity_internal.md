@@ -1,0 +1,204 @@
+# Model-use check: Churn propensity model for retention offers
+
+*Internal model scoring customers' likelihood to close their account; high scores trigger a retention offer. Built and hosted in-house.*
+
+| | |
+|---|---|
+| Sector / team / stage | bank · analytics · live |
+| Personal information · sensitive | yes · no |
+| Decisions about individuals | yes |
+| Third party · offshore | no · no |
+| Critical operation · generative AI | no · no |
+
+**7 mandatory · 21 regulator-expects · 6 recommended items** across 12 stages.
+
+> General information from public regulatory documents, not legal advice and not a compliance verdict. Confirm each item against the cited source with your risk, compliance and privacy teams.
+
+## Key points for this use case
+
+- Prudential standards (CPS 230, CPS 234, CPS 220) bind APRA-regulated entities. This check assumes your organisation is an APRA-regulated bank.
+- Automated decision-making transparency (APP 1.7-1.9) commences on 10 December 2026 (17 days from today): the privacy policy must describe decisions a computer program makes, or substantially and directly informs, that could significantly affect individuals (OAIC APP 1.7-1.9 fact sheet). Banks and insurers are assumed to be APP entities.
+
+## Risk appetite, ownership and inventory
+*Model development, validation and monitoring*
+
+**Evidence typically produced:** Entry in the AI / model inventory; named owner; risk rating within appetite  
+**Usually involves:** Data / AI lead, Risk partner
+
+*No binding paragraph in this library matched this stage.*
+
+- [ ] **🟠 Regulator expects** · APRA AI letter AI adoption is moving fast, but governance maturity is lagging · also: Monitoring, drift and change control  
+  APRA observed AI adoption is accelerating across all regulated industries. Entities are moving beyond experimentation from internal productivity use cases to customer facing applications. Many entities are already trialling or introducing AI capabilities in areas such as software engineering, claims triage, loan application processing, fraud and scam disruption, customer interaction and insight generation. …
+- [ ] **🟠 Regulator expects** · APRA AI letter Summary of common weaknesses and expectations for regulated entities - April 2026  
+  To: All APRA-regulated entities • oversee an AI strategy which is consistent with the entity’s risk appetite and tolerance settings, supported by effective monitoring and reporting (including for third party dependencies), with clearly defined triggers aligned to resilience objectives to enable timely action when not operating as expected. …
+- [ ] **🟢 Recommended** · AI6 Foundations 3.Measure and manage risks · also: Board oversight and AI literacy  
+  AI risks fundamentally change depending on the type and complexity of your AI systems. Risks often emerge from how the AI system behaves in different situations and use-cases, rather than only from software updates. They can rapidly amplify smaller issues into significant problems. …
+
+## Data quality and data risk
+*Model development, validation and monitoring*
+
+**Evidence typically produced:** Data quality checks; data lineage; known limitations  
+**Usually involves:** Data / AI lead
+
+- [ ] **🔴 Mandatory** · CPS 220 para 25  
+  25. The MIS must provide the Board of the APRA-regulated institution, board committees of the APRA-regulated institution and senior management of the institution with regular, accurate and timely information concerning the institution’s risk profile. …
+- [ ] **🟠 Regulator expects** · CPG 235 para 51 · ⚖️ explains binding law  
+  51. Data validation is the assessment of the data against business rules to determine its fitness for use prior to further processing. It constitutes a key set of controls for ensuring that data meets quality requirements.
+- [ ] **🟠 Regulator expects** · CPG 235 para 54 · ⚖️ explains binding law  
+  54. Common forms of data validation include verification of format, type, value range, currency, presence, consistency and completeness. Data validation can also be usefully conducted at a data-set level such as the use of: (a) control totalling: aggregation techniques including hash totalling , amount totalling and record counts; (b) reconciliation: comparing two sets of data and explaining variances; …
+
+## Testing and validation before use
+*Model development, validation and monitoring*
+
+**Evidence typically produced:** Validation report; test results against acceptance criteria  
+**Usually involves:** Model risk / independent validation
+
+- [ ] **🔴 Mandatory** · CPS 234 para 27  
+  27. An APRA-regulated entity must test the effectiveness of its information security controls through a systematic testing program. The nature and frequency of the systematic testing must be commensurate with: (a) the rate at which the vulnerabilities and threats change; (b) the criticality and sensitivity of the information asset; (c) the consequences of an information security incident; …
+- [ ] **🔴 Mandatory** · CPS 230 para 29 · ❔ weaker match, check relevance  
+  29. An APRA-regulated entity must regularly monitor, review and test controls for design and operating effectiveness, the frequency of which must be commensurate with the materiality of the risks being controlled. The results of testing must be reported to senior management and any gaps or deficiencies in the control environment must be rectified in a timely manner.
+- [ ] **🟠 Regulator expects** · APRA AI letter Traditional change management and assurance is in place but is not sufficient for dynamic AI solutions · also: Monitoring, drift and change control  
+  AI risks can cut across multiple domains at regulated entities. This includes operational risk, cyber and information security, data governance, model risk, change control and release management, legal and regulatory compliance, privacy and conduct risk, procurement and third party dependency. …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance Is the product appropriate for its intended uses? · ⚖️ explains binding law · ❔ weaker match, check relevance  
+  When selecting an AI product, your organisation should clearly identify the ways it intends to use AI and evaluate whether the particular product is appropriate. This includes considering whether the product has been tested and proven for such uses. You should consider whether the intended uses are likely to constitute high privacy risk activities. …
+- [ ] **🟢 Recommended** · AI6 Foundations 5.Test and monitor · also: Monitoring, drift and change control  
+  AI systems can change their behaviour over time or act in ways that are less predictable than conventional software. For example, an AI system that worked well last month might start giving different answers today if it is trained on additional data. To use AI safely, organisations should test and monitor their AI systems. Getting started 5.1 Ask for proof. …
+
+## Monitoring, drift and change control
+*Model development, validation and monitoring*
+
+**Evidence typically produced:** Monitoring dashboard and thresholds; change-control record for retraining and version changes  
+**Usually involves:** Data / AI lead, Model risk
+
+*No binding paragraph in this library matched this stage.*
+
+- Covered by items listed above: APRA AI letter Traditional change management and assurance is in place but is not sufficient for dynamic AI solutions; APRA AI letter AI adoption is moving fast, but governance maturity is lagging; AI6 Foundations 5.Test and monitor
+
+## Collection, use and disclosure
+*Personal information in data, prompts or outputs*
+
+**Evidence typically produced:** Data inventory for the model (fields, sources, purpose); privacy impact assessment  
+**Usually involves:** Privacy officer
+
+*No binding paragraph in this library matched this stage. Privacy Act obligations apply, but the Act's text is not yet live in this library: see the ⚖️ notes and *Not covered* below.*
+
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance Top five takeaways · ⚖️ explains binding law  
+  4. If personal information is being input into an AI system, APP 6 requires entities to only use or disclose the information for the primary purpose for which it was collected, unless they have consent or can establish the secondary use would be reasonably expected by the individual, and is related (or directly related, for sensitive information) to the primary purpose. …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance Quick reference guide · ⚖️ explains binding law  
+  • The Privacy Act applies to all uses of AI involving personal information. • If personal information is being input into an AI system, APP 6 requires entities to only use or disclose the information for the primary purpose for which it was collected, unless they have consent or can establish the secondary use would be reasonably expected by the individual, and is related (or directly related, for sensitive …
+- [ ] **🟢 Recommended** · AI6 Foundations 4.Share essential information  
+  To use AI responsibly, organisations need to tell users and stakeholders when and how they’re interacting with AI. People should know when they’re interacting with AI and understand when AI decisions affect them. For example, when a customer is receiving services and information from a chatbot, they should know this is not a human specialist. Getting started 4.1 Create and maintain an AI register. …
+
+## Overseas hosting and disclosure
+*Personal information in data, prompts or outputs*
+
+**Evidence typically produced:** Where data and models are hosted; overseas disclosure assessment  
+**Usually involves:** Privacy officer, Legal
+
+*No binding paragraph in this library matched this stage. Privacy Act obligations apply, but the Act's text is not yet live in this library: see the ⚖️ notes and *Not covered* below.*
+
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance What are the potential security risks? · ⚖️ explains binding law · also: Security, retention and deletion  
+  When assessing a new product, you should consider your organisation’s obligations under APP 11 to take reasonable steps to protect the personal information you hold from misuse, interference and loss, as well as unauthorised access, modification or disclosure. …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance What are the requirements of APP 6? · ⚖️ explains binding law  
+  When personal information is input into an AI system, it may be considered either a use of personal information (if the data stays within your organisation’s control) or a disclosure of personal information (if the data is made accessible to others outside the organisation and has been released from your organisation’s effective control) under the Privacy Act. …
+
+## Security, retention and deletion
+*Personal information in data, prompts or outputs*
+
+**Evidence typically produced:** Access controls; retention and deletion plan for training data, prompts and logs  
+**Usually involves:** Privacy officer, CISO / Information security
+
+*No binding paragraph in this library matched this stage. Privacy Act obligations apply, but the Act's text is not yet live in this library: see the ⚖️ notes and *Not covered* below.*
+
+- Also relevant (listed above): OAIC AI products guidance What are the potential security risks?
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance What are the requirements of APP 10? · ⚖️ explains binding law  
+  Organisations looking to use AI must be aware of these accuracy risks and how they may impact on the organisation’s ability to comply with their privacy obligations. As discussed above, APP 10 requires an entity to take reasonable steps to ensure that: • the personal information it collects is accurate, up-to-date and complete; …
+
+## Accuracy of inputs and outputs
+*Personal information in data, prompts or outputs*
+
+**Evidence typically produced:** Output accuracy testing; process to correct inaccurate outputs about individuals  
+**Usually involves:** Data / AI lead, Privacy officer
+
+*No binding paragraph in this library matched this stage. Privacy Act obligations apply, but the Act's text is not yet live in this library: see the ⚖️ notes and *Not covered* below.*
+
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance Quick reference guide · ⚖️ explains binding law  
+  • The Privacy Act applies to all uses of AI involving personal information. • Organisations must take particular care with sensitive information, which generally requires consent to be handled. Many photographs or recordings of individuals (including artificially generated ones) contain sensitive information and therefore may not be able to be generated by, or used as input data for, AI systems without the …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance What obligations do we have to ensure the accuracy of AI systems? · ⚖️ explains binding law  
+  Organisations subject to the Privacy Act must comply with their accuracy obligations under APP 10 when using AI systems. APP 10 requires entities to take reasonable steps to ensure that: • the personal information they collect is accurate, up-to-date and complete; …
+- [ ] **🟢 Recommended** · AI6 Foundations 2.Understand impacts and plan accordingly · also: Fairness, bias and testing  
+  Because AI systems can operate at speed and scale, their potential impacts are often magnified. Without careful planning, a single AI system can lead to widespread negative outcomes, such as unfair decisions or the provision of inaccurate information. For example, AI systems can learn from and amplify existing issues such as unwanted bias in data. …
+
+## Privacy policy disclosure of automated decisions
+*Decisions about individuals (pricing, underwriting, credit, claims, eligibility)*
+
+**Evidence typically produced:** List of decisions the model makes or informs; privacy-policy wording; commencement readiness (from 10 Dec 2026)  
+**Usually involves:** Privacy officer, Legal
+
+*No binding paragraph in this library matched this stage. Privacy Act obligations apply, but the Act's text is not yet live in this library: see the ⚖️ notes and *Not covered* below.*
+
+- [ ] **🟠 Regulator expects** · OAIC APP 1.7-1.9 fact sheet Is the computer program substantially and directly related to making a decision? · ⏳ from 2026-12-10 · ⚖️ explains binding law  
+  Substantially means where it is a key factor in facilitating the human’s decision making; and Directly means where the thing has a direct connection with making the decision. A computer program may be substantially and directly related to a decision if it: • advises of an appropriate outcome of a process • determines the outcome of a process • in any other way influences the outcome of a process. …
+- [ ] **🟠 Regulator expects** · OAIC APP 1.7-1.9 fact sheet When does the transparency obligation apply? · ⏳ from 2026-12-10 · ⚖️ explains binding law  
+  An APP entity is in scope of the transparency obligation where: • it has arranged for a computer program to make, or do a thing that is substantially and directly related to making a decision; and • the decision could reasonably be expected to significantly affect the rights or interests of an individual; …
+- [ ] **🟢 Recommended** · AI6 Foundations 1. Decide who is accountable · ❔ weaker match, check relevance  
+  AI systems can make automated decisions that significantly impact people, communities and businesses. Overall, your organisation is ultimately accountable for how and where AI is used, AI complexity can create gaps where no one takes clear responsibility for outcomes. Accountability is the first step to using AI responsibly. Getting started 1.1 Assign a senior leader as the overall AI governance owner. …
+
+## Fairness, bias and testing
+*Decisions about individuals (pricing, underwriting, credit, claims, eligibility)*
+
+**Evidence typically produced:** Fairness and bias testing results; impact assessment on affected customer groups  
+**Usually involves:** Data / AI lead, Model risk
+
+*No binding paragraph in this library matched this stage. Privacy Act obligations apply, but the Act's text is not yet live in this library: see the ⚖️ notes and *Not covered* below.*
+
+- Also relevant (listed above): AI6 Foundations 2.Understand impacts and plan accordingly
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance Privacy risks and harms · ⚖️ explains binding law  
+  The use of both traditional and generative AI technologies carries a number of significant privacy risks. Specific risks are discussed throughout this guidance, but can include: This example highlights the risks of AI systems regurgitating personal information from their training data even when prompted for fictional examples, creating a range of potential privacy compliance and ethical risks. …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance Privacy risks and harms · ⚖️ explains binding law  
+  The use of both traditional and generative AI technologies carries a number of significant privacy risks. Specific risks are discussed throughout this guidance, but can include: • Bias and discrimination: As AI systems learn from source data which may contain inherent bias, this bias may be replicated in their outputs through inferences made based on gender, race or age and have discriminatory effects. …
+
+## Human oversight and contestability
+*Decisions about individuals (pricing, underwriting, credit, claims, eligibility)*
+
+**Evidence typically produced:** Human-review design; complaint and contest process; explanation approach  
+**Usually involves:** Business owner, Compliance
+
+- [ ] **🔴 Mandatory** · CPS 230 para 12 · ❔ weaker match, check relevance  
+  12. An APRA-regulated entity must identify, assess and manage operational risks that may result from inadequate or failed internal processes or systems, the actions or inactions of people or external drivers and events. Operational risk is inherent in all products, activities, processes and systems.
+- [ ] **🔴 Mandatory** · CPS 230 para 24 · ❔ weaker match, check relevance  
+  24. An APRA-regulated entity must maintain appropriate and sound information and information technology (IT) capability to meet its current and projected business requirements and to support its critical operations and risk management. …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance What are the requirements of APP 10? · ⚖️ explains binding law  
+  Organisations looking to use AI must be aware of these accuracy risks and how they may impact on the organisation’s ability to comply with their privacy obligations. As discussed above, APP 10 requires an entity to take reasonable steps to ensure that: • Establishing processes to ensure there is appropriate human oversight of AI outputs, which treat the outputs as statistically informed guesses. …
+- [ ] **🟠 Regulator expects** · OAIC AI products guidance What ongoing assurance processes are needed? · ⚖️ explains binding law · ❔ weaker match, check relevance  
+  Throughout the lifecycle of the AI product, your organisation should have in place processes for ensuring that the product continues to be reliable and appropriate for its intended uses. This will assist your organisation to comply with the requirement under APP 1 to take reasonable steps to implement practices, procedures and systems that will ensure it complies with the APPs and is able to deal with related …
+- [ ] **🟢 Recommended** · AI6 Foundations 6.Maintain human control  
+  Unlike traditional software that follows explicit instructions, AI systems learn patterns from data and make their own opaque decision logic. This means they need human oversight to make sure they operate safely. For example, while regular software does exactly what you program it to do, AI might interpret your instructions differently than you intended. …
+
+## Board oversight and AI literacy
+*Board and executive oversight*
+
+**Evidence typically produced:** Board or committee paper; approval within the risk management framework  
+**Usually involves:** Executive sponsor, Risk partner
+
+- Also relevant (listed above): AI6 Foundations 3.Measure and manage risks
+- [ ] **🔴 Mandatory** · CPS 230 para 21  
+  21. The Board must: (a) oversee operational risk management and the effectiveness of key internal controls in maintaining the entity’s operational risk profile within risk appetite. The Board must be provided with regular updates on the APRA-regulated entity’s operational risk profile and ensure senior management takes action as required to address any areas of concern; …
+- [ ] **🔴 Mandatory** · CPS 230 para 19  
+  19. The Board of an APRA-regulated entity is ultimately accountable for oversight of an entity’s operational risk management. This includes business continuity and the management of service provider arrangements.
+- [ ] **🟠 Regulator expects** · APRA AI letter Summary of common weaknesses and expectations for regulated entities - April 2026  
+  To: All APRA-regulated entities Artificial Intelligence (AI) is being rapidly adopted across APRA-regulated industries as entities seek to realise benefits to their businesses and customers. AI presents great opportunity for productivity and efficiency, and failing to embrace AI may put businesses at a strategic disadvantage. AI also has the potential to create new risks and escalate existing challenges. …
+- [ ] **🟠 Regulator expects** · CPG 230 para 9 · ⚖️ explains binding law · ❔ weaker match, check relevance  
+  9. The Board would typically: a) oversee updates to an entity’s operational risk profile and ensure risks outside of its appetite are addressed promptly; b) oversee the effectiveness of key internal controls; c) be kept informed of areas of any material weaknesses and major remediation efforts; d) understand the material operational risks that arise from new ventures; …
+
+## Not covered by this library: check separately
+
+- **Privacy Act 1988 and the Australian Privacy Principles (the Act itself).** Privacy obligations are covered through OAIC guidance, which explains the APPs. The Act's text is staged but not yet live (it switches on with statement-level legal authority, D-044), so APP obligations appear under "Regulator expects" with an "explains binding law" note rather than under "Mandatory".
+- **Financial Accountability Regime (FAR).** Named accountable executives and their accountability maps.
+- **CPS 510 Governance.** Board and governance requirements beyond risk management.
+- **Consumer credit law (responsible lending, NCCP).** Credit assessment obligations for lenders.
+- **Anti-discrimination law.** Relevant where a model's decisions could treat people differently by a protected attribute.
+- **ASIC guidance and Corporations Act licensee obligations.** Conduct obligations for AFS and credit licensees, including s912A general obligations.
+
+---
+Generated 2026-11-23 · config `hybrid_stratified_rerank` · index `idx-2185d086e9c4` · no language model used: every item quotes its cited source.

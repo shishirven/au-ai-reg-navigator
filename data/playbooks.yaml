@@ -67,6 +67,32 @@ playbooks:
         evidence: Output accuracy testing; process to correct inaccurate outputs about individuals
         involve: [Data / AI lead, Privacy officer]
 
+  - id: generative_ai
+    title: Generative AI and LLMs
+    trigger: '\b(generative|GenAI|LLM|chatbot|large language model|copilot|prompt)\b'
+    when: {generative_ai: true}
+    stages:
+      - id: genai_inputs
+        title: What goes into prompts and the model
+        query: entering personal information into publicly available generative AI tools, prompts, data used to train or fine-tune a generative AI model
+        evidence: Rules for what staff and systems may put in prompts; data-use terms of the model provider (training on your data, retention)
+        involve: [Privacy officer, Data / AI lead]
+      - id: genai_outputs
+        title: Accuracy of generated outputs
+        query: generative AI outputs inaccurate, hallucination, fabricated information, human review of AI generated content before use
+        evidence: Output evaluation set and error rates; human-review step for outputs that reach customers or decisions
+        involve: [Data / AI lead, Business owner]
+      - id: genai_transparency
+        title: Telling people they are dealing with AI
+        query: tell users and customers when they are interacting with AI or receiving AI generated content, chatbot disclosure
+        evidence: Disclosure wording in the interface; staff guidance on AI-assisted communications
+        involve: [Business owner, Compliance]
+      - id: genai_security
+        title: AI-specific security threats
+        query: information security controls to protect information assets commensurate with threats and vulnerabilities, AI changing the cyber threat landscape, prompt injection, AI agents identity and access
+        evidence: Threat model for the AI use (prompt injection, data leakage, agent permissions); security testing results
+        involve: [CISO / Information security]
+
   - id: automated_decisions
     title: Decisions about individuals (pricing, underwriting, credit, claims, eligibility)
     trigger: '\b(automated decision\w*|decisions? about (customers|individuals|people)|pricing|underwrit\w*|credit|claims?|eligibilit\w*|approv\w*|declin\w*)\b'

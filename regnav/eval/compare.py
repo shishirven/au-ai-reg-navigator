@@ -12,7 +12,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-CONFIGS = ["baseline_dense", "hybrid_pooled", "hybrid_stratified", "hybrid_stratified_rerank"]
+CONFIGS = [
+    "baseline_dense",
+    "hybrid_pooled",
+    "hybrid_stratified",
+    "hybrid_stratified_rerank",
+    "hybrid_stratified_capped",
+]
 ROWS = [
     ("Retrieval", None),
     ("recall_at_5", "Recall@5"),

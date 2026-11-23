@@ -6,7 +6,7 @@ SECTOR ?= bank
 UV := uv run
 
 .PHONY: help setup-local install lint format typecheck test test-unit test-integration test-adversarial \
-        coverage regression-gate ingest ask check eval eval-all compare judge-calibration \
+        test-corpus coverage regression-gate ingest ask check eval eval-all compare judge-calibration \
         release-check chunks eval-draft eval-retrieval retrieval-ablation authority-staging clause-eval mlflow-ui app docker-build up down clean
 
 help:  ## List targets
@@ -37,6 +37,9 @@ test-unit:  ## Unit tests
 
 test-integration:  ## Integration tests on the synthetic fixture corpus (stub LLM)
 	$(UV) pytest tests/integration -q
+
+test-corpus:  ## Model-use check on the real index (needs make ingest; no LLM)
+	$(UV) pytest tests/corpus -q
 
 test-adversarial:  ## Adversarial/safety tests - needs ANTHROPIC_API_KEY
 	$(UV) pytest tests/adversarial -m llm -q

@@ -33,6 +33,9 @@ No language model is called; every item quotes its source:
 >
 > ⬇ CSV with status / evidence / owner columns for the team to fill in
 
+How it works, calibration and limits: [docs/model_use_check.md](docs/model_use_check.md) ·
+example outputs: [docs/examples/model_use_check/](docs/examples/model_use_check/).
+
 **2. Ask.** A question gets an answer split by legal force, with every claim cited:
 
 > **Mandatory** (binding standard)
@@ -237,6 +240,8 @@ Fully offline on a laptop (Ollama, Qwen3-4B on CPU): `bash scripts/setup_local.s
 | `make eval-all && make compare` | full eval on `data/eval/questions.jsonl` → MLflow + `docs/results.md` |
 | `make eval-draft` | provisional eval on the 40 DRAFT questions |
 | `make judge-calibration` | export 10 judged answers to label; run again for Cohen's κ |
+| `make check USE_CASE=...` | model-use check for one use case → Markdown + CSV (no LLM) |
+| `make test-corpus` | model-use check examples on the real index |
 | `make test-adversarial` | prompt injection, out-of-scope, legal advice, voluntary-only, not-yet-in-force |
 | `make release-check CONFIG=configs/hybrid_stratified.yaml` | release gate (tests + gate + eval + thresholds + index version) |
 
