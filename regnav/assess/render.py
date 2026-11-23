@@ -7,6 +7,11 @@ import io
 
 from regnav.assess.checklist import Checklist, ChecklistItem
 
+# Per-item tracking a team enters in the app: chunk_id -> {"status", "owner", "evidence", "notes"}.
+Tracking = dict[str, dict[str, str]]
+STATUSES = ("To check", "Met", "Not met", "N/A")
+_BOX = {"Met": "[x]", "N/A": "[-]", "Not met": "[!]"}
+
 TIER_MARK = {
     "binding": "🔴 Mandatory",
     "expectation": "🟠 Regulator expects",
@@ -53,7 +58,8 @@ def _flags(i: ChecklistItem) -> str:
     return f" · {' · '.join(out)}" if out else ""
 
 
-def to_markdown(cl: Checklist) -> str:
+def to_markdown(cl: Checklist, tracking: Tracking | None = None) -> str:
+    tracking = tracking or {}
     uc = cl.use_case
     n = cl.counts()
     lines = [
@@ -103,9 +109,14 @@ def to_markdown(cl: Checklist) -> str:
             )
             lines.append(f"- {lead}: {refs}")
         for i in s.items:
+            tr = tracking.get(i.chunk_id, {})
+            box = _BOX.get(tr.get("status", ""), "[ ]")
+            extra = " · ".join(
+                f"{k}: {tr[k]}" for k in ("status", "owner", "evidence", "notes") if tr.get(k)
+            )
             lines.append(
-                f"- [ ] **{TIER_MARK.get(i.tier, i.tier)}** · {i.document} {i.citation}{_flags(i)}  \n"
-                f"  {i.excerpt}"
+                f"- {box} **{TIER_MARK.get(i.tier, i.tier)}** · {i.document} {i.citation}{_flags(i)}  \n"
+                f"  {i.excerpt}" + (f"  \n  *{extra}*" if extra else "")
             )
     if cl.gaps:
         lines += ["", "## Not covered by this library: check separately", ""]
@@ -119,7 +130,8 @@ def to_markdown(cl: Checklist) -> str:
     return "\n".join(x for x in lines if x is not None) + "\n"
 
 
-def to_csv(cl: Checklist) -> str:
+def to_csv(cl: Checklist, tracking: Tracking | None = None) -> str:
+    tracking = tracking or {}
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=CSV_FIELDS, lineterminator="\n")
     w.writeheader()
@@ -141,10 +153,10 @@ def to_csv(cl: Checklist) -> str:
                     "also_relevant_to": "; ".join(i.also_in),
                     "evidence_typically_produced": s.stage.evidence,
                     "involve": ", ".join(s.stage.involve),
-                    "status": "",
-                    "evidence_link": "",
-                    "owner": "",
-                    "notes": "",
+                    "status": tracking.get(i.chunk_id, {}).get("status", ""),
+                    "evidence_link": tracking.get(i.chunk_id, {}).get("evidence", ""),
+                    "owner": tracking.get(i.chunk_id, {}).get("owner", ""),
+                    "notes": tracking.get(i.chunk_id, {}).get("notes", ""),
                     "chunk_id": i.chunk_id,
                     "source_url": i.url,
                 }

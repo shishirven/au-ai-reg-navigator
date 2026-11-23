@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import threading
+
 from regnav.assess.checklist import Checklist, build_checklist
 from regnav.assess.usecase import UseCase
 from regnav.config import AppConfig
@@ -19,9 +21,35 @@ def stratified_of(system: RetrievalSystem) -> StratifiedRetriever:
     return r
 
 
+_LOCK = threading.Lock()  # one check at a time: a waiting check reuses the warm-up's results
+
+
 def run_check(uc: UseCase, cfg: AppConfig, system: RetrievalSystem | None = None) -> Checklist:
     system = system or build_retrieval(cfg)
-    return build_checklist(uc, cfg, stratified_of(system), system.index_version)
+    with _LOCK:
+        return build_checklist(uc, cfg, stratified_of(system), system.index_version)
 
 
-__all__ = ["Checklist", "UseCase", "run_check", "stratified_of"]
+WARMUP_CASES = [
+    UseCase(
+        name="warm-up",
+        sector=sector,
+        personal_information="yes",
+        sensitive_information="yes",
+        decisions_about_individuals="yes",
+        third_party="yes",
+        offshore="yes",
+        critical_operation="yes",
+        generative_ai="yes",
+    )
+    for sector in ("bank", "insurer")
+]
+
+
+def warm_up(cfg: AppConfig, system: RetrievalSystem) -> None:
+    """Search every stage for both sectors so later checks are instant (fills the stage cache)."""
+    for uc in WARMUP_CASES:
+        run_check(uc, cfg, system)
+
+
+__all__ = ["Checklist", "UseCase", "run_check", "stratified_of", "warm_up"]

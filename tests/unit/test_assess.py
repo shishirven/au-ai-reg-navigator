@@ -233,3 +233,19 @@ def test_coverage_gaps_for_use_case_and_question() -> None:
     }
     assert {"far", "credit_law"} <= q
     assert gaps_for_question("What does CPS 230 para 52 require?") == []
+
+
+def test_exports_carry_the_teams_tracking() -> None:
+    cl, _ = _build(_uc())
+    first = cl.items[0].chunk_id
+    track = {first: {"status": "Met", "owner": "Priya", "evidence": "https://wiki/val-report"}}
+    rows = list(csv.DictReader(io.StringIO(to_csv(cl, track))))
+    row = next(r for r in rows if r["chunk_id"] == first)
+    assert (row["status"], row["owner"], row["evidence_link"]) == (
+        "Met",
+        "Priya",
+        "https://wiki/val-report",
+    )
+    assert all(r["status"] == "" for r in rows if r["chunk_id"] != first)
+    md = to_markdown(cl, track)
+    assert "- [x] **" in md and "owner: Priya" in md

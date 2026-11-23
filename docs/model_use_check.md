@@ -13,6 +13,25 @@ expectations to check, grouped by stage of the model lifecycle, each quoting its
 It is a **starting point for the conversation with risk, compliance and privacy**, not a
 compliance verdict. It never says a use case is compliant.
 
+## The page, step by step
+
+1. **Start:** what the check is for, the three steps, and three example models to open in one click.
+2. **About your model:** name (required), a one-line description, organisation (bank / insurer),
+   team and lifecycle stage.
+3. **Questions:** one per screen, answered with one tap (Yes / No / Not sure), which moves on
+   automatically. Follow-ups that don't apply are skipped (sensitive information only if personal
+   information is involved; offshore only if there is a vendor), so most models take 5-7 taps.
+4. **Check your answers:** a summary with a *Change* link on every line.
+5. **Your checklist:** what stands out for this model (APRA notifications, the APP 1.7-1.9
+   countdown), counts by legal force, then the stages as a task list. Each item has a status
+   (To check / Met / Not met / N/A), an owner and an evidence field; progress updates as you go,
+   and you can filter by legal force or hide reviewed items. *Not covered here* lists what to check
+   elsewhere; *Export* downloads the CSV and report **with your statuses filled in**.
+
+The stages are searched in the background as soon as the page opens, so the checklist is usually
+ready by the time the questions are answered. Statuses live in the browser session: export to keep
+them.
+
 ## Workflow
 
 ```mermaid
