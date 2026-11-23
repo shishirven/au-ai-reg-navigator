@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| System | Retrieval-augmented question answering over Australian AI/financial regulation |
+| System | Retrieval-augmented Q&A and a model-use checklist over Australian AI and financial regulation, for data and analytics teams |
 | Version | prompt `v3`, index `idx-2185d086e9c4` (see `chroma/index_manifest_*.json`) |
 | Owner | Shishir (portfolio project) |
 | Status | **Demonstration / research prototype.** Not validated for production use. |
@@ -10,14 +10,21 @@
 
 ## Purpose
 
-Help risk, compliance and model-risk staff at Australian banks, insurers and superannuation
-trustees **find and triage** what the regulatory documents say about a question involving AI, with
-every statement **cited** and **labelled by legal force**:
+Help **data leads, data scientists, ML engineers, actuaries and analytics teams** at Australian
+banks and insurers work out which regulatory requirements apply to the models and AI they build or
+buy, before they take the work to their risk, compliance and privacy partners (scope decision
+D-051). Two modes:
 
-* **Mandatory**: binding prudential standards (APRA CPS 230, CPS 234, CPS 220)
-* **Regulator expects**: regulator guidance and letters (APRA CPG 230, CPG 235, APRA AI letter,
-  OAIC guidance)
-* **Recommended**: voluntary government guidance (National AI Centre AI6)
+* **Ask**: a question about AI or model use, answered with every statement **cited** and
+  **labelled by legal force**:
+  * **Mandatory**: binding prudential standards (APRA CPS 230, CPS 234, CPS 220)
+  * **Regulator expects**: regulator guidance and letters (APRA CPG 230, CPG 235, APRA AI letter,
+    OAIC guidance)
+  * **Recommended**: voluntary government guidance (National AI Centre AI6)
+* **Model-use check**: a short form about one model (personal information? decisions about
+  people? vendor? offshore? critical operation?) produces a checklist grouped by lifecycle stage.
+  Each item quotes its source paragraph and shows the evidence teams typically produce and who
+  usually signs off. No language model is used in this mode (D-053).
 
 Its distinguishing behaviour is surfacing **technology-neutral binding obligations** (for example,
 CPS 230 service-provider requirements for an "AI vendor") that keyword- or similarity-based tools
@@ -25,18 +32,34 @@ miss because the standards never mention AI.
 
 ## Intended users and uses
 
-* Compliance analysts, second-line risk, model validators, internal audit: as a **research aid**
-  to locate relevant paragraphs and see their legal force, before reading the source documents.
-* Training and awareness: illustrating how AI obligations map onto technology-neutral standards.
+| user | typical use |
+|---|---|
+| Data scientist / ML engineer | "We want to use an LLM API on customer emails: what applies?" Run a model-use check before the design review. |
+| Actuary | Pricing or underwriting model: privacy disclosure of automated decisions (from 10 Dec 2026), validation and monitoring expectations, vendor rules for the ML platform. |
+| Analytics / BI lead | Propensity and segmentation models driving offers: personal information use, fairness testing, model inventory. |
+| Data / AI lead | A consistent first-pass checklist across the team's portfolio, exported as CSV into the risk assessment. |
+
+Secondary users: risk partners, model validators and internal audit, to see which paragraphs a
+team has considered and trace each to its source.
+
+**Workflow.** Describe the use case → checklist by lifecycle stage → the team marks each item met /
+not met / not applicable with evidence (CSV) → review and sign-off by risk, compliance and privacy
+→ attach to the risk assessment or model inventory entry. The tool never concludes that a use case
+is compliant.
 
 ## Out-of-scope uses
 
 * **Legal advice** or determinations of whether an entity is compliant or in breach.
 * Sole basis for any regulatory, credit, underwriting, claims or HR decision.
-* Questions about documents not in the corpus: other jurisdictions (EU AI Act, GDPR), ASIC
-  regulatory guides, APRA capital standards, the Privacy Act text itself. The system is designed to
-  abstain on these.
-* Monitoring regulatory change: the corpus is a fixed snapshot (see versions below).
+* **Superannuation trustees** (SPS standards not in the library) and organisations that are not
+  APRA-regulated; the prudential items assume an APRA-regulated bank or insurer (D-051).
+* Questions about documents not in the library: other jurisdictions (EU AI Act, GDPR), FAR, CPS 510,
+  ASIC guidance, the Corporations Act, insurance and consumer-credit law, anti-discrimination law,
+  actuarial professional standards, and the Privacy Act text itself (staged, not yet live). Answers
+  and checklists name these as **not covered** so users check them separately (D-054).
+* Confidential product details in the **public demo**: questions there are logged for tracing.
+  Real use means self-hosting with the organisation's approved model and tracing off.
+* Monitoring regulatory change: the library is a fixed snapshot (see versions below).
 
 ## System components
 

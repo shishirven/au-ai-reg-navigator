@@ -1,0 +1,150 @@
+# Stages of an AI / model use case, written for data leads, data scientists, actuaries and
+# analytics teams (D-051, D-052, D-053).
+#
+# Each playbook is a set of focused sub-queries ("stages"). They are used two ways:
+#   * Q&A mode: if a question's wording matches a playbook `trigger`, its stage queries are
+#     searched alongside the question, so a broad question ("what do we need to do before
+#     engaging an AI vendor?") reaches every relevant requirement, not just the closest match.
+#   * Model-use check: the intake form selects playbooks (`when`), and each stage becomes a
+#     section of the checklist.
+#
+# `query` is search text, not a question to the model: it uses the regulators' own
+# technology-neutral vocabulary. `evidence` is what the team would typically produce to show the
+# item is addressed. `involve` is who usually signs off. Neither is legal advice.
+# `exclude` lists paragraphs reviewed and found to be misleading matches for a stage
+# (model-use check only).
+
+playbooks:
+  - id: model_lifecycle
+    title: Model development, validation and monitoring
+    trigger: '\b(model|machine learning|ML|data scien\w*|actuar\w*|validat\w*|monitor\w*|drift|testing|train\w*)\b'
+    when: {always: true}
+    stages:
+      - id: lifecycle_risk_appetite
+        title: Risk appetite, ownership and inventory
+        query: AI inventory of use cases, ownership and accountability across the AI lifecycle, consistent with risk appetite
+        evidence: Entry in the AI / model inventory; named owner; risk rating within appetite
+        involve: [Data / AI lead, Risk partner]
+      - id: lifecycle_data_quality
+        title: Data quality and data risk
+        query: data quality, data risk management, data validation, fitness for purpose of data
+        evidence: Data quality checks; data lineage; known limitations
+        involve: [Data / AI lead]
+      - id: lifecycle_validation
+        title: Testing and validation before use
+        query: testing and validation of AI systems before deployment, performance, accuracy, robustness, systematic testing of controls
+        evidence: Validation report; test results against acceptance criteria
+        involve: [Model risk / independent validation]
+      - id: lifecycle_monitoring
+        title: Monitoring, drift and change control
+        query: continuous monitoring of AI systems in production, drift, performance degradation, change management of models
+        evidence: Monitoring dashboard and thresholds; change-control record for retraining and version changes
+        involve: [Data / AI lead, Model risk]
+
+  - id: personal_info
+    title: Personal information in data, prompts or outputs
+    trigger: '\b(personal (information|data)|privacy|customer data|PII|sensitive information|health information|prompt)\b'
+    when: {personal_information: true}
+    stages:
+      - id: pi_collection_use
+        title: Collection, use and disclosure
+        query: use or disclose personal information only for the primary purpose of collection, secondary use, inputting personal information into an AI system
+        evidence: Data inventory for the model (fields, sources, purpose); privacy impact assessment
+        involve: [Privacy officer]
+      - id: pi_overseas
+        title: Overseas hosting and disclosure
+        query: disclosure of personal information overseas, cross-border, offshore hosting of AI product
+        evidence: Where data and models are hosted; overseas disclosure assessment
+        involve: [Privacy officer, Legal]
+      - id: pi_security
+        title: Security, retention and deletion
+        query: reasonable steps to protect personal information from misuse, loss, unauthorised access, retention and deletion, data breach
+        evidence: Access controls; retention and deletion plan for training data, prompts and logs
+        involve: [Privacy officer, CISO / Information security]
+      - id: pi_accuracy
+        title: Accuracy of inputs and outputs
+        query: accuracy of personal information generated or inferred by AI, outputs that are inaccurate
+        evidence: Output accuracy testing; process to correct inaccurate outputs about individuals
+        involve: [Data / AI lead, Privacy officer]
+
+  - id: automated_decisions
+    title: Decisions about individuals (pricing, underwriting, credit, claims, eligibility)
+    trigger: '\b(automated decision\w*|decisions? about (customers|individuals|people)|pricing|underwrit\w*|credit|claims?|eligibilit\w*|approv\w*|declin\w*)\b'
+    when: {decisions_about_individuals: true}
+    stages:
+      - id: adm_transparency
+        title: Privacy policy disclosure of automated decisions
+        query: computer program to make or substantially and directly related to making a decision that could significantly affect the rights or interests of an individual, privacy policy transparency obligation APP 1.7
+        evidence: List of decisions the model makes or informs; privacy-policy wording; commencement readiness (from 10 Dec 2026)
+        involve: [Privacy officer, Legal]
+      - id: adm_fairness_testing
+        title: Fairness, bias and testing
+        query: test AI systems for bias, fairness and unintended outcomes before deployment, impact on individuals
+        evidence: Fairness and bias testing results; impact assessment on affected customer groups
+        involve: [Data / AI lead, Model risk]
+      - id: adm_human_oversight
+        title: Human oversight and contestability
+        query: human oversight, ability to intervene, contest or review AI decisions, explain outcomes to affected people
+        evidence: Human-review design; complaint and contest process; explanation approach
+        involve: [Business owner, Compliance]
+
+  - id: vendor
+    title: Third-party AI vendor, model API or platform
+    trigger: '\b(vendor|supplier|provider|third[- ]party|outsourc\w*|SaaS|procure\w*|API)\b'
+    when: {third_party: true}
+    stages:
+      - id: vendor_due_diligence
+        title: Due diligence before signing
+        query: due diligence before entering a material arrangement with a service provider, assess ability to provide the service and risks
+        evidence: Vendor due-diligence record; materiality assessment; risk assessment of reliance on the provider
+        involve: [Operational risk, Procurement]
+        # CPS 230 para 27 is about an entity *providing* a material service to others, not
+        # engaging a provider. It matches "risk assessment ... material ... arrangement" closely.
+        exclude: [apra_cps230_2026:p27]
+      - id: vendor_contract
+        title: Contract terms
+        query: formal legally binding agreement with service provider, audit access, termination, sub-contracting, notification of other material service providers
+        evidence: Contract clause checklist (audit and APRA access, termination and exit, sub-contracting, incident notice, model change notice, data use)
+        involve: [Legal, Procurement]
+      - id: vendor_notify
+        title: Notifying APRA and offshoring
+        query: notify APRA after entering or materially changing a material arrangement, offshoring arrangement
+        evidence: Notification decision and date; offshoring assessment (where data and models are hosted)
+        involve: [Operational risk, Compliance]
+      - id: vendor_security
+        title: Vendor information security
+        query: information assets managed by a third party, assess information security capability, evaluate design of controls, rely on third party control testing
+        evidence: Security assessment of the vendor; control testing evidence or assurance reports
+        involve: [CISO / Information security]
+      - id: vendor_ai_supply_chain
+        title: AI supply chain, change and exit
+        query: AI supply chain third-party and fourth-party dependencies, foundation model provider, model updates, contingency and exit plans for critical AI providers
+        evidence: Supply-chain map (vendor, foundation model, hosting); exit or substitution plan; model-change monitoring
+        involve: [Data / AI lead, Operational risk]
+
+  - id: resilience
+    title: Critical operations, incidents and resilience
+    trigger: '\b(outage|incident|failure|disruption|critical operation|business continuity|resilien\w*|fallback)\b'
+    when: {critical_operation: true}
+    stages:
+      - id: resilience_critical_ops
+        title: Critical operations and tolerance levels
+        query: critical operations, tolerance levels for disruption, business continuity plan
+        evidence: Whether the model supports a critical operation; tolerance levels; fallback if the model fails
+        involve: [Operational risk, Business owner]
+      - id: resilience_incidents
+        title: Incident management and notification
+        query: information security incident notify APRA, operational risk incident, notify APRA of disruption to critical operation
+        evidence: Incident playbook covering model failures; notification thresholds and timings
+        involve: [Operational risk, CISO / Information security]
+
+  - id: governance
+    title: Board and executive oversight
+    trigger: '\b(board|accountab\w*|executive|governance|oversight|senior manag\w*)\b'
+    when: {always: true}
+    stages:
+      - id: governance_board
+        title: Board oversight and AI literacy
+        query: Board oversight of risk management, Board AI literacy and understanding to challenge management
+        evidence: Board or committee paper; approval within the risk management framework
+        involve: [Executive sponsor, Risk partner]

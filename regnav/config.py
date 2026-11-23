@@ -69,6 +69,13 @@ class RetrievalConfig(BaseModel):
     rerank: bool = False  # cross-encoder re-ranking of each tier's candidate pool
     rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
     rerank_pool_k: int = 20  # candidates per tier passed to the cross-encoder
+    # Opt-in (D-052): fixes for one document taking every slot in a tier (F-12) and for broad
+    # questions. Off by default so earlier configs and their results are unchanged.
+    per_doc_cap: int | None = None  # max chunks from one document per tier (stratified only)
+    strip_instructions: bool = False  # drop answer-format instructions before searching
+    stage_queries: bool = False  # broad questions: also search playbook stage sub-queries
+    max_stages: int = 6
+    tier_depth: int = 40  # candidates per tier per query considered by the cap / multi-query merge
 
 
 Provider = Literal["ollama", "groq", "openai_compat", "anthropic", "stub"]
@@ -187,7 +194,7 @@ class Secrets(BaseSettings):
         return bool(self.langfuse_public_key and self.langfuse_secret_key)
 
 
-DEFAULT_CONFIG = Path("configs/hybrid_stratified.yaml")
+DEFAULT_CONFIG = Path("configs/hybrid_stratified_rerank.yaml")  # D-055
 
 
 def load_config(path: str | Path | None = None, **overrides: object) -> AppConfig:

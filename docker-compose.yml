@@ -22,7 +22,7 @@ services:
       HOME: /tmp
       PORT: "8501"
       REGNAV_PUBLIC_DEMO: "0"
-      REGNAV_CONFIG: ${REGNAV_CONFIG:-configs/hybrid_stratified.yaml}
+      REGNAV_CONFIG: ${REGNAV_CONFIG:-configs/hybrid_stratified_rerank.yaml}
       # Local fallback model (Ollama running on your laptop, outside Docker)
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     extra_hosts:

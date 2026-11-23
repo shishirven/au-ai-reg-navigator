@@ -43,10 +43,13 @@ flowchart LR
 | Tagging | `regnav/ingest/tag.py` | modality must/should/info by regex (negation-aware); flat scalar metadata (`applies_bank`…) for Chroma |
 | Index | `regnav/ingest/index.py` | Chroma (cosine) + chunk JSONL for BM25; per-document fingerprint (file hash + metadata + **ingest-code hash**); incremental updates; content-derived `index_version` in `index_manifest_*.json` |
 | Retrieval | `regnav/retrieve/` | dense (BGE-small, query instruction), BM25 (Okapi, light stemming), RRF fusion (k=60), tier-stratified wrapper; filters applied identically to both retrievers |
+| Retrieval options | `regnav/retrieve/{expand,rerank,query,stages,plan}.py` | AI→tech-neutral query expansion and cross-encoder re-ranking (default, D-042/D-055); opt-in (D-052): answer-format instruction stripping, playbook stage sub-queries for broad questions (`data/playbooks.yaml`), soft per-document cap per tier |
+| Model-use check | `regnav/assess/`, `data/playbooks.yaml`, `data/use_cases/` | use-case intake → playbooks selected by its answers → each lifecycle stage searched per tier (2 binding, 2 expectation, 1 voluntary) → deduplicated checklist with per-tier relevance floors, applicability notes citing CPS 230 para 60 and the APP 1.7-1.9 commencement, Markdown + CSV; **no LLM**; stage results cached per index version (D-053) |
+| Coverage | `regnav/coverage.py`, `data/coverage.yaml` | names topics outside the library (Privacy Act text, FAR, CPS 510, ASIC, insurance and credit law, anti-discrimination, actuarial standards) on answers and checklists (D-054) |
 | Generation | `regnav/generate/` | provider-agnostic LLM interface (Groq/OpenAI-compatible, Ollama, Anthropic, stub); scope gate; prompt v3; validator; claim-level repair; one retry; safe abstention |
 | Observability | `regnav/observability/langfuse.py` | one trace per query: retrieval span (ids, tiers, scores), a generation per attempt (tokens, cost, latency, validation errors), config + index + prompt version; no-op without keys |
 | Evaluation | `regnav/eval/` | retrieval metrics, rule-based generation metrics (final + raw), LLM judge, bootstrap CIs, MLflow, compare, judge calibration, regression gate, release check |
-| UI | `app/streamlit_app.py` | config + sector selectors, tiered answer cards, sources panel with tier/modality badges, trace link, offline-stub mode |
+| UI | `app/streamlit_app.py`, `app/pages/1_Model-use_check.py` | Ask page: config + sector selectors, tiered answer cards, sources panel with tier/modality badges, trace link, offline-stub mode. Model-use check page: intake form, examples, checklist by stage, CSV / Markdown download |
 
 ## Data flow and versioning
 

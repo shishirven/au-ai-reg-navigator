@@ -6,8 +6,10 @@ import argparse
 import json
 import sys
 from collections import Counter
+from pathlib import Path
 
 from regnav.config import load_config
+from regnav.coverage import gaps_for_question
 from regnav.logging_utils import setup_logging
 
 
@@ -121,6 +123,8 @@ def cmd_ask(args: argparse.Namespace) -> int:
             print(json.dumps(result.to_dict(), indent=2, default=str))
         else:
             print(format_answer(result))
+            for g in gaps_for_question(question):
+                print(f"Not covered by this library: {g.title}. {g.note}")
             if args.show_sources:
                 print("\nRetrieved:")
                 for c in result.retrieved:
@@ -129,6 +133,27 @@ def cmd_ask(args: argparse.Namespace) -> int:
                     )
         print("-" * 80)
     tracer.flush()
+    return 0
+
+
+def cmd_check(args: argparse.Namespace) -> int:
+    """Model-use check: use-case YAML -> checklist (Markdown + CSV). No LLM call."""
+    from regnav.assess import UseCase, run_check
+    from regnav.assess.render import to_csv, to_markdown
+
+    cfg = load_config(args.config)
+    uc = UseCase.from_yaml(args.use_case)
+    cl = run_check(uc, cfg)
+    md = to_markdown(cl)
+    if args.out:
+        out = Path(args.out)
+        out.mkdir(parents=True, exist_ok=True)
+        stem = Path(args.use_case).stem
+        (out / f"{stem}.md").write_text(md)
+        (out / f"{stem}.csv").write_text(to_csv(cl))
+        print(f"wrote {out / (stem + '.md')} and {out / (stem + '.csv')}")
+    else:
+        print(md)
     return 0
 
 
@@ -156,6 +181,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--show-sources", action="store_true")
     p.add_argument("--model", default=None, help="override generation.model (e.g. qwen3:4b)")
     p.set_defaults(func=cmd_ask)
+
+    p = sub.add_parser(
+        "check", help="model-use check: use-case YAML -> requirement checklist (no LLM)"
+    )
+    p.add_argument("use_case", help="use-case YAML, e.g. data/use_cases/motor_pricing_gbm.yaml")
+    p.add_argument("--config", default=None)
+    p.add_argument("--out", default=None, help="directory for <name>.md and <name>.csv")
+    p.set_defaults(func=cmd_check)
 
     args = parser.parse_args(argv)
     setup_logging(args.log_level)

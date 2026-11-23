@@ -55,8 +55,23 @@ def build_retrieval(cfg: AppConfig) -> RetrievalSystem:
         if r.mode == "hybrid":
             retriever, top_k = hybrid, r.top_k
         else:
-            retriever, top_k = StratifiedRetriever(hybrid, r.per_tier_k), r.per_tier_k * 3
-    if r.query_expansion:
+            retriever, top_k = (
+                StratifiedRetriever(
+                    hybrid, r.per_tier_k, per_doc_cap=r.per_doc_cap, depth=r.tier_depth
+                ),
+                r.per_tier_k * 3,
+            )
+    planned = r.mode == "stratified" and (
+        r.strip_instructions or r.stage_queries or r.per_doc_cap is not None
+    )
+    if planned:
+        from regnav.retrieve.plan import PlannedRetriever
+
+        assert isinstance(retriever, StratifiedRetriever)
+        retriever = PlannedRetriever(
+            retriever, r.strip_instructions, r.stage_queries, r.query_expansion, r.max_stages
+        )
+    elif r.query_expansion:
         from regnav.retrieve.rerank import ExpandingRetriever
 
         retriever = ExpandingRetriever(retriever)

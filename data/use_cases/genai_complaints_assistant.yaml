@@ -1,0 +1,15 @@
+# Example use case (data science, generative AI). Fictional.
+name: Complaints summarisation assistant (LLM API)
+description: >-
+  Summarises customer complaint emails and suggests a category and next step for staff, using a
+  third-party LLM API. Staff make the decision; the model does not.
+sector: bank
+team: data_science
+lifecycle_stage: build
+personal_information: "yes"
+sensitive_information: unsure
+decisions_about_individuals: "no"
+third_party: "yes"
+offshore: "yes"
+critical_operation: "no"
+generative_ai: "yes"

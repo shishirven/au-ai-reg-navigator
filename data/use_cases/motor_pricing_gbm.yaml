@@ -1,0 +1,15 @@
+# Example use case (actuarial). Fictional.
+name: Motor insurance pricing model (GBM)
+description: >-
+  Gradient-boosted model that sets motor premiums from policyholder, vehicle and claims-history
+  data. Built in-house; trained on a cloud ML platform hosted by an external provider.
+sector: insurer
+team: actuarial
+lifecycle_stage: validate
+personal_information: "yes"
+sensitive_information: "no"
+decisions_about_individuals: "yes"
+third_party: "yes"
+offshore: unsure
+critical_operation: "yes"
+generative_ai: "no"

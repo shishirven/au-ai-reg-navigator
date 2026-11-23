@@ -1,9 +1,39 @@
 # AU AI Regulation Navigator
 
-**Tier-aware RAG over Australian AI regulation, built to model-risk standards.**
+**Which rules apply to the model you're building? A tier-aware regulatory assistant for data
+leads, data scientists, actuaries and analytics teams at Australian banks and insurers, built to
+model-risk standards.**
 
-Ask *"What do we need to do before engaging a third-party AI vendor?"* and get an answer split by
-legal force, with every claim cited:
+Data teams build the pricing models, churn models and LLM assistants, but the rules that govern
+them are spread across technology-neutral prudential standards, privacy law, regulator letters and
+voluntary guidance, and few of them say "AI". This tool gives a team a cited, first-pass view of
+what applies **before** they take the work to risk, compliance and privacy. It is a starting point
+for that conversation, never a compliance verdict.
+
+**1. Model-use check.** Describe one model in a short form and get a checklist by lifecycle stage.
+No language model is called; every item quotes its source:
+
+> **Motor insurance pricing model (GBM)** · insurer · actuarial · uses personal information ·
+> informs decisions about customers · external ML platform
+>
+> *Key points:* automated decision-making transparency (APP 1.7-1.9) commences on 10 December 2026
+> · notify APRA before a material offshoring arrangement (CPS 230 para 60(b))
+> · 'unsure' on offshore treated as yes
+>
+> **Data quality and data risk** · *evidence:* data quality checks, lineage, known limitations
+> - [ ] 🟠 Regulator expects · CPG 235 para 51 · *Data validation is the assessment of the data
+>   against business rules to determine its fitness for use…*
+>
+> **Due diligence before signing** (platform vendor) · *involves:* operational risk, procurement
+> - [ ] 🔴 Mandatory · CPS 230 para 52 · *Before entering into or materially modifying a material
+>   arrangement, an APRA-regulated entity must: (a) undertake appropriate due diligence…*
+>
+> **Not covered by this library:** Privacy Act text · FAR · insurance law · anti-discrimination
+> law · actuarial professional standards
+>
+> ⬇ CSV with status / evidence / owner columns for the team to fill in
+
+**2. Ask.** A question gets an answer split by legal force, with every claim cited:
 
 > **Mandatory** (binding standard)
 > - Before entering into a material arrangement, an APRA-regulated entity must undertake appropriate due diligence… *[CPS 230 para 52]*
@@ -14,7 +44,21 @@ legal force, with every claim cited:
 > **Recommended** (voluntary guidance)
 > - Ask the developer or supplier to show proof that the AI system has been properly tested… *[AI6 Foundations]*
 >
-> *Not legal advice.* · config `hybrid_stratified` · index `idx-2185d086e9c4`
+> *Not legal advice.* · config `hybrid_stratified_rerank` · index `idx-2185d086e9c4`
+
+### Who it's for, and the workflow
+
+| user | example |
+|---|---|
+| Data scientist / ML engineer | LLM API summarising customer complaints: vendor, offshoring, personal information in prompts |
+| Actuary | Pricing or underwriting model: automated-decision disclosure, validation, monitoring, platform vendor |
+| Analytics lead | Churn or propensity model driving offers: personal information use, fairness testing, inventory |
+| Data / AI lead | Consistent first-pass checklists across the team's models, exported to the risk assessment |
+
+Describe the use case → checklist by lifecycle stage → the team marks each item met / not met /
+not applicable with evidence (CSV) → risk, compliance and privacy review and sign off → attach to
+the risk assessment or model inventory. Scope: APRA-regulated banks and insurers, APRA prudential
+standards and privacy guidance (D-051). Anything outside the library is named as *not covered*.
 
 ## Why this is hard: the core idea
 
@@ -172,6 +216,12 @@ make ask Q="Who is accountable for AI risk?" SECTOR=insurer
 
 ```bash
 make app
+```
+
+Model-use check from the command line (writes Markdown and CSV to `results/checks/`):
+
+```bash
+make check USE_CASE=data/use_cases/motor_pricing_gbm.yaml
 ```
 
 Fully offline on a laptop (Ollama, Qwen3-4B on CPU): `bash scripts/setup_local.sh`, then use

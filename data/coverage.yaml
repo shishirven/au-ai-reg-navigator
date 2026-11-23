@@ -1,0 +1,70 @@
+# What this library covers, and what it does not (D-051, D-054).
+#
+# Used to add an honest "not covered by this library" note to answers and checklists, so users
+# know what to check elsewhere. Items are *pointers*, not advice: "may also be relevant".
+# Q&A mode: an item is shown when its `trigger` matches the question.
+# Model-use check: an item is shown when its `when` conditions match the use case
+# (`always`, or use-case fields such as decisions_about_individuals / team / sector).
+
+library: >-
+  APRA CPS 230 (2023 and 2026 versions), CPS 234, CPS 220; CPG 230, CPG 235; APRA letter to
+  industry on AI (April 2026); OAIC guidance on commercially available AI products and the
+  APP 1.7-1.9 automated decision-making fact sheet; National AI Centre Guidance for AI Adoption
+  (AI6). Earlier voluntary guidance (2024 voluntary standard, 2019 ethics principles) is kept for
+  history and excluded from answers.
+
+not_covered:
+  - id: privacy_act_text
+    title: Privacy Act 1988 and the Australian Privacy Principles (the Act itself)
+    note: >-
+      Privacy obligations are covered through OAIC guidance, which explains the APPs. The Act's
+      text is staged but not yet live (it switches on with statement-level legal authority,
+      D-044), so APP obligations appear under "Regulator expects" with an "explains binding law"
+      note rather than under "Mandatory".
+    trigger: '\b(APPs?\b|Australian Privacy Principle|Privacy Act|personal information|privacy)'
+    when: {personal_information: true}
+  - id: far
+    title: Financial Accountability Regime (FAR)
+    note: Named accountable executives and their accountability maps.
+    trigger: '\b(FAR|accountable (person|executive)s?|accountability map|BEAR)\b'
+    when: {always: true}
+  - id: cps510
+    title: CPS 510 Governance
+    note: Board and governance requirements beyond risk management.
+    trigger: '\b(CPS 510|board composition|governance standard)\b'
+    when: {always: true}
+  - id: cpg234
+    title: CPG 234 Information Security (guidance)
+    note: APRA's practice guide to CPS 234, including third-party security assurance.
+    trigger: '\b(CPG 234|information security|cyber)\b'
+    when: {third_party: true}
+  - id: super_standards
+    title: Superannuation prudential standards (SPS 220, SPS 510)
+    note: Risk management and governance standards for RSE licensees.
+    trigger: '\b(super(annuation)?|RSE|trustee)\b'
+    when: {sector: super}
+  - id: insurance_law
+    title: Insurance Contracts Act and insurance codes of practice
+    note: Duties in claims handling and underwriting, including utmost good faith.
+    trigger: '\b(claims? handling|underwrit\w*|insurance contract|code of practice)\b'
+    when: {sector: insurer, decisions_about_individuals: true}
+  - id: credit_law
+    title: Consumer credit law (responsible lending, NCCP)
+    note: Credit assessment obligations for lenders.
+    trigger: '\b(credit|lending|loan|responsible lending)\b'
+    when: {sector: bank, decisions_about_individuals: true}
+  - id: anti_discrimination
+    title: Anti-discrimination law
+    note: Relevant where a model's decisions could treat people differently by a protected attribute.
+    trigger: '\b(discriminat\w*|bias|fairness|protected attribute)\b'
+    when: {decisions_about_individuals: true}
+  - id: asic
+    title: ASIC guidance and Corporations Act licensee obligations
+    note: Conduct obligations for AFS and credit licensees, including s912A general obligations.
+    trigger: '\b(ASIC|AFSL?|912A|licensee|design and distribution|DDO)\b'
+    when: {always: true}
+  - id: actuarial_standards
+    title: Actuaries Institute professional standards and guidance
+    note: Professional obligations for actuaries relying on models and AI outputs.
+    trigger: '\b(actuar\w*)\b'
+    when: {team: actuarial}

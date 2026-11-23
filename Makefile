@@ -1,11 +1,12 @@
 # AU AI Regulation Navigator - developer entry points. Everything runs through uv.
-CONFIG ?= configs/hybrid_stratified.yaml
+CONFIG ?= configs/hybrid_stratified_rerank.yaml
+USE_CASE ?= data/use_cases/motor_pricing_gbm.yaml
 Q ?= What do we need to do before engaging a third-party AI vendor?
 SECTOR ?= bank
 UV := uv run
 
 .PHONY: help setup-local install lint format typecheck test test-unit test-integration test-adversarial \
-        coverage regression-gate ingest ask eval eval-all compare judge-calibration \
+        coverage regression-gate ingest ask check eval eval-all compare judge-calibration \
         release-check chunks eval-draft eval-retrieval retrieval-ablation authority-staging clause-eval mlflow-ui app docker-build up down clean
 
 help:  ## List targets
@@ -89,6 +90,9 @@ release-check:  ## Release gate: lint, tests, regression gate, full gold eval, t
 	$(MAKE) lint typecheck test regression-gate
 	$(if $(SKIP_EVAL),,$(UV) python -m regnav.eval.run_eval --config $(CONFIG))
 	$(UV) python -m regnav.eval.release_check --config $(CONFIG)
+
+check:  ## Model-use check (no LLM): make check USE_CASE=data/use_cases/motor_pricing_gbm.yaml
+	$(UV) python -m regnav.cli check --config $(CONFIG) $(USE_CASE) --out results/checks
 
 app:  ## Run the Streamlit app locally
 	$(UV) streamlit run app/streamlit_app.py

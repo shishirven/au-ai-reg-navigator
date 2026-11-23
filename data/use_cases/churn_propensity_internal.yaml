@@ -1,0 +1,15 @@
+# Example use case (analytics, no vendor). Fictional.
+name: Churn propensity model for retention offers
+description: >-
+  Internal model scoring customers' likelihood to close their account; high scores trigger a
+  retention offer. Built and hosted in-house.
+sector: bank
+team: analytics
+lifecycle_stage: live
+personal_information: "yes"
+sensitive_information: "no"
+decisions_about_individuals: "yes"
+third_party: "no"
+offshore: "no"
+critical_operation: "no"
+generative_ai: "no"

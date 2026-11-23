@@ -20,6 +20,7 @@ if os.environ.get("REGNAV_PUBLIC_DEMO") == "1" or os.environ.get("K_SERVICE"):
 
 from regnav.authority import note_for
 from regnav.config import TIER_LABELS, AppConfig, Secrets, load_config
+from regnav.coverage import gaps_for_question
 from regnav.demo_guard import (
     banner_text,
     footer_text,
@@ -179,7 +180,9 @@ with st.sidebar:
     status_slot = st.empty()  # filled at the end of the run, after any fallback has happened
 
 st.markdown(
-    "Ask about AI in Australian financial services. Every claim is cited and labelled as "
+    "For data leads, data scientists, actuaries and analytics teams at banks and insurers. "
+    "Ask about AI and model use under Australian regulation; for a checklist on one model, use "
+    "**Model-use check** in the sidebar. Every claim is cited and labelled as "
     f"{badge('Mandatory', TIER_COLOR['binding'])} {badge('Regulator expects', TIER_COLOR['expectation'])} "
     f"{badge('Recommended', TIER_COLOR['voluntary'])}.",
     unsafe_allow_html=True,
@@ -297,6 +300,12 @@ if result is not None:
                 f"<span style='font-weight:400;color:#475467;font-size:0.85rem'>· {sub}</span></div>"
                 f"<ul style='margin:6px 0 0 0'>{''.join(items)}</ul></div>",
                 unsafe_allow_html=True,
+            )
+        gaps = gaps_for_question(result.question)
+        if gaps:
+            st.markdown(
+                "**Not covered by this library: check separately.** "
+                + " ".join(f"*{html.escape(g.title)}*: {html.escape(g.note)}" for g in gaps)
             )
         st.caption(f"⚠️ {result.disclaimer}")
         flags = []
