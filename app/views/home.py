@@ -8,6 +8,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from regnav.commencement import for_doc
 from regnav.config import load_config
 from regnav.demo_guard import CORPUS_AS_OF, footer_text
 from regnav.ingest.index import load_manifest
@@ -66,8 +67,13 @@ def tag(tier: str) -> str:
 def doc_row(d: LibraryDoc, today: date) -> str:
     when = ""
     if d.effective_from:
-        future = d.effective_from > today.isoformat()
-        when = f"{'commences' if future else 'from'} {d.effective_from}" + (" ⏳" if future else "")
+        if d.tier == "binding":
+            future = d.effective_from > today.isoformat()
+            when = f"{'commences' if future else 'in force from'} {d.effective_from}"
+        else:
+            when = f"dated {d.effective_from}"
+    for c in for_doc(d.id, today):
+        when += f" · explains {c.short}, which commences {c.long_date} ⏳"
     sectors = ", ".join(s.replace("any_business", "any business") for s in d.applies_to)
     link = f' · <a href="{html.escape(d.url)}" target="_blank">source ↗</a>' if d.url else ""
     return (

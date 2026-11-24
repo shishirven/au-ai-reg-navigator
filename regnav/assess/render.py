@@ -25,8 +25,8 @@ CSV_FIELDS = [
     "citation",
     "requirement_excerpt",
     "modality",
-    "effective_from",
-    "not_yet_in_force",
+    "document_date",
+    "obligation_commences",
     "weak_match",
     "explains_binding_law",
     "also_relevant_to",
@@ -53,7 +53,7 @@ def _cite(i: ChecklistItem) -> str:
 def _flags(i: ChecklistItem) -> str:
     out = []
     if i.not_yet_in_force:
-        out.append(f"⏳ from {i.effective_from}")
+        out.append(f"⏳ {i.obligation} commences {i.commences}")
     if i.explains_law:
         out.append("⚖️ explains binding law")
     if i.weak:
@@ -151,8 +151,8 @@ def to_csv(cl: Checklist, tracking: Tracking | None = None) -> str:
                     "citation": i.citation,
                     "requirement_excerpt": i.excerpt,
                     "modality": i.modality,
-                    "effective_from": i.effective_from,
-                    "not_yet_in_force": "yes" if i.not_yet_in_force else "",
+                    "document_date": i.effective_from,
+                    "obligation_commences": f"{i.obligation} {i.commences}" if i.commences else "",
                     "weak_match": "yes" if i.weak else "",
                     "explains_binding_law": i.explains_law,
                     "also_relevant_to": "; ".join(i.also_in),

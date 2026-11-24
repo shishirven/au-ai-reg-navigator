@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from dataclasses import asdict, dataclass, field
 from datetime import date
 from pathlib import Path
@@ -21,6 +20,7 @@ from typing import Any
 
 from regnav.assess.usecase import UseCase
 from regnav.authority import note_for
+from regnav.commencement import by_id, load_commencements
 from regnav.config import TIER_LABELS, TIERS, AppConfig
 from regnav.coverage import CoverageGap, conditions_met, gaps_for_use_case
 from regnav.links import citation_url
@@ -87,8 +87,10 @@ class ChecklistItem:
     chunk_id: str
     excerpt: str
     modality: str
-    effective_from: str = ""
-    not_yet_in_force: bool = False
+    effective_from: str = ""  # the document's own date (publication or commencement), as listed
+    not_yet_in_force: bool = False  # explains an obligation that hasn't commenced (registry)
+    commences: str = ""  # that obligation's commencement date (data/commencements.yaml)
+    obligation: str = ""  # its short name, e.g. "APP 1.7-1.9"
     url: str = ""
     score: float | None = None
     weak: bool = False
@@ -165,6 +167,11 @@ def _citation(m: dict[str, Any]) -> str:
 def _item(stage: Stage, c: RetrievedChunk, today: date) -> ChecklistItem:
     m = c.metadata
     eff = str(m.get("effective_from") or "")
+    pend = [
+        x
+        for x in load_commencements()
+        if x.pending(today) and x.relevant_to(str(m.get("doc_id", "")), c.text)
+    ]
     score = c.scores.get("rerank")
     note = note_for(str(m.get("doc_id", "")))
     return ChecklistItem(
@@ -176,7 +183,9 @@ def _item(stage: Stage, c: RetrievedChunk, today: date) -> ChecklistItem:
         excerpt=_excerpt(c.text),
         modality=c.modality,
         effective_from=eff,
-        not_yet_in_force=bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", eff)) and eff > today.isoformat(),
+        not_yet_in_force=bool(pend),
+        commences=pend[0].commences.isoformat() if pend else "",
+        obligation=pend[0].short if pend else "",
         url=citation_url(m, c.text),
         score=score,
         weak=score is not None and score < FLOORS.get(c.tier, (0.0, 0.0))[0],
@@ -216,18 +225,17 @@ def applicability_notes(uc: UseCase, today: date) -> list[str]:
                 else ""
             )
         )
-    if f["decisions_about_individuals"] and f["personal_information"]:
-        start = date(2026, 12, 10)
+    adm = by_id("app_1_7_9")
+    if f["decisions_about_individuals"] and f["personal_information"] and adm is not None:
         when = (
-            f"commences on 10 December 2026 ({(start - today).days} days from today)"
-            if today < start
-            else "has applied since 10 December 2026"
+            f"commences on {adm.long_date} ({(adm.commences - today).days} days from today)"
+            if today < adm.commences
+            else f"has applied since {adm.long_date}"
         )
+        cites = "; ".join(s.cite for s in adm.sources[:2])
         notes.append(
-            "Automated decision-making transparency (APP 1.7-1.9) "
-            f"{when}: the privacy policy must describe decisions a computer program makes, or "
-            "substantially and directly informs, that could significantly affect individuals "
-            "(OAIC APP 1.7-1.9 fact sheet). Banks and insurers are assumed to be APP entities."
+            f"Automated decision-making transparency ({adm.short}) {when}: {adm.obligation}. "
+            f"{adm.applies} Banks and insurers are assumed to be APP entities. (Sources: {cites}.)"
         )
     if uc.sensitive_information in ("yes", "unsure"):
         notes.append(

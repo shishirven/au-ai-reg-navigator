@@ -70,7 +70,9 @@ actuaries.
 3. **Relevance floors** per tier drop off-topic matches and flag weak ones (below).
 4. A paragraph found by several stages is listed once, under the first, with "also relevant to".
 5. **Applicability notes** are deterministic sentences tied to the answers, each citing its
-   paragraph (CPS 230 para 60(a)/(b); the APP 1.7-1.9 fact sheet).
+   paragraph (CPS 230 para 60(a)/(b)). Commencement dates come from `data/commencements.yaml`, where
+   each date is backed by quoted sources (the OAIC fact sheet; the Act's commencement and
+   application provisions), never from a document's publication date or a date in code (D-056).
 6. **No language model is used.** Every item is a quotation, so the check costs no API quota, gives
    the same output every time, and every line can be traced to its source.
 

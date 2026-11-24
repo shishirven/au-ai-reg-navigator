@@ -38,6 +38,7 @@ generation:
   claim_repair: true
   scope_gate: true
   min_dense_similarity: 0.62
+  commencement_check: true   # D-056: state not-yet-commenced dates, citing their source
   price_input_per_mtok: 0.0
   price_output_per_mtok: 0.0
   # Free-tier Gemini Flash via the OpenAI-compatible endpoint. Same prompt and

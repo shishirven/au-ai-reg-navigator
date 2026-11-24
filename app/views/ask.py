@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import html
 import os
+from datetime import date
 from pathlib import Path
 
 import streamlit as st
 
 from regnav.authority import note_for
+from regnav.commencement import by_id, for_doc
 from regnav.config import TIER_LABELS, AppConfig, Secrets, load_config
 from regnav.coverage import gaps_for_question
 from regnav.demo_guard import (
@@ -285,6 +287,32 @@ if result is not None:
                 f"<ul style='margin:6px 0 0 0'>{''.join(items)}</ul></div>",
                 unsafe_allow_html=True,
             )
+        for cm in result.commencements:
+            c = by_id(cm["id"])
+            if c is None:
+                continue
+            how = {
+                "quoted": "The answer quotes the source that states this date.",
+                "retry": "",
+                "model": "",
+            }.get(cm["how"], "")
+            srcs = " · ".join(
+                (
+                    f"<a href='{html.escape(s.url)}' target='_blank' rel='noopener'>{html.escape(s.cite)}</a>"
+                    if s.url
+                    else html.escape(s.cite)
+                )
+                + ("" if s.live else " <i>(not yet in the searched library)</i>")
+                for s in c.sources
+            )
+            st.markdown(
+                f"<div style='border:1px solid rgba(220,104,3,.45);background:rgba(220,104,3,.08);"
+                f"border-radius:8px;padding:8px 12px;margin:6px 0 10px 0;font-size:0.9rem'>"
+                f"⏳ <b>{html.escape(c.short)} commences {html.escape(c.long_date)}.</b> "
+                f"{html.escape(c.applies)} {how}<br>"
+                f"<span style='font-size:0.8rem;opacity:.8'>Date sources: {srcs}</span></div>",
+                unsafe_allow_html=True,
+            )
         gaps = gaps_for_question(result.question)
         if gaps:
             st.markdown(
@@ -338,7 +366,10 @@ if result is not None:
                 body = c.text.split("\n", 1)[-1]
                 st.markdown(f"**{m.get('doc_title', '')}**  \nSection: {m.get('section', '')}")
                 if m.get("effective_from"):
-                    st.markdown(f"Effective from: `{m['effective_from']}`")
+                    label = "In force from" if c.tier == "binding" else "Document dated"
+                    st.markdown(f"{label}: `{m['effective_from']}`")
+                for cm in for_doc(str(m.get("doc_id", "")), date.today()):
+                    st.markdown(f"⏳ Explains {cm.short}, which commences **{cm.long_date}**.")
                 if note := note_for(str(m.get("doc_id", ""))):
                     st.info(f"⚖️ {note.note}")
                 st.text(body)

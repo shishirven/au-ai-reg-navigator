@@ -601,7 +601,9 @@ elif ss.mc_step == "result" and ss.get("mc_cl") is not None:
                     it: ChecklistItem
                     flags = []
                     if it.not_yet_in_force:
-                        flags.append(f'<span class="mc-soft">⏳ from {it.effective_from}</span>')
+                        flags.append(
+                            f'<span class="mc-soft">⏳ {html.escape(it.obligation)} commences {it.commences}</span>'
+                        )
                     if it.explains_law:
                         flags.append('<span class="mc-soft">⚖️ explains binding law</span>')
                     if it.weak:

@@ -193,7 +193,7 @@ def test_markdown_and_csv_render() -> None:
     md = to_markdown(cl)
     assert md.startswith("# Model-use check: Pricing GBM")
     assert "- [ ] **🔴 Mandatory** · CPS 230 para 52" in md
-    assert "⏳ from 2026-12-10" in md and "not a compliance verdict" in md
+    assert "⏳ APP 1.7-1.9 commences 2026-12-10" in md and "not a compliance verdict" in md
     assert "no language model used" in md
     rows = list(csv.DictReader(io.StringIO(to_csv(cl))))
     assert rows and list(rows[0]) == CSV_FIELDS

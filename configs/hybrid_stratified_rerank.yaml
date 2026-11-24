@@ -35,6 +35,7 @@ generation:
   claim_repair: true
   scope_gate: true
   min_dense_similarity: 0.62
+  commencement_check: true   # D-056: state not-yet-commenced dates, citing their source
   price_input_per_mtok: 0.0   # free tier
   price_output_per_mtok: 0.0
   # Local fallback for the app/CLI when Groq is rate-limited or down (never used by evals). D-041.

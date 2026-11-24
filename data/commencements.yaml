@@ -1,0 +1,44 @@
+# When obligations commence, with the sources that say so (D-056).
+#
+# Separate from `effective_from` in sources.yaml, which is a property of a *document* and means
+# different things for different documents (commencement for a standard, publication date for
+# guidance, the date of a letter). A commencement here is a property of an *obligation*, and every
+# date must be backed by quoted sources:
+#   * `live: true`  - a chunk in the live index whose text contains `quote` (checked by
+#                     tests/corpus/test_commencements.py). Answers cite it like any other source.
+#   * `live: false` - a provision staged but not yet searched (e.g. the Act itself, D-044); shown to
+#                     users as the authority for the date, never cited in an answer.
+# `explained_by`: documents whose content explains this obligation; retrieving any of them, or text
+# matching `mentions`, makes the commencement relevant to an answer or checklist.
+
+commencements:
+  - id: app_1_7_9
+    short: APP 1.7-1.9
+    obligation: >-
+      privacy policies must describe decisions a computer program makes, or
+      substantially and directly informs, that could significantly affect individuals
+    commences: "2026-12-10"
+    applies: >-
+      Applies to decisions made after commencement, even if the computer program was arranged,
+      or the personal information was used, acquired or created, before then.
+    explained_by: [oaic_app1_adm_2026]
+    mentions: '\bAPPs?\s?1\.[789]\b|\bAustralian Privacy Principles?\s?1\.[789]\b'
+    sources:
+      - chunk: "oaic_app1_adm_2026:s001"
+        cite: OAIC APP 1.7-1.9 fact sheet
+        quote: "Changes to privacy obligations for APP entities come into effect on 10 December 2026."
+        live: true
+      - doc: privacy_act_app1_7_9
+        cite: Privacy and Other Legislation Amendment Act 2024, s 2 commencement table, item 7
+        quote: >-
+          Schedule 1, Part 15 commences on the day after the end of the period of 24 months
+          beginning on the day the Act receives the Royal Assent: 10 December 2026.
+        url: https://www.legislation.gov.au/C2024A00128/asmade/text
+        live: false
+      - doc: privacy_act_app1_7_9
+        cite: Privacy and Other Legislation Amendment Act 2024, Schedule 1, item 89 (application)
+        quote: >-
+          The amendment of clause 1 of Schedule 1 to the Privacy Act 1988 made by this Part applies
+          in relation to decisions made after the commencement of this item
+        url: https://www.legislation.gov.au/C2024A00128/asmade/text
+        live: false

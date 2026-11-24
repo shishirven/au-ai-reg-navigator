@@ -126,6 +126,9 @@ class GenerationConfig(LLMConfig):
     # dense match is very weak or the question names a jurisdiction / instrument not in corpus.
     scope_gate: bool = True
     min_dense_similarity: float = 0.62
+    # D-056: when a retrieved source explains an obligation that hasn't commenced, add the live
+    # source that states the date and require the answer to state it (data/commencements.yaml).
+    commencement_check: bool = False
 
 
 class JudgeConfig(LLMConfig):
