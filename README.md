@@ -111,12 +111,15 @@ Details: [docs/retrieval_ablation.md](docs/retrieval_ablation.md).
 | hybrid, pooled | 0.76 [0.65, 0.86] | 0.67 | 0.94 |
 | hybrid, tier-stratified | 0.77 [0.66, 0.86] | 0.77 | 0.97 |
 | **+ query expansion + re-rank** | **0.89** [0.82, 0.94] | **0.91** | 0.97 |
+| + per-document cap in guidance tiers (`hybrid_stratified_capped`, opt-in) | 0.93 [0.88, 0.97] | 0.91 | 0.97 |
 
 Re-ranking is what moves answer correctness: **+0.12** over stratified (paired bootstrap
 [+0.03, +0.22]). Stratification on its own guarantees a binding source but not the *right paragraph*,
 and the judge scores completeness against a reference answer, so its correctness matches the naive
 baseline's. Citation validity, authority-label accuracy and modality are at ceiling for every config
-because the validator enforces them. Open issue: one document can take every slot in a tier (F-12).
+because the validator enforces them. The capped variant fixes one-document crowding in retrieval (F-12) and
+scores higher (+0.04, interval includes zero), but stays opt-in: a safety test on a not-yet-in-force date
+still fails, which is a generation fix (D-052).
 
 Full table: **[docs/results.md](docs/results.md)** · validation write-up:
 **[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)** · per-question outputs: `docs/eval_runs/`.

@@ -106,15 +106,15 @@ are within noise. MRR is lower for stratified **by design** (per-tier interleavi
 The table above is `hybrid_stratified`. All four configurations, same questions, generator, judge and
 index (`idx-2185d086e9c4`); full table in `docs/results.md`:
 
-| metric | dense pooled | hybrid pooled | hybrid stratified | **stratified + re-rank** |
-|---|---|---|---|---|
-| Answer correctness (judge) | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | **0.887** [0.82, 0.94] |
-| Correctness, 23 binding questions | 0.717 | 0.674 | 0.772 | **0.913** |
-| Faithfulness (judge) | 1.000 | 0.938 [0.86, 0.99] | 0.966 [0.93, 0.99] | 0.970 [0.93, 1.00] |
-| Expected-tier recall | 0.805 | 0.862 | 1.000 | 0.990 |
-| Citation validity / authority / modality (final) | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 |
-| Abstention precision / recall | 1.00 / 0.80 | 1.00 / 0.80 | 1.00 / 0.80 | 1.00 / 0.80 |
-| Input tokens / query | 3,318 | 3,341 | 3,056 | 3,820 |
+| metric | dense pooled | hybrid pooled | hybrid stratified | **stratified + re-rank** | + guidance-tier cap (`capped`) |
+|---|---|---|---|---|---|
+| Answer correctness (judge) | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | **0.887** [0.82, 0.94] | 0.931 [0.88, 0.97] |
+| Correctness, 23 binding questions | 0.717 | 0.674 | 0.772 | **0.913** | see note |
+| Faithfulness (judge) | 1.000 | 0.938 [0.86, 0.99] | 0.966 [0.93, 0.99] | 0.970 [0.93, 1.00] | 0.971 [0.94, 0.99] |
+| Expected-tier recall | 0.805 | 0.862 | 1.000 | 0.990 | 1.000 |
+| Citation validity / authority / modality (final) | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 | 1.00 / 1.00 / 0.00 |
+| Abstention precision / recall | 1.00 / 0.80 | 1.00 / 0.80 | 1.00 / 0.80 | 1.00 / 0.80 | 1.00 / 0.80 |
+| Input tokens / query | 3,318 | 3,341 | 3,056 | 3,820 | 3,832 |
 
 Paired bootstrap on correctness (same 40 questions, 10,000 resamples):
 
@@ -124,6 +124,8 @@ Paired bootstrap on correctness (same 40 questions, 10,000 resamples):
 | re-rank vs dense pooled | **+0.11** [+0.03, +0.21] | 13 / 4 |
 | re-rank vs hybrid pooled | **+0.13** [+0.03, +0.23] | 14 / 5 |
 | stratified vs dense pooled | −0.01 [−0.08, +0.06] | 7 / 8 |
+| capped (guidance-tier cap) vs re-rank | +0.04 [−0.01, +0.11] | 7 / 3 |
+| capped, all-tier variant (rejected) vs re-rank | −0.04 [−0.12, +0.02] | 5 / 6 |
 
 *Interpretation.*
 
@@ -178,7 +180,7 @@ metrics should be treated as indicative only.**
 | F-08 | Low | Evaluation questions and reference answers were written by the developer, a validation-independence issue. | Open. Expert-written gold set (user) required before release (§10). |
 | F-09 | Low (fixed) | Index version differed between Windows and Linux checkouts (line endings). | **Fixed** (D-040), `.gitattributes`. |
 | F-11 | Medium | Corpus gaps for the super sector and definitions: SPS 220 (risk management for RSE licensees) and APS/GPS/LPS/HPS 001 are cited but not in the corpus; CPS 220 does not apply to super, so super users get no binding risk-management standard. | Open: add SPS 220 (and SPS 230 references where relevant). |
-| F-12 | **Medium** | One document can take every slot in its tier. For *"Do privacy policies have to explain how automated decisions use personal information?"* the OAIC AI-products guidance (68 chunks, "personal information" throughout) fills all regulator-expects slots, and the OAIC APP 1.7–1.9 fact sheet (wording: "computer program … make a decision") ranks 28th–30th in tier, so the 10 Dec 2026 commencement is never stated (adversarial test 5 fails). The same pattern dropped the APRA AI letter and CPS 234 from a vendor-engagement answer in a side-by-side review. | **Remediation built, confirmation pending.** `hybrid_stratified_capped` (D-052): soft cap of 3 chunks per document in the guidance tiers plus instruction stripping. Retrieval: the fact sheet now reaches the context (broad-question coverage 0.43 → 0.61, `docs/stage_coverage.md`) with binding context unchanged and narrow context recall 0.740 → 0.750. A first variant that also capped the binding tier lowered correctness (0.887 → 0.844) and was rejected. The generation eval and adversarial test 5 on the final config are scheduled; it becomes the default only if correctness holds. The model-use check (D-053) is not affected: it searches each lifecycle stage separately. |
+| F-12 | **Medium** | One document can take every slot in its tier. For *"Do privacy policies have to explain how automated decisions use personal information?"* the OAIC AI-products guidance (68 chunks, "personal information" throughout) fills all regulator-expects slots, and the OAIC APP 1.7–1.9 fact sheet (wording: "computer program … make a decision") ranks 28th–30th in tier, so the 10 Dec 2026 commencement is never stated (adversarial test 5 fails). The same pattern dropped the APRA AI letter and CPS 234 from a vendor-engagement answer in a side-by-side review. | **Partly remediated; not yet the default.** Retrieval is fixed in `hybrid_stratified_capped` (D-052): the fact sheet now reaches the context and is cited; broad-question coverage 0.43 → 0.61; answer correctness 0.887 → 0.931 (paired Δ +0.04 [−0.01, +0.11], 7 better / 3 worse). **But adversarial test 5 still fails**: the cited fact-sheet paragraph does not contain the date, and the generator ignored the source's `effective_from` attribute and prompt rule 5. Under the rule pre-registered on 23 Nov (correctness within −0.02 *and* test 5 passing) it does not become the default. Remaining fix is in generation: deterministically state the commencement date for claims citing a not-yet-in-force source (validator/repair), then re-run. |
 | F-10 | Info | Latency and throughput on the free inference tier are bounded by rate limits (200k tokens/day/model). | Production would need a paid tier or self-hosting; capacity test required. |
 
 ## 8. Limitations

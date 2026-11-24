@@ -35,7 +35,7 @@ questions must not cost these.
 | + cap 2 + stripping + stage sub-queries (first proposal) | 0.672 | 0.783 | 0.61 | |
 | + cap 3 + stripping + stage sub-queries | 0.691 | 0.870 | 0.67 | |
 | + cap 3, **all tiers** + stripping (`…capped_alltiers`) | 0.748 | 0.913 | 0.67 | 0.844 (−0.04 [−0.12, +0.02]) |
-| **+ cap 3, guidance tiers only + stripping (`hybrid_stratified_capped`)** | **0.750** | **0.913** | **0.61** | generation eval scheduled |
+| **+ cap 3, guidance tiers only + stripping (`hybrid_stratified_capped`)** | **0.750** | **0.913** | **0.61** | **0.931** (+0.04 [−0.01, +0.11]) |
 
 Reading it:
 
@@ -54,3 +54,5 @@ Reading it:
 * n = 8 broad and 40 narrow developer-written questions; the broad-question intervals overlap, so
   this is directional evidence. `hybrid_stratified_capped` replaces the default only if its
   generation eval is at least as good as `hybrid_stratified_rerank`.
+
+**Decision (24 Nov):** `hybrid_stratified_capped` meets the correctness condition of the pre-registered rule but fails adversarial test 5 (the fact sheet is retrieved and cited, but the answer omits the 10 Dec 2026 commencement), so it stays opt-in and `hybrid_stratified_rerank` remains the default (D-052, F-12). The next fix is on the generation side: state the commencement date deterministically for claims that cite a source not yet in force.
