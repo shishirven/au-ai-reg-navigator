@@ -72,7 +72,7 @@ USER app
 # The version assert fails the build if the corpus or ingest code drifted from the eval.
 # GIT_SHA is applied after this layer so a new commit does not rebuild the index.
 RUN python -m regnav.cli ingest --config configs/prod.yaml \
-    && python -c "from regnav.config import load_config; from regnav.ingest.index import load_manifest; m=load_manifest(load_config('configs/prod.yaml')); v=m['index_version']; assert v=='idx-2185d086e9c4', v; print('baked', v, 'chunks', m['total_chunks'])"
+    && python -c "from regnav.config import load_config; from regnav.ingest.index import load_manifest; m=load_manifest(load_config('configs/prod.yaml')); v=m['index_version']; assert v=='idx-1174b9fc0ac3', v; print('baked', v, 'chunks', m['total_chunks'])"
 USER root
 ARG GIT_SHA=unknown
 ENV GIT_SHA=${GIT_SHA}

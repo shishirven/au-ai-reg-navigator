@@ -65,6 +65,7 @@ class _Unit:
     lines: list[str] = field(default_factory=list)
     part: int | None = None
     merged_paras: list[str] = field(default_factory=list)
+    fn: str | None = None  # footnote number: its own chunk, id ``fn<n>`` (D-059)
 
     @property
     def body(self) -> str:
@@ -98,6 +99,18 @@ def _build_units(lines: list[Line], numbered: bool) -> list[_Unit]:
     heading_has_content = True
     cur: _Unit | None = None
     for ln in lines:
+        if ln.footnote:
+            units.append(
+                _Unit(
+                    section=f"Footnote {ln.footnote}",
+                    para=None,
+                    page=ln.page,
+                    lines=[ln.text],
+                    fn=ln.footnote,
+                )
+            )
+            cur = None
+            continue
         if ln.kind == "heading":
             # Consecutive headings collapse into a "Parent › Child" path.
             section = f"{section} › {ln.text}" if not heading_has_content and section else ln.text
@@ -159,6 +172,12 @@ def _merge_small(units: list[_Unit], min_tokens: int, max_tokens: int) -> list[_
     out: list[_Unit] = []
     pending: _Unit | None = None
     for u in units:
+        if u.fn is not None or (pending is not None and pending.fn is not None):
+            if pending is not None:
+                out.append(pending)
+                pending = None
+            out.append(u)
+            continue
         if pending is not None:
             if (
                 pending.section == u.section
@@ -199,6 +218,9 @@ def _unit_ids(doc_id: str, units: list[_Unit]) -> list[tuple[str, str | None]]:
     section_ord = 0
     last_key = None
     for u in units:
+        if u.fn is not None:
+            ids.append((f"{doc_id}:fn{u.fn}", None))
+            continue
         paras = [p for p in u.merged_paras if p] if u.merged_paras else ([u.para] if u.para else [])
         if paras:
             label = paras[0] if len(paras) == 1 else f"{paras[0]}-{paras[-1]}"

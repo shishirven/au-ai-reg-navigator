@@ -17,7 +17,7 @@
 ## Key points for this use case
 
 - Prudential standards (CPS 230, CPS 234, CPS 220) bind APRA-regulated entities. This check assumes your organisation is an APRA-regulated bank.
-- Automated decision-making transparency (APP 1.7-1.9) commences on 10 December 2026 (16 days from today): privacy policies must describe decisions a computer program makes, or substantially and directly informs, that could significantly affect individuals. Applies to decisions made after commencement, even if the computer program was arranged, or the personal information was used, acquired or created, before then. Banks and insurers are assumed to be APP entities. (Sources: OAIC APP 1.7-1.9 fact sheet; Privacy and Other Legislation Amendment Act 2024, s 2 commencement table, item 7.)
+- Automated decision-making transparency (APP 1.7-1.9) commences on 10 December 2026 (15 days from today): privacy policies must describe decisions a computer program makes, or substantially and directly informs, that could significantly affect individuals. Applies to decisions made after commencement, even if the computer program was arranged, or the personal information was used, acquired or created, before then. Banks and insurers are assumed to be APP entities. (Sources: OAIC APP 1.7-1.9 fact sheet; Privacy and Other Legislation Amendment Act 2024, s 2 commencement table, item 7.)
 
 ## Risk appetite, ownership and inventory
 *Model development, validation and monitoring*
@@ -201,4 +201,4 @@
 - **ASIC guidance and Corporations Act licensee obligations.** Conduct obligations for AFS and credit licensees, including s912A general obligations.
 
 ---
-Generated 2026-11-24 · config `hybrid_stratified_rerank` · index `idx-2185d086e9c4` · no language model used: every item quotes its cited source.
+Generated 2026-11-25 · config `hybrid_stratified_capped` · index `idx-1174b9fc0ac3` · no language model used: every item quotes its cited source.

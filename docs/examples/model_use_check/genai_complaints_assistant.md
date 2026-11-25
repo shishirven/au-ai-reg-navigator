@@ -10,7 +10,7 @@
 | Third party · offshore | yes · yes |
 | Critical operation · generative AI | no · yes |
 
-**13 mandatory · 30 regulator-expects · 5 recommended items** across 18 stages.
+**13 mandatory · 29 regulator-expects · 5 recommended items** across 18 stages.
 
 > General information from public regulatory documents, not legal advice and not a compliance verdict. Confirm each item against the cited source with your risk, compliance and privacy teams.
 
@@ -197,8 +197,8 @@
   52. Before entering into or materially modifying a material arrangement, an APRA-regulated entity must: (a) undertake appropriate due diligence, including an appropriate selection process and an assessment of the ability of the service provider to provide the service on an ongoing basis; …
 - [ ] **🔴 Mandatory** · [CPS 230 para 55](https://www.legislation.gov.au/F2026L00475/asmade/2026-04-29/text/original/pdf#page=15)  
   55. For each material arrangement an APRA-regulated entity must: (a) identify and manage risks that could affect the ability of the service provider to provide the service on an ongoing basis; (b) identify and manage risks to the APRA-regulated entity that could result from the arrangement, such as step-in risk or contagion risk; (c) ensure it can execute its BCP if needed; …
-- [ ] **🟠 Regulator expects** · [CPG 230 Requirement Activities to be undertaken by regulated entity](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=23) · ⚖️ explains binding law  
-  Materiality assessment Perform materiality assessment of arrangements with NTSPs. Selection and initial due diligence Perform initial due diligence and appropriate selection process for material arrangements with non-traditional service providers. Where there is no optionality, there can be no selection process. Ongoing due diligence, monitoring, risk management, and
+- [ ] **🟠 Regulator expects** · [CPG 230 Table 5: Expectations for material non-traditional service provider arrangements](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=23) · ⚖️ explains binding law · also: Contract terms  
+  Requirement: Materiality assessment; Activities to be undertaken by regulated entity: Perform materiality assessment of arrangements with NTSPs. Requirement: Selection and initial due diligence; Activities to be undertaken by regulated entity: Perform initial due diligence and appropriate selection process for material arrangements with non-traditional service providers. …
 - [ ] **🟠 Regulator expects** · [CPG 230 para 55](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=22) · ⚖️ explains binding law  
   55. A prudent entity would assess the risks of engaging a service provider in another jurisdiction to determine if it is within appetite. This would include consideration of: a) the ability to continue operations and meet core obligations following a loss of service; b) maintenance of information security; c) the ability to own and manage controls on its behalf; …
 
@@ -208,13 +208,11 @@
 **Evidence typically produced:** Contract clause checklist (audit and APRA access, termination and exit, sub-contracting, incident notice, model change notice, data use)  
 **Usually involves:** Legal, Procurement
 
-- Also relevant (listed above): CPS 230 para 52
+- Also relevant (listed above): CPS 230 para 52; CPG 230 Table 5: Expectations for material non-traditional service provider arrangements
 - [ ] **🔴 Mandatory** · [CPS 230 para 53](https://www.legislation.gov.au/F2026L00475/asmade/2026-04-29/text/original/pdf#page=14)  
   53. For all material arrangements, an APRA-regulated entity must maintain a formal legally binding agreement (formal agreement). The formal agreement must, at a minimum: (a) specify the services covered by the agreement and associated service levels; …
 - [ ] **🟠 Regulator expects** · [CPG 230 para 52](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=22) · ⚖️ explains binding law  
   52. CPS 230 requires entities to maintain formal agreements for material arrangements with material service providers. Not all arrangements with a material service provider will be material to support delivery of the critical operation or expose the entity to material operational risk.
-- [ ] **🟠 Regulator expects** · [CPG 230 para 58](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=23) · ⚖️ explains binding law  
-  58. APRA recognises that regulated entities cannot meet certain contractual obligations in CPS 230 when engaging with NTSPs. Paragraph 57 of CPS 230 outlines exemptions available for such arrangements. Regulated entities may only utilise the relief for material arrangements with service providers where: …
 
 ## Notifying APRA and offshoring
 *Third-party AI vendor, model API or platform*
@@ -225,8 +223,8 @@
 - Also relevant (listed above): CPS 230 para 52
 - [ ] **🔴 Mandatory** · [CPS 230 para 60](https://www.legislation.gov.au/F2026L00475/asmade/2026-04-29/text/original/pdf#page=16)  
   60. An APRA-regulated entity must notify APRA: (a) as soon as possible and not more than 20 business days after entering into or materially changing an agreement for the provision of a service on which the entity relies to undertake a critical operation; …
-- [ ] **🟠 Regulator expects** · [CPG 230 Notifications to APRA](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=9) · ⚖️ explains binding law  
-  Operational risk incidents As soon as possible and not later than 72 hours after becoming aware of an operational risk incident that it determines to be likely to have a material financial impact or a material impact on the ability of the entity to maintain its critical operations (paragraph 32 of CPS 230) Disruption As soon as possible and not later than 24 hours after a disruption to a critical operation outside …
+- [ ] **🟠 Regulator expects** · [CPG 230 Table 1. Notifications to APRA](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=9) · ⚖️ explains binding law  
+  Notifications to APRA 2 Operational risk incidents | As soon as possible and not later than 72 hours after becoming aware of an operational risk incident that it determines to be likely to have a material financial impact or a material impact on the ability of the entity to maintain its critical operations (paragraph 32 of CPS 230) Disruption | As soon as possible and not later than 24 hours after a disruption to a …
 - [ ] **🟠 Regulator expects** · [CPG 230 para 59](https://www.apra.gov.au/system/files/2026-05/Prudential%20Practice%20Guide%20CPG%20230%20-%20Operational%20Risk%20Management%20-%20clean.pdf#page=23) · ⚖️ explains binding law  
   59. For a material arrangement with a service provider that does not meet either of the above conditions, regulated entities may apply to APRA for a specific exemption under paragraph 58.
 
@@ -283,4 +281,4 @@
 - **ASIC guidance and Corporations Act licensee obligations.** Conduct obligations for AFS and credit licensees, including s912A general obligations.
 
 ---
-Generated 2026-11-24 · config `hybrid_stratified_rerank` · index `idx-2185d086e9c4` · no language model used: every item quotes its cited source.
+Generated 2026-11-25 · config `hybrid_stratified_capped` · index `idx-1174b9fc0ac3` · no language model used: every item quotes its cited source.

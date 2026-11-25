@@ -143,3 +143,34 @@ def test_fixed_size_windows_overlap(size: int, overlap: int) -> None:
     assert set(first) & set(second)  # windows overlap
     assert chunks[0].chunk_id == "xps:w0000"
     assert chunks[-1].body.split()[-1] == "w199"  # nothing dropped at the end
+
+
+def test_footnotes_get_their_own_chunks_without_moving_other_ids() -> None:
+    """F-13: footnotes are appended after the body, so adding them leaves every other id as is."""
+    from regnav.ingest.parse import Line
+
+    body = [
+        Line("text", "1. An entity must do the first thing in full and on time.", 1),
+        Line("text", "2. An entity must do the second thing in full and on time.", 1),
+        Line("heading", "Attachment", 2),
+        Line("text", "Category: Regulators; Description: Statutory authorities.", 2, table=True),
+    ]
+    notes = [
+        Line(
+            "text",
+            "Material offshoring arrangement means a material arrangement offshore.",
+            2,
+            footnote="16",
+        ),
+        Line("text", "Refer to CPS 190.", 2, footnote="17"),
+    ]
+    doc = _doc()
+    without = [c.chunk_id for c in chunk_document(body, doc, ChunkingConfig())]
+    with_notes = chunk_document(body + notes, doc, ChunkingConfig())
+    ids = [c.chunk_id for c in with_notes]
+    assert ids[: len(without)] == without
+    assert ids[len(without) :] == [f"{doc.id}:fn16", f"{doc.id}:fn17"]
+    fn = with_notes[-2]
+    assert fn.section == "Footnote 16" and fn.para is None
+    assert "Footnote 16" in fn.text.split("\n")[0]  # the prefix names it for search and citation
+    assert fn.body.startswith("Material offshoring arrangement means")

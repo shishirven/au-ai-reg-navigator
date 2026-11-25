@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Model / system | AU AI Regulation Navigator (tier-aware RAG), prompt `v3` |
-| Version under review | index `idx-2185d086e9c4` · config `hybrid_stratified` · generator `groq/qwen/qwen3.8-27b` · judge `groq/openai/gpt-oss-120b`. Metrics below are **provisional** and apply to Groq only, not to the Gemini Flash fallback. |
+| Version under review | index `idx-1174b9fc0ac3` (from 25 Nov 2026, F-13; generation metrics in §5 were measured on `idx-2185d086e9c4`) · config `hybrid_stratified_capped` · generator `groq/qwen/qwen3.8-27b` · judge `groq/openai/gpt-oss-120b`. Metrics below are **provisional** and apply to Groq only, not to the Gemini Flash fallback. |
 | Validation type | Initial validation (pre-release) |
 | Model tier (proposed) | Low–moderate: decision-*support* tool, human in the loop, no automated decisions |
 | Validator | Self-assessment in Line-2 format (portfolio project). **Not independent**; see §9 |
@@ -30,7 +30,7 @@ source. See `docs/MODEL_CARD.md`.
 ## 2. System description (summary)
 
 Twelve documents (3 binding APRA standards current + 1 superseded; 5 regulator-expectation
-documents; 1 voluntary current + 2 superseded) are parsed into 522 paragraph-level chunks carrying
+documents; 1 voluntary current + 2 superseded) are parsed into 604 chunks (one per numbered paragraph or heading section, plus 82 footnotes; tables kept row by row) carrying
 tier, sector applicability, status and modality metadata. A question is answered by:
 
 1. hybrid retrieval (BGE dense + BM25, reciprocal-rank fusion) run **separately per tier** with a
@@ -186,6 +186,7 @@ metrics should be treated as indicative only.**
 | F-09 | Low (fixed) | Index version differed between Windows and Linux checkouts (line endings). | **Fixed** (D-040), `.gitattributes`. |
 | F-11 | Medium | Corpus gaps for the super sector and definitions: SPS 220 (risk management for RSE licensees) and APS/GPS/LPS/HPS 001 are cited but not in the corpus; CPS 220 does not apply to super, so super users get no binding risk-management standard. | Open: add SPS 220 (and SPS 230 references where relevant). |
 | F-12 | **Medium** | One document can take every slot in its tier. For *"Do privacy policies have to explain how automated decisions use personal information?"* the OAIC AI-products guidance (68 chunks, "personal information" throughout) fills all regulator-expects slots, and the OAIC APP 1.7–1.9 fact sheet (wording: "computer program … make a decision") ranks 28th–30th in tier, so the 10 Dec 2026 commencement is never stated (adversarial test 5 fails). The same pattern dropped the APRA AI letter and CPS 234 from a vendor-engagement answer in a side-by-side review. | **Remediated (25 Nov 2026, D-057).** `hybrid_stratified_capped` is the default: the soft per-document cap in the guidance tiers gets the APP 1.7-1.9 fact sheet into the context (D-052), and the commencement check (D-056) makes every answer state the 10 Dec 2026 start date with a cited source. Adversarial test 5 passes; correctness +0.06 [+0.01, +0.13] over the previous default on the same 40 questions. |
+| F-13 | **Medium** (fixed) | **Tables and footnotes were dropped or flattened at parsing.** The parser removed small type as footnote text, so: (1) the CPS 230 (2026) Attachment table listing the 6 categories of non-traditional service providers that para 57 exempts was never indexed (8pt type against a 12pt body); (2) 82 footnotes across CPS 230 (both versions), CPS 220, CPS 234, CPG 230 and CPG 235 were dropped, some substantive (CPS 230 fn 16 defines *material offshoring arrangement*); (3) CPG 230's 7 tables were flattened into run-on text and one table header became a junk section (`apra_cpg230_2026:s009`, "reporting"); (4) the OAIC AI-products guidance's Markdown table was glued into one paragraph. Found while comparing CPS 230 2026 with 2023. | **Fixed (25 Nov 2026, D-059).** Ruled tables (PyMuPDF) and small-type side-by-side layouts become one row per line, labelled by header ("Category: …; Examples: …"); Markdown pipe tables likewise; footnotes become their own chunks (`…:fn16`) instead of being dropped; running headers stay excluded. Re-index `idx-1174b9fc0ac3`: 604 chunks (+83: 82 footnotes + the CPS 230 Attachment; −1 junk section; 14 changed as intended). All 62 gold chunk ids unchanged in text. Retrieval eval (40 draft questions, default config): context recall 0.750 → 0.750, binding gold hit 0.91 → 0.91, MRR unchanged, recall@5 0.618 → 0.608 (one question, D12: a CPG 230 table now outranks para 54 in the top 5, which is still in the context). Residual: CPG 230 process diagrams (pp. 12–13) pair up imperfectly; 3 clause-label statements in CPG 230 tables now split differently (map labels by normalised text at switch-on). Generation metrics in §5 are from the previous index; re-run before release (§10). |
 | F-10 | Info | Latency and throughput on the free inference tier are bounded by rate limits (200k tokens/day/model). | Production would need a paid tier or self-hosting; capacity test required. |
 
 ## 8. Limitations
@@ -212,9 +213,10 @@ challenge of the conceptual design. Everything needed to reproduce it is version
    passes `make release-check` (no `--allow-draft`);
 2. judge calibration κ ≥ 0.6 against human labels;
 3. ~~the pooled-baseline generation comparison is complete~~ **done** (§5.2); F-12 remediated and re-evaluated;
-4. F-01 and F-03 have remediation plans with owners (F-12 remediated, D-057).
+4. F-01 and F-03 have remediation plans with owners (F-12 remediated, D-057);
+5. the generation eval is re-run on the current index `idx-1174b9fc0ac3` (F-13 changed parsing; retrieval was re-run, generation not yet).
 
-Current release-gate output (draft evidence, `--allow-draft`): **APPROVED** on all thresholds.
+Current release-gate output (draft evidence, `--allow-draft`): every threshold passes, but the gate **BLOCKS** since 25 Nov 2026 because the last full eval ran on index `idx-2185d086e9c4` and the parser fix (F-13) produced `idx-1174b9fc0ac3`: re-run the full eval (condition 5).
 Without `--allow-draft` the gate **BLOCKS** (no gold-set run), as designed.
 
 ## 11. Ongoing monitoring and triggers

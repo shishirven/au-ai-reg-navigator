@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | System | Retrieval-augmented Q&A and a model-use checklist over Australian AI and financial regulation, for data and analytics teams |
-| Version | prompt `v3`, index `idx-2185d086e9c4` (see `chroma/index_manifest_*.json`) |
+| Version | prompt `v3`, index `idx-1174b9fc0ac3` (see `chroma/index_manifest_*.json`) |
 | Owner | Shishir (portfolio project) |
 | Status | **Demonstration / research prototype.** Not validated for production use. |
 | Last reviewed | November 2026 |
@@ -74,7 +74,7 @@ is compliant.
 
 ## Corpus and versions
 
-12 documents, 522 chunks (index `idx-2185d086e9c4`, built 2026-11-19, ingest code `d0ec610bcd44`).
+12 documents, 604 chunks (index `idx-1174b9fc0ac3`, built 2026-11-25, ingest code `384b7a7487cc`): one per numbered paragraph or heading section, plus 82 footnote chunks and table rows kept since the table/footnote parser fix (F-13, D-059).
 Superseded documents are indexed but **excluded from retrieval by default**.
 
 | doc id | tier | status | chunks | sha256 (12) |

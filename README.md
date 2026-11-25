@@ -50,7 +50,7 @@ example outputs: [docs/examples/model_use_check/](docs/examples/model_use_check/
 > **Recommended** (voluntary guidance)
 > - Ask the developer or supplier to show proof that the AI system has been properly tested… *[AI6 Foundations]*
 >
-> *Not legal advice.* · config `hybrid_stratified_capped` · index `idx-2185d086e9c4`
+> *Not legal advice.* · config `hybrid_stratified_capped` · index `idx-1174b9fc0ac3`
 
 ### Who it's for, and the workflow
 
