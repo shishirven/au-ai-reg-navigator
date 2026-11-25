@@ -1,0 +1,7 @@
+id,type,sector,recall_at_5,rr,binding_coverage,abstained,gated,fallback,repaired,n_claims,citation_validity,authority_label_accuracy,modality_error_rate,raw_modality_error_rate,tier_recall,faithfulness,correctness,total_latency_s,input_tokens,output_tokens,question
+D15,factual,any_business,1.0,1.0,,False,0.0,0.0,0.0,1,1.0,1.0,0.0,0.0,1.0,1.0,1.0,58.193345656,4138,117,When does the APP 1.7-1.9 automated decision-making transparency obligation commence?
+D16,factual,any_business,0.5,1.0,,False,0.0,0.0,0.0,4,1.0,1.0,0.0,0.0,1.0,1.0,1.0,53.57125257999999,8822,693,When is an organisation in scope of the APP 1.7-1.9 transparency obligation?
+D17,factual,any_business,1.0,1.0,,False,0.0,0.0,0.0,6,1.0,1.0,0.0,0.0,1.0,1.0,0.75,89.361023759,10411,765,How much technical detail must a privacy policy include about automated decisions?
+D18,factual,any_business,1.0,1.0,,False,0.0,0.0,0.0,4,1.0,1.0,0.0,0.0,1.0,1.0,1.0,89.919785209,10556,605,What are examples of decisions in scope of the ADM transparency obligation?
+D29,cross_doc,any_business,0.3333333333333333,0.25,,False,0.0,0.0,0.0,3,1.0,1.0,0.0,0.0,1.0,1.0,0.75,40.210484925,4499,263,What privacy obligations apply if our AI generates or infers personal information about customers?
+D40,unanswerable,any_business,,,,True,1.0,0.0,0.0,0,,,,,,,1.0,2.0643559499999924,0,0,How much does a Claude API call cost per million tokens?

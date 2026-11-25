@@ -33,8 +33,8 @@ from regnav.retrieve import RetrievalSystem, build_retrieval
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIGS = {
-    "Tier-stratified + re-ranking (recommended)": "configs/hybrid_stratified_rerank.yaml",
-    "Re-ranking + per-document cap (candidate, D-052)": "configs/hybrid_stratified_capped.yaml",
+    "Re-ranking + per-document cap (recommended)": "configs/hybrid_stratified_capped.yaml",
+    "Tier-stratified + re-ranking": "configs/hybrid_stratified_rerank.yaml",
     "Tier-stratified hybrid": "configs/hybrid_stratified.yaml",
     "Hybrid pooled (dense + BM25)": "configs/hybrid_pooled.yaml",
     "Dense pooled (naive baseline)": "configs/baseline_dense.yaml",

@@ -198,7 +198,7 @@ class Secrets(BaseSettings):
         return bool(self.langfuse_public_key and self.langfuse_secret_key)
 
 
-DEFAULT_CONFIG = Path("configs/hybrid_stratified_rerank.yaml")  # D-055
+DEFAULT_CONFIG = Path("configs/hybrid_stratified_capped.yaml")  # D-055, D-057
 
 
 def load_config(path: str | Path | None = None, **overrides: object) -> AppConfig:

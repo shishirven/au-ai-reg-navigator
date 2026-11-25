@@ -1,5 +1,5 @@
 # AU AI Regulation Navigator - developer entry points. Everything runs through uv.
-CONFIG ?= configs/hybrid_stratified_rerank.yaml
+CONFIG ?= configs/hybrid_stratified_capped.yaml
 USE_CASE ?= data/use_cases/motor_pricing_gbm.yaml
 Q ?= What do we need to do before engaging a third-party AI vendor?
 SECTOR ?= bank

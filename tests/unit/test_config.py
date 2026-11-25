@@ -40,10 +40,12 @@ def test_overrides() -> None:
     assert cfg.name == "x"
 
 
-def test_prod_config_matches_rerank_without_a_local_fallback() -> None:
-    """Public-demo config keeps retrieval and quality knobs; only the outage behaviour changes."""
+def test_prod_config_matches_the_default_without_a_local_fallback() -> None:
+    """Public-demo config keeps the default config's retrieval and quality knobs (D-057);
+    only the outage behaviour changes."""
     prod = load_config("configs/prod.yaml")
-    base = load_config("configs/hybrid_stratified_rerank.yaml")
+    base = load_config()  # the default config
+    assert base.name == "hybrid_stratified_capped"
     assert prod.name == "prod"
     assert prod.index_key() == base.index_key()
     assert prod.embedding.model_dump() == base.embedding.model_dump()

@@ -25,7 +25,7 @@ from regnav.demo_guard import footer_text, public_demo_enabled
 from regnav.retrieve import build_retrieval
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CONFIG = "configs/hybrid_stratified_rerank.yaml"
+DEFAULT_CONFIG = "configs/hybrid_stratified_capped.yaml"
 
 EXAMPLES = [
     ("📈", "Motor pricing model", "Actuarial · insurer · cloud ML platform", "motor_pricing_gbm"),

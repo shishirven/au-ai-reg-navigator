@@ -114,6 +114,7 @@ def evaluate_question(
         repaired=1.0 if result.repaired else 0.0,
         valid=result.valid,
         n_attempts=len(result.attempts),
+        commencements=result.commencements,  # D-056: how a pending start date was stated
         validation_errors=[a.error_types for a in result.attempts],
         repairs=[a.repairs for a in result.attempts],
         claims=claims,

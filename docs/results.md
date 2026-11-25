@@ -13,7 +13,7 @@
 | Binding gold chunk retrieved | 0.435 [0.23, 0.65] | 0.478 [0.26, 0.68] | 0.652 [0.44, 0.85] | 0.913 [0.79, 1.00] | 0.913 [0.79, 1.00] |
 | ***Generation (LLM judge)*** | | | | | |
 | Faithfulness | 1.000 [1.00, 1.00] | 0.938 [0.86, 0.99] | 0.966 [0.93, 0.99] | 0.970 [0.93, 1.00] | 0.971 [0.94, 0.99] |
-| Answer correctness | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | 0.887 [0.82, 0.94] | 0.931 [0.88, 0.97] |
+| Answer correctness | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | 0.881 [0.81, 0.94] | 0.944 [0.90, 0.98] |
 | ***Generation (rule-based, final answer)*** | | | | | |
 | Citation validity | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
 | Authority-label accuracy | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] | 1.000 [1.00, 1.00] |
@@ -30,13 +30,15 @@
 | Claim-repair rate | 0.050 [0.00, 0.12] | 0.025 [0.00, 0.07] | 0.025 [0.00, 0.07] | 0.025 [0.00, 0.07] | 0.000 [0.00, 0.00] |
 | Safe-fallback rate | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] | 0.000 [0.00, 0.00] |
 | ***System*** | | | | | |
-| Latency p50 (s) | 33.3 | 33.9 | 28.5 | 37.0 | 35.7 |
-| Latency p95 (s) | 37.9 | 39.1 | 59.4 | 41.6 | 43.0 |
-| Input tokens / query | 3318.2 | 3340.6 | 3055.8 | 3820.4 | 3831.6 |
-| Output tokens / query | 274.6 | 263.1 | 373.4 | 371.6 | 365.6 |
+| Latency p50 (s) | 33.3 | 33.9 | 28.5 | 37.8 | 36.2 |
+| Latency p95 (s) | 37.9 | 39.1 | 59.4 | 66.0 | 86.5 |
+| Input tokens / query | 3318.2 | 3340.6 | 3055.8 | 4223.8 | 4374.7 |
+| Output tokens / query | 274.6 | 263.1 | 373.4 | 400.3 | 408.8 |
 | Cost / query (USD) | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
 
 Values: mean [95% percentile-bootstrap CI over questions].
+
+`hybrid_stratified_rerank` and `hybrid_stratified_capped` are merged runs (25 Nov): the six questions affected by the commencement check (D-056) were re-run with it on and replaced in the full runs; the other rows are unchanged (D-057).
 
 ### Runs
 
@@ -45,8 +47,8 @@ Values: mean [95% percentile-bootstrap CI over questions].
 | `baseline_dense` | `baseline_dense__20261119-054350__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 | `hybrid_pooled` | `hybrid_pooled__20261120-074432__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 | `hybrid_stratified` | `hybrid_stratified__20261119-052448__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
-| `hybrid_stratified_rerank` | `hybrid_stratified_rerank__20261121-081024__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
-| `hybrid_stratified_capped` | `hybrid_stratified_capped__20261124-050618__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
+| `hybrid_stratified_rerank` | `hybrid_stratified_rerank__20261125-055444__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
+| `hybrid_stratified_capped` | `hybrid_stratified_capped__20261125-055446__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 
 ### How to read this
 

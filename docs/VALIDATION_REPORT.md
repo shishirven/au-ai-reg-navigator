@@ -108,7 +108,8 @@ index (`idx-2185d086e9c4`); full table in `docs/results.md`:
 
 | metric | dense pooled | hybrid pooled | hybrid stratified | **stratified + re-rank** | + guidance-tier cap (`capped`) |
 |---|---|---|---|---|---|
-| Answer correctness (judge) | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | **0.887** [0.82, 0.94] | 0.931 [0.88, 0.97] |
+| Answer correctness (judge) | 0.775 [0.66, 0.88] | 0.762 [0.65, 0.86] | 0.769 [0.66, 0.86] | 0.887 [0.82, 0.94] | 0.931 [0.88, 0.97] |
+| Answer correctness, with the commencement check (D-056) | | | | 0.881 [0.81, 0.94] | **0.944** [0.90, 0.98] |
 | Correctness, 23 binding questions | 0.717 | 0.674 | 0.772 | **0.913** | see note |
 | Faithfulness (judge) | 1.000 | 0.938 [0.86, 0.99] | 0.966 [0.93, 0.99] | 0.970 [0.93, 1.00] | 0.971 [0.94, 0.99] |
 | Expected-tier recall | 0.805 | 0.862 | 1.000 | 0.990 | 1.000 |
@@ -126,6 +127,9 @@ Paired bootstrap on correctness (same 40 questions, 10,000 resamples):
 | stratified vs dense pooled | −0.01 [−0.08, +0.06] | 7 / 8 |
 | capped (guidance-tier cap) vs re-rank | +0.04 [−0.01, +0.11] | 7 / 3 |
 | capped, all-tier variant (rejected) vs re-rank | −0.04 [−0.12, +0.02] | 5 / 6 |
+| **capped vs re-rank, both with the commencement check (decision run, D-057)** | **+0.06 [+0.01, +0.13]** | 9 / 2 |
+
+**The default changed on 25 Nov 2026 (D-057).** The commencement check only acts on questions where a not-yet-commenced obligation is in the context (D15-D18, D29 and the gated D40). Those six were re-run for both configs and merged into the full runs with `scripts/merge_rerun.py`; the other 34 rows are the original runs, whose pipeline the check does not touch. On the merged runs `hybrid_stratified_capped` is +0.06 [+0.01, +0.13] better on correctness than `hybrid_stratified_rerank`, with faithfulness, citation validity, authority labels and modality unchanged, and it passes adversarial test 5. Both conditions of the rule pre-registered on 23 Nov hold, so it is the default. Of the questions where a start date applied, the model stated it unprompted in 1, after the targeted retry in 1, and the quoted source was added in 3 (capped).
 
 *Interpretation.*
 
@@ -180,7 +184,7 @@ metrics should be treated as indicative only.**
 | F-08 | Low | Evaluation questions and reference answers were written by the developer, a validation-independence issue. | Open. Expert-written gold set (user) required before release (§10). |
 | F-09 | Low (fixed) | Index version differed between Windows and Linux checkouts (line endings). | **Fixed** (D-040), `.gitattributes`. |
 | F-11 | Medium | Corpus gaps for the super sector and definitions: SPS 220 (risk management for RSE licensees) and APS/GPS/LPS/HPS 001 are cited but not in the corpus; CPS 220 does not apply to super, so super users get no binding risk-management standard. | Open: add SPS 220 (and SPS 230 references where relevant). |
-| F-12 | **Medium** | One document can take every slot in its tier. For *"Do privacy policies have to explain how automated decisions use personal information?"* the OAIC AI-products guidance (68 chunks, "personal information" throughout) fills all regulator-expects slots, and the OAIC APP 1.7–1.9 fact sheet (wording: "computer program … make a decision") ranks 28th–30th in tier, so the 10 Dec 2026 commencement is never stated (adversarial test 5 fails). The same pattern dropped the APRA AI letter and CPS 234 from a vendor-engagement answer in a side-by-side review. | **Remediated in `hybrid_stratified_capped` + commencement check; default decision pending.** Retrieval (D-052): the fact sheet is retrieved and cited; broad-question coverage 0.43 → 0.61; correctness 0.887 → 0.931 (paired Δ +0.04 [−0.01, +0.11]). Generation (D-056): sourced commencement dates; the answer must state the date, citing the source that states it, or quote that source. **Adversarial test 5 now passes with `hybrid_stratified_capped`** and still fails with `hybrid_stratified_rerank`, whose retrieval never surfaces the fact sheet. The check changes answers only on questions where it triggers (D15-D18, D29, D40); those are re-run for both configs (scheduled, Groq quota), then the pre-registered rule is applied to decide the default. |
+| F-12 | **Medium** | One document can take every slot in its tier. For *"Do privacy policies have to explain how automated decisions use personal information?"* the OAIC AI-products guidance (68 chunks, "personal information" throughout) fills all regulator-expects slots, and the OAIC APP 1.7–1.9 fact sheet (wording: "computer program … make a decision") ranks 28th–30th in tier, so the 10 Dec 2026 commencement is never stated (adversarial test 5 fails). The same pattern dropped the APRA AI letter and CPS 234 from a vendor-engagement answer in a side-by-side review. | **Remediated (25 Nov 2026, D-057).** `hybrid_stratified_capped` is the default: the soft per-document cap in the guidance tiers gets the APP 1.7-1.9 fact sheet into the context (D-052), and the commencement check (D-056) makes every answer state the 10 Dec 2026 start date with a cited source. Adversarial test 5 passes; correctness +0.06 [+0.01, +0.13] over the previous default on the same 40 questions. |
 | F-10 | Info | Latency and throughput on the free inference tier are bounded by rate limits (200k tokens/day/model). | Production would need a paid tier or self-hosting; capacity test required. |
 
 ## 8. Limitations
@@ -207,7 +211,7 @@ challenge of the conceptual design. Everything needed to reproduce it is version
    passes `make release-check` (no `--allow-draft`);
 2. judge calibration κ ≥ 0.6 against human labels;
 3. ~~the pooled-baseline generation comparison is complete~~ **done** (§5.2); F-12 remediated and re-evaluated;
-4. F-01 and F-03 have remediation plans with owners.
+4. F-01 and F-03 have remediation plans with owners (F-12 remediated, D-057).
 
 Current release-gate output (draft evidence, `--allow-draft`): **APPROVED** on all thresholds.
 Without `--allow-draft` the gate **BLOCKS** (no gold-set run), as designed.

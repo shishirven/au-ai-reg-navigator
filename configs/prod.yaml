@@ -1,7 +1,7 @@
 name: prod
 description: >-
   Public-demo config (D-046, D-050). Same retrieval and generation thresholds as
-  hybrid_stratified_rerank. Groq stays primary. A 429 or outage falls back to
+  hybrid_stratified_capped (D-057). Groq stays primary. A 429 or outage falls back to
   Gemini Flash on the free tier. If that also fails, the answer is the existing
   safe abstention. Retries and the HTTP timeout stay short.
 seed: 42
@@ -22,6 +22,12 @@ retrieval:
   rerank: true
   rerank_model: cross-encoder/ms-marco-MiniLM-L-6-v2
   rerank_pool_k: 20
+  # D-057: same retrieval as hybrid_stratified_capped (the default since 25 Nov)
+  per_doc_cap: 3
+  per_doc_cap_tiers: [expectation, voluntary]
+  tier_depth: 40
+  strip_instructions: true
+  stage_queries: false
 generation:
   # Groq free tier only. Do not point this at a paid model.
   provider: groq
