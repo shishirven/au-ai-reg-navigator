@@ -72,6 +72,7 @@ Test layers are described in `docs/TEST_PLAN.md`.
 | Unit (157) + integration (10) | **All pass** (167), hermetic (no network/keys). Coverage ≈ 82% of `regnav/`. |
 | Retrieval regression gate (CI, fixtures, real BGE) | **Pass** for `hybrid_stratified` (recall@5 1.00, MRR 1.00, binding coverage 1.00). Control: the dense baseline config **fails** the gate (binding coverage 0.75), confirming the gate discriminates. |
 | Adversarial (live LLM) | **4 / 5 pass** (prompt injection, out-of-scope abstention, legal-advice request, voluntary-only topic). **The 5th fails** (re-run 22 Nov 2026 once quota allowed): asked whether privacy policies must explain automated decisions, the answer is faithful but never states that APP 1.7–1.9 commences on 10 Dec 2026, because the OAIC fact sheet is not retrieved. See **F-12**. |
+| Chunking ablation (retrieval only) | Paragraph chunks vs fixed 512/256-token windows, same retrieval: at equal context size windows reach the gold paragraph text far less often (0.50 vs 0.75, Δ −0.25 [−0.36, −0.15]); 512-token windows only draw level with 2.5× the context and span ~6 paragraphs each, so can't be cited. Paragraph chunking kept (D-058, `docs/chunking_ablation.md`). |
 | Full evaluation | §5.1–5.3 below. **Provisional:** 40 developer-written DRAFT questions. |
 
 ### 5.1 Retrieval: the core claim (all four configurations, 40 draft questions)
