@@ -49,6 +49,7 @@ Values: mean [95% percentile-bootstrap CI over questions].
 | `hybrid_stratified` | `hybrid_stratified__20261119-052448__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 | `hybrid_stratified_rerank` | `hybrid_stratified_rerank__20261125-055444__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
 | `hybrid_stratified_capped` | `hybrid_stratified_capped__20261125-055446__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-2185d086e9c4` | groq/qwen/qwen3.8-27b |
+| `hybrid_stratified_capped` (after F-13 re-index) | `hybrid_stratified_capped__20261125-084122__DRAFT` (full) | `data/eval/questions_draft.jsonl` | 40 | `idx-1174b9fc0ac3` | groq/qwen/qwen3.8-27b |
 
 ### How to read this
 
